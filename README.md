@@ -26,5 +26,5 @@ For any questions or support, please feel free to reach out to the project team:
 **Course:** Technologies and Information Systems for the Web
 **Institution:** ESMAD, Portugal
 
-**Acknowledgments**
+### Acknowledgments
 We would like to thank our professors, colleagues, and the ESMAD faculty for their invaluable support and guidance throughout the development of this project.
