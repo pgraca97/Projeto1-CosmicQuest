@@ -23,6 +23,7 @@ For inquiries or support, feel free to contact the project team:
 - Kleiton Mabjaia	[40220369@esmad.ipp.pt](mailto:40220369@esmad.ipp.pt)
 
 **Course**: Technologies and Information Systems for the Web
+
 **Institution**: ESMAD, Portugal
 
 ### Acknowledgments
