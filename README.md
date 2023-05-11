@@ -16,6 +16,7 @@ Development of Cosmic Quest is presently ongoing, with regular updates soon to b
 Given that this project is part of a university course, contributions from external sources aren't accepted at this time. However, feedback and suggestions are most welcome.
 
 **Contact Information**
+
 For inquiries or support, feel free to contact the project team:
 
 - Paulo Graça	[40220477@esmad.ipp.pt](mailto:40220477@esmad.ipp.pt)
