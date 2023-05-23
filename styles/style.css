@@ -1,0 +1,338 @@
+/*  Fonts */
+@font-face {
+  font-family: 'DePixelBreit';
+  src: url('../assets/fonts/DePixelBreit.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DePixelSchmal';
+  src: url('../assets/fonts/DePixelSchmal.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'PCPaintSpecialSmall';
+  src: url('../assets/fonts/PCPaintSpecialSmall.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/*  Body Styles */
+body#custom-body {
+  background-color: #0d0c13;
+  overflow: hidden;
+}
+.asteroid {
+  position: absolute;
+  background-image: url('../assets/img/Asteroids/Asteroid1.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 42px; /* adjust size of your asteroid */
+  height: 42px; /* adjust size of your asteroid */
+  top: 50px; /* initial position */
+  left: 50px; /* initial position */
+  animation: spin 5s infinite linear, moveX 20s infinite alternate, moveY 15s infinite alternate;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes moveX {
+  0% { left: 10%; }
+  50% { left: 80%; }
+  100% { left: 10%; }
+}
+
+@keyframes moveY {
+  0% { top: 10%; }
+  50% { top: 80%; }
+  100% { top: 10%; }
+}
+/*
+body {
+  background-image: url('../assets/mainBackground.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+*/
+/*  Frame Container */
+.frame-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2; 
+  pointer-events: none;
+}
+
+/*  Main Container */
+.main-container {
+  height: 498px;
+  width: 830px;
+  position: absolute;
+  background-image: url('../assets/img/Background.png');
+  background-color: pink;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+/*  Bottom Navigation Bar */
+.fixed-bottom {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.navbar-small {
+  height: 35px;
+}
+
+.top-content {
+  margin-top:12px;
+  font-family: 'DePixelSchmal';
+}
+
+#home-btn {
+  width:55px;
+}
+
+
+#rooms-btn {
+  width:68px;
+}
+
+#alerts-btn {
+  width:71px;
+}
+
+.alerts-counter {
+  font-family: 'DePixelSchmal';
+  font-size: 1rem;
+
+  background: linear-gradient(to top, #75f8d2, #6096db, #2ae3fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; 
+  background-clip: text;
+  color: transparent; 
+  display: inline-block;
+
+  animation: glowing-text 2s infinite;
+  cursor: pointer;
+  user-select: none;
+  padding-top: 1px;
+  
+}
+
+
+#home-btn .btn-image-hover,
+#rooms-btn .btn-image-hover,
+#alerts-btn .btn-image-hover {
+  top: 5px;
+}
+.btn-group-vertical {
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Specific Styles for .btn-primary */
+button.btn.btn-primary {
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 216px;
+  background: transparent !important;
+  border: none;
+}
+
+/* Image Styles */
+.btn .btn-image,
+.btn .btn-image-hover {
+  display: block;
+  width: auto;
+  height: auto;
+  object-fit: contain; /* Keeps aspect ratio */
+}
+
+/* Hover Image Styles */
+.btn .btn-image-hover {
+  position: absolute;
+  top: -1.5px;
+  left: 0;
+  display: block; /* Hide by default */
+  mix-blend-mode: screen;
+}
+
+#new-game-btn {
+  width: 157px;
+  top: 5px;
+}
+#continue-btn {
+  width: 149px;
+  top: 3px
+}
+
+#personal-btn {
+  width: 154px;
+}
+#exit-btn {
+  width: 77px;
+  top:-2px
+}
+
+
+#new-game-btn .btn-image-hover,
+#continue-btn .btn-image-hover,
+#exit-btn .btn-image-hover,
+#personal-btn .btn-image-hover {
+  top:2px;
+}
+
+/* Hover State */
+.btn:hover .btn-image-hover {
+  display: block; /* Show on hover */
+  animation: shake 0.2s linear infinite;
+}
+
+#login-btn {
+  position: relative;
+  width: 59px;
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  padding: 0;
+  background: transparent !important;
+  border: none;
+}
+
+#login-btn img {
+  width: auto !important;
+}
+
+#login-btn .btn-image-hover{
+  position: absolute;
+  top: 2px;
+  left: 0;
+  display: block; /* Hide by default */
+  mix-blend-mode: screen;
+}
+
+#login-btn:hover .btn-image-hover {
+  display: block;
+}
+
+#sign-up-btn {
+  position: relative;
+  width: 72px;
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  padding: 0;
+  background: transparent !important;
+  border: none;
+}
+
+#sign-up-btn img {
+  width: auto !important;
+}
+
+#sign-up-btn .btn-image-hover{
+  position: absolute;
+  top: 2px;
+  left: 0;
+  display: block; /* Hide by default */
+  mix-blend-mode: screen;
+}
+
+#sign-up-btn:hover .btn-image-hover {
+  display: block;
+}
+
+@keyframes glitch {
+  0% {
+    text-shadow: none;
+  }
+  33% {
+    text-shadow: -2px 0 #ff00c1, 2px 0 #00c1ff;
+  }
+  66% {
+    text-shadow: -2px 0 #00c1ff, 2px 0 #ff00c1;
+  }
+  100% {
+    text-shadow: none;
+  }
+}
+
+
+
+
+#welcome-msg {
+  font-family: 'DePixelSchmal';
+  font-size: 0.7rem;
+
+  background: linear-gradient(to top, #75f8d2, #6096db, #2ae3fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; 
+  background-clip: text;
+  color: transparent; 
+  display: inline-block;
+
+  animation: glowing-text 2s infinite;
+  
+}
+
+@keyframes glowing-text {
+  0%, 100% {
+    text-shadow: 0 0 5px #75f8d2, 0 0 10px #75f8d2, 0 0 15px #75f8d2;
+  }
+  50% {
+    text-shadow: 0 0 20px #2ae3fc, 0 0 30px #2ae3fc, 0 0 40px #2ae3fc;
+  }
+}
+
+
+
+
+@keyframes marquee {
+  0% { left: 100%; } 
+  100% { left: -100%; } 
+}
+
+
+
+@keyframes shake {
+  0%, 100% {
+    animation-timing-function: ease-in;
+    transform: translateX(0);
+  }
+  25%, 75% {
+    transform: translateX(-3px);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
+
+.star {
+  position: absolute;
+  background-color: white;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  animation: twinkle 2s infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% {
+      opacity: 1;
+  }
+  50% {
+      opacity: 0.2;
+  }
+}

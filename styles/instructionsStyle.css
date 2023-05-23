@@ -1,0 +1,110 @@
+/*  Fonts */
+@font-face {
+  font-family: 'DePixelBreit';
+  src: url('../assets/fonts/DePixelBreit.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DePixelSchmal';
+  src: url('../assets/fonts/DePixelSchmal.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'PCPaintSpecialSmall';
+  src: url('../assets/fonts/PCPaintSpecialSmall.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/*  Body Styles */
+body#custom-body {
+  background-color: #0d0c13;
+}
+
+.title-banner-container {
+  position: relative;
+  background-image: url("/assets/img/Glass_Banner.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 50%;
+}
+
+
+
+.title {
+  font-family: 'DePixelBreit';
+  position:absolute;
+  font-size: 0.8rem;
+  background: linear-gradient(to top, #75f8d2 45%, #6096db 15%, #2ae3fc 40%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; 
+  background-clip: text;
+  color: transparent; 
+  top: 30%; /* Adjust as needed */
+  left: 51%;
+  transform: translateX(-50%);
+
+}
+
+
+
+/*  Frame Container */
+.frame-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1; 
+  pointer-events: none;
+}
+
+/*  Main Container */
+.main-container {
+  height: 498px;
+  align-items: flex-start;
+  width: 830px;
+  position: absolute;
+  background-image: url('../assets/img/Background.png');
+  background-color: pink;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.subtitle-container {
+  width: auto; 
+  justify-content: space-between; 
+  align-items: center;
+  top: -15px; 
+  /* added to ensure it doesn't overlap with .title-banner-container */
+  position: relative; 
+}
+
+.arrow {
+  width: auto; /* adjust as needed */
+  cursor: pointer;
+}
+
+.right-arrow {
+  transform: rotate(180deg);
+}
+
+.subtitle {
+  font-family: 'DePixelBreit';
+  background: linear-gradient(to top, #75f8d2 45%, #6096db 15%, #2ae3fc 40%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; 
+  background-clip: text;
+  color: transparent; 
+  font-size: 0.8rem; /* adjust as needed */
+  color: white; /* adjust as needed */
+}
+
+.instructions-container {
+  font-family: 'DePixelBreit';
+color: red;
+width: 550px;
+text-align: justify;
+}
