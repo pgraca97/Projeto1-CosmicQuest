@@ -68,6 +68,11 @@ function landingPageView() {
       </button>
     `;
 
+    const userSessionStorage = User.getAuthenticatedUser();
+    console.log(userSessionStorage);
+    console.log(userSessionStorage.username);
+    const userLocalStorage = User.updateUser(userSessionStorage.username)
+    console.log(userLocalStorage);
     // Update navbar's HTML for authenticated users
     btnGroupTop.innerHTML = btnGroupTopContent;
     btnGroup.innerHTML = btnGroupContent;
@@ -113,6 +118,7 @@ function landingPageView() {
     } catch (e) {
       displayMessage("msgLogin", e.message, "danger");
     }
+
   });
 
   document.querySelector("#sign-up-form")?.addEventListener("submit", (event) => {
@@ -133,6 +139,21 @@ function landingPageView() {
       displayMessage("msgRegister", e.message, "danger");
     }
   });
+
+  document.querySelector("#instructions-btn")?.addEventListener("click", () => {
+    location.href = "./html/instructions.html";
+});
+
+document.querySelector("#new-game-btn")?.addEventListener("click", () => {
+  location.href = "../html/new game.html";
+});
+
+document.querySelector("#exit-btn")?.addEventListener("click", () => {
+  User.logout();
+  location.reload();
+});
+
 }
 
 landingPageView();
+
