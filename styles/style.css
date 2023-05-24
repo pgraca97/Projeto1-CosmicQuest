@@ -74,6 +74,9 @@ body {
   height: 498px;
   width: 830px;
   position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-image: url('../assets/img/Background.png');
   background-color: pink;
   top: 50%;
