@@ -133,6 +133,12 @@ function landingPageView() {
       displayMessage("msgRegister", e.message, "danger");
     }
   });
+  // Display the register modal when the page loads
+  document.addEventListener("DOMContentLoaded", function() {
+    var registerModal = document.getElementById("signupModal");
+    var bsModal = new bootstrap.Modal(registerModal);
+    bsModal.show();
+  });
 }
 
 landingPageView();

@@ -336,3 +336,56 @@ button.btn.btn-primary {
       opacity: 0.2;
   }
 }
+
+/* Login Modal */
+#loginModal .modal-content {
+  font-family: 'DePixelBreit';
+}
+
+#loginModal .modal-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+#loginModal #txtUsername,
+#loginModal #txtPassword {
+  margin-bottom: 1rem;
+}
+
+#loginModal .modal-footer {
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Register Modal */
+#signupModal .modal-content {
+  font-family: 'DePixelBreit';
+}
+
+#signupModal .modal-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+#signupModal #txtUsernameRegister,
+#signupModal #txtPasswordRegister,
+#signupModal #txtPasswordRegister2 {
+  margin-bottom: 1rem;
+}
+
+#signupModal .modal-footer {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.modal-content {
+  width: 400px;
+}
