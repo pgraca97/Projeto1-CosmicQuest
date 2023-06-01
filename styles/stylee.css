@@ -1,0 +1,156 @@
+
+/*  Fonts */
+@font-face {
+    font-family: 'DePixelBreit';
+    src: url('../assets/fonts/DePixelBreit.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'DePixelSchmal';
+    src: url('../assets/fonts/DePixelSchmal.ttf') format('truetype');
+  }
+  
+  @font-face {
+    font-family: 'PCPaintSpecialSmall';
+    src: url('../assets/fonts/PCPaintSpecialSmall.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  /*  Body Styles */
+  body#custom-body {
+    background-color: #0d0c13;
+    overflow: hidden;
+  }
+  .asteroid {
+    position: absolute;
+    background-image: url('../assets/img/Asteroids/Asteroid1.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 42px; /* adjust size of your asteroid */
+    height: 42px; /* adjust size of your asteroid */
+    top: 50px; /* initial position */
+    left: 50px; /* initial position */
+    animation: spin 5s infinite linear, moveX 20s infinite alternate, moveY 15s infinite alternate;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  @keyframes moveX {
+    0% { left: 10%; }
+    50% { left: 80%; }
+    100% { left: 10%; }
+  }
+  
+  @keyframes moveY {
+    0% { top: 10%; }
+    50% { top: 80%; }
+    100% { top: 10%; }
+  }
+  /*
+  body {
+    background-image: url('../assets/mainBackground.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+  }
+  */
+  /*  Frame Container */
+  .frame-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2; 
+    pointer-events: none;
+  }
+  
+  /*  Main Container */
+  .main-container {
+    height: 498px;
+    width: 830px;
+    position: absolute;
+    background-image: url('../assets/img/Background.png');
+    background-color: pink;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+  }
+
+  
+  #question-container {
+    position: relative;
+    background-image: url("/assets/img/");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 50%;
+    width: 100%;
+
+  }
+  
+  #options{
+    position: relative;
+    background-image: url("/assets/img/");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 50%;  
+    color: aliceblue;
+  }
+
+  #question {
+    font-family: 'DePixelBreit';
+    position: absolute;
+    font-size: 0.8rem;
+    background: linear-gradient(to top, #75f8d2 45%, #6096db 15%, #2ae3fc 40%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; 
+    background-clip: text;
+    color: transparent; 
+    top: 10%; /* Adjust as needed */
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  #txtName {
+    background-color: transparent;
+    border: transparent !important;
+  }
+  
+  .blank {
+    border: 1px dashed #ccc;
+    min-height: 30px;
+    margin-bottom: 10px;
+    padding: 5px;
+  }
+  
+  .option {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 5px;
+    margin-right: 10px;
+  }
+  
+  .fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  
+  .fade-in {
+    opacity: 1;
+    transition: opacity 0.5s ease;
+  }
+  
+  .correct {
+    background-color: #cfc;
+  }
+  
+  .incorrect {
+    background-color: #f99;
+  }
+  

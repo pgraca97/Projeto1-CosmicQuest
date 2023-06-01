@@ -97,74 +97,59 @@
                 <div class="modal-content">
                     <!-- Modal Header -->
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Register</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-
-                        <!-- Avatar Selection -->
-<div class="form-group">
-    <label for="avatarSelect">Select Avatar</label>
-    <div id="avatarCarousel" class="carousel slide" data-bs-ride="carousel">
-        <!-- Indicators -->
-        <ol class="carousel-indicators">
-            <li data-bs-target="#avatarCarousel" data-bs-slide-to="0" class="active"></li>
-            <li data-bs-target="#avatarCarousel" data-bs-slide-to="1"></li>
-            <li data-bs-target="#avatarCarousel" data-bs-slide-to="2"></li>
-            <!-- Add more indicators as needed -->
-        </ol>
-
-        <!-- Slides -->
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img class="d-block mx-auto" src="avatar1.png" alt="Avatar 1">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block mx-auto" src="avatar2.png" alt="Avatar 2">
-            </div>
-            <div class="carousel-item">
-                <img class="d-block mx-auto" src="avatar3.png" alt="Avatar 3">
-            </div>
-            <!-- Add more carousel items as needed -->
-        </div>
-
-        <!-- Controls -->
-        <a class="carousel-control-prev" href="#avatarCarousel" role="button" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#avatarCarousel" role="button" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </a>
-    </div>
-</div>
 
                     <!-- Register Form -->
                     <form id="sign-up-form">
                         <div class="modal-body">
-                            <!-- Username Field -->
-                            <div class="form-group">
-                                <label for="txtUsernameRegister">Username</label>
-                                <input type="text" class="form-control" id="txtUsernameRegister" placeholder="Enter username" />
-                            </div>
-
-                            <!-- Password Field -->
-                            <div class="form-group">
-                                <label for="txtPasswordRegister">Password</label>
-                                <input type="password" class="form-control" id="txtPasswordRegister" placeholder="Enter password" />
-                            </div>
-
-                            <!-- Confirm Password Field -->
-                            <div class="form-group">
-                                <label for="txtPasswordRegister2">Confirm Password</label>
-                                <input type="password" class="form-control" id="txtPasswordRegister2" placeholder="Enter password again" />
+                            <div class="row">
+                                <!-- Avatar Container -->
+                                <div class="col-4">
+                                    <div class="avatar-container">
+                                        <div class="avatar-arrows">
+                                            <div class="arrow" onclick="prevAvatar()">&#8249;</div>
+                                            <div class="arrow" onclick="nextAvatar()">&#8250;</div>
+                                        </div>
+                                        <!-- Avatar container -->
+                                        <div class="avatar-container">
+                                            <img src="assets/img/UI_Glass_Frame_Standard_01a.png" alt="Frame2" />
+                                        </div>
+                                        <div class="avatar-slider">
+                                            <img id="avatarImage" class="avatar-image" src="avatar1.png" alt="Avatar" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Name, Password, and Email Address Fields -->
+                                <div class="col-8">
+                                    <!-- Name container -->
+                                        <div class="1">
+                                            <div class="title">
+                                                <input type="text" class="title-banner-container mt-5 pt-5" id="txtName" placeholder="Enter name" required>
+                                            </div>
+                                        </div>  
+                                    <!-- Password container -->
+                                    <div class="1">
+                                        <div class="title">
+                                            <input type="text" class="title-banner-container mt-5 pt-5" id="txtName" placeholder="Enter name" required>
+                                        </div>
+                                    </div> 
+                                    <!-- Email container -->
+                                    <div class="1">
+                                        <div class="title">
+                                            <input type="text" class="title-banner-container mt-5 pt-5" id="txtName" placeholder="Enter name" required>
+                                        </div>
+                                    </div> 
+                                </div>
                             </div>
                         </div>
 
                         <!-- Modal Footer -->
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-secondary">Register</button>
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                        <div class="title-banner-container mt-5 pt-5">
+                            <div class="title">
+                                <button id="txtName" type="submit" class="btn btn-secondary">Register</button>
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                            </div>
                         </div>
                     </form>
 
@@ -185,6 +170,6 @@
     <script src="js/init.js"></script>
     <script type="module" src="./js/Views/ladingPageView.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-
+  
 </body>
 </html>

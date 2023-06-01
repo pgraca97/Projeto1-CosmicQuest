@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag and Drop Fill in the Blanks</title>
+    <link rel="stylesheet" href="styles/stylee.css">   
+</head>
+<body>
+
+    <!--
+
+    
+     Basic meta tags 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    
+    
+    <link rel="stylesheet" href="styles/stylee.css">
+
+    
+    <title>Cosmic Quest</title>
+    
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    
+</head>
+<body id="custom-body">
+    <header>
+        
+    </header>
+    <main>
+        
+        <div class="frame-container">
+            <img src="assets/img/Frame.png" alt="Frame2" />
+        </div>
+        
+        <div class="main-container d-flex flex-column justify-content-between align-items-center">
+            
+            <div id="question-container">
+                <h2 id="question"></h2>
+                <ul id="options">
+                </ul>
+                <button id="submit-btn">Submit</button>
+            </div>
+        </div>
+
+        <form id="question-form">
+            <label for="answer">Question: What is the capital of France?</label>
+            <input type="text" id="answer" name="answer" required>
+            <button type="submit">Submit</button>
+        </form>
+    -->
+
+    <h1>Drag and Drop Fill in the Blanks</h1>
+    <p id="phrase">
+        Mercury's orbital period around the Sun is
+        <div class="blank" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div class="blank" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+<div class="blank" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+<div class="option" draggable="true" ondragstart="dragStart(event)">Earth days</div>.
+    </p>
+
+    <div id="options">
+        <span class="option" draggable="true" ondragstart="dragStart(event)">88</span>
+        <span class="option" draggable="true" ondragstart="dragStart(event)">365</span>
+        <span class="option" draggable="true" ondragstart="dragStart(event)">715</span>
+    </div>
+
+    <button onclick="checkAnswer()">Submit</button>
+
+
+    <div class="asteroid"></div>
+    <script src="scripteee.js"></script>
+</body>
+</html>
+

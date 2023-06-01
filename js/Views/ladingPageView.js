@@ -1,5 +1,17 @@
 import * as User from "/js/Model/User.js";
 
+window.addEventListener("DOMContentLoaded", () => {
+  const title = document.querySelector("#txtName");
+  const bannerContainer = document.querySelector(".name-container");
+  
+  // Get the width of the title
+  const titleWidth = title.getBoundingClientRect().width;
+
+  // Set the width of the banner container to match the title's width, plus some extra padding
+  const bannerWidth = titleWidth + 35;  // adjust the added value to your needs
+  bannerContainer.style.width = `${bannerWidth}px`;
+});
+
 // Function to display a message in a specific modal
 function displayMessage(modal, message, type) {
   const divMessage = document.getElementById(modal);
@@ -139,6 +151,26 @@ function landingPageView() {
     var bsModal = new bootstrap.Modal(registerModal);
     bsModal.show();
   });
+          // JavaScript code for avatar slider
+          var avatarIndex = 1;
+          var maxAvatars = 5;
+  
+          function prevAvatar() {
+              avatarIndex = (avatarIndex - 1 + maxAvatars) % maxAvatars;
+              updateAvatar();
+          }
+  
+          function nextAvatar() {
+              avatarIndex = (avatarIndex + 1) % maxAvatars;
+              updateAvatar();
+          }
+  
+          function updateAvatar() {
+              var avatarImage = document.getElementById("avatarImage");
+              avatarImage.src = "avatar" + avatarIndex + ".png";
+          }
+
+  
 }
 
 landingPageView();
