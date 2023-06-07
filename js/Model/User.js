@@ -1,4 +1,6 @@
 import * as GameSession from "/js/Model/GameSession.js";
+import { characterColor } from "/js/common.js";
+
 
 // Global variable that will hold the user list
 let users = [];
@@ -158,10 +160,9 @@ export function updateUserInSessionStorage(updatedUser) {
 }
 */
 
-
+/*
 export function updateUser(updatedUser) {
     const userToUpdate = users.find(user => user.username === updatedUser);
-    console.log(userToUpdate);
     return userToUpdate
     // Replace the user at the found index with the updated user
     //users[userIndex] = updatedUser;
@@ -169,6 +170,18 @@ export function updateUser(updatedUser) {
     console.log(userToUpdate);
     // Update the users in local storage
     //localStorage.users = JSON.stringify(users);
+}
+*/
+
+export function updateUser(updatedUser) {
+    // Find the index of the user to update
+    const userIndex = users.findIndex(user => user.username === updatedUser.username);
+    
+    // Replace the user at the found index with the updated user
+    users[userIndex] = updatedUser;
+
+    // Update the users in local storage
+    localStorage.users = JSON.stringify(users);
 }
 
 

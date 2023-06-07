@@ -339,3 +339,37 @@ button.btn.btn-primary {
       opacity: 0.2;
   }
 }
+
+
+.character-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: auto; 
+  justify-content: space-between; 
+  align-items: center;
+  padding-right: 15px;
+}
+
+.arrow {
+  width: auto; 
+  cursor: pointer;
+}
+
+.right-arrow {
+  transform: rotate(-90deg);
+}
+
+.left-arrow {
+  transform: rotate(90deg);
+}
+
+.user-character-container {
+  position: relative;
+  background-image: url("/assets/img/UI_Glass_Frame_Standard_01a.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+}
+
+

@@ -1,0 +1,111 @@
+.Combatant {
+    width: 67px;
+    height: 14px;
+    background: url("/assets/images/ui/SingleMemberDisplay.png") no-repeat no-repeat;
+    position: absolute;
+}
+
+.Challenge .Combatant {
+    transform: scale(2);
+}
+
+.Challenge .Combatant[data-active="false"] {
+    opacity: 0;
+}
+
+.Challenge .Combatant[data-active="true"]{
+    opacity: 1;
+}
+
+.Combatant[data-team="player"] {
+    left: 7px;
+    top: 100px;
+}
+
+.Combatant[data-team="enemy"]{
+    top: 28px;
+    right: 7px;
+}
+
+.Combatant_character_crop {
+    position: absolute;
+    bottom: 1px;
+    left: 3px;
+    width: 22px;
+    height: 12px;
+    overflow: hidden;
+}
+
+.Battle .Combatant_character_crop {
+    display: none;
+}
+
+.Combatant_name {
+    position: absolute;
+    left: -2px;
+    top: -8px;
+    white-space: nowrap;
+    background-color: aqua;
+    color: red;
+    font-size: 5px;
+    padding: 0 2px;
+    margin:0;
+
+}
+
+.Combatant_type {
+    position: absolute;
+    left: 3px;
+    top: -2px;
+    width: 16px;
+    height: 16px;
+}
+
+.Combatant_life-container {
+    position: absolute;
+    left: 20px;
+    top: 4px;
+    width: 26px;
+    height: 3px;
+}
+.Combatant_xp-container {
+    position: absolute;
+    left: 20px;
+    top: 8px;
+    width: 26px;
+    height: 2px;
+}
+
+.Combatant_level {
+    position: absolute;
+    font-size: 12px;
+    right: 2px;
+    top: -1px;
+    width: 17px;
+    height: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8c594;
+    border: 1px solid #a48465;
+    margin: 0;
+}
+
+.Combatant_status{
+    position: absolute;
+    font-size: 5px;
+    left: 47px;
+    bottom: -3px;
+    padding: 0 2px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    margin: 0;
+}
+
+.Combatant_status [data-status="saucy"] {
+    color: red ;
+}
+
+.Combatant_status [data-status="clumsy"] {
+    background: #582a79;
+}
