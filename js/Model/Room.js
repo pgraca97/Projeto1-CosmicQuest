@@ -4,8 +4,8 @@ class Room {
     constructor(number, challengeSets) {
         this.number = number;  // The room number
         this.challengeSets = challengeSets;
-        this.scenario = 'path/to/scenario/image.png' // Array of ChallengeSet objects, where each ChallengeSet represents the challenges for a particular planet
-        this.npc = 'path/to/npc/image.png';  // The path to the image file for the room's NPC
+        this.scenario = ['assets/img/Room 1/Room 1.png', 'path/to/scenarioroom2/image.png'] // Array of ChallengeSet objects, where each ChallengeSet represents the challenges for a particular planet
+        this.npc = 'assets/img/NPC.png';  // The path to the image file for the room's NPC
     }
 
     static createRooms() {

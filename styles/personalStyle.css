@@ -1,0 +1,185 @@
+.main-container {
+  flex-direction: column;
+}
+
+#content {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  align-content: flex-end;
+  width: auto;
+  left: -6%;
+}
+
+#personal-options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+width: 500px;
+padding-top: 10px;
+}
+
+.title-banner-container {
+  position: relative;
+  background-image: url("/assets/img/Glass_Banner.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 50%;
+}
+
+.title-banner-container.dashboard{
+  transform: rotate(-90deg);
+  left: 6%;
+}
+.user-character-container {
+  position: relative;
+  background-image: url("/assets/img/UI_Glass_Frame_Standard_01a.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+}
+
+
+
+.title {
+  font-family: 'DePixelBreit';
+  position: absolute;
+  font-size: 0.8rem;
+  width: auto;
+  background: linear-gradient(to top, #75f8d2 45%, #6096db 15%, #2ae3fc 40%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; 
+  background-clip: text;
+  color: transparent; 
+  top: 30%; 
+  left: 52%;
+  transform: translateX(-50%);
+}
+
+.character-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: auto; 
+  justify-content: space-between; 
+  align-items: center;
+  padding-right: 15px;
+}
+
+.arrow {
+  width: auto; 
+  cursor: pointer;
+}
+
+.right-arrow {
+  transform: rotate(-90deg);
+}
+
+.left-arrow {
+  transform: rotate(90deg);
+}
+
+
+
+label {
+  font-family: 'DePixelBreit';
+  background: linear-gradient(to top, #75f8d2 45%, #6096db 15%, #2ae3fc 40%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; 
+  background-clip: text;
+  color: transparent; 
+  font-size: 0.8rem;
+  color: white;
+}
+
+#personal-form {
+  display: flex;
+  flex-direction: row;
+}
+
+#form-fields {
+  width: 260px !important;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  font-family: 'DePixelBreit';
+  background: linear-gradient(to top, #75f8d2 45%, #6096db 15%, #2ae3fc 40%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  font-size: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Add this line */
+  white-space: nowrap; /* Add this line */
+}
+/*
+#form-fields .form-control {
+  font-family: 'DePixelBreit';
+  background: linear-gradient(to top, #75f8d2 45%, #6096db 15%, #2ae3fc 40%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  font-size: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+*/
+#form-fields input::placeholder {
+  color: green; /* change to the color you want */
+}
+
+#form-fields input {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 0;
+  border: none;
+  background: none !important;
+}
+
+#form-fields input:focus {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: none !important;
+  border-radius: 0;
+  background: none!important;
+  box-shadow: none;
+  outline: none;
+}
+
+.username-container {
+  position: relative;
+  background-image: url("/assets/img/UI_Glass_Frame_Horizontal_01a.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+}
+
+#username {
+  width: 140px !important;
+}
+
+#password {
+  width: 100px!important;
+}
+
+
+#email {
+  width: 200px!important;
+}
+
+#form-fields > button {
+  width: auto !important;
+}
+
+.personal-dashboard {
+  width: 42px;
+  height: 42px;
+
+}

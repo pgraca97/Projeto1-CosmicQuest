@@ -103,6 +103,14 @@
 
                     <!-- Register Form -->
                     <form id="sign-up-form">
+                        <div class="character-container">
+                            <img class="arrow left-arrow" src="/assets/img/Glass_Arrow_Small.png" alt="Left arrow">
+                            <div class="user-character-container">
+                                <div class="user-character"><img class="user-character-img" src="" alt="User img"></div>
+                            </div>
+        
+                            <img class="arrow right-arrow" src="/assets/img/Glass_Arrow_Small.png" alt="Right arrow">
+                        </div>
                         <div class="modal-body">
                             <!-- Username Field -->
                             <div class="form-group">
@@ -120,6 +128,11 @@
                             <div class="form-group">
                                 <label for="txtPasswordRegister2">Confirm Password</label>
                                 <input type="password" class="form-control" id="txtPasswordRegister2" placeholder="Enter password again" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="txtEmailRegister">Email</label>
+                                <input type="email" class="form-control" id="txtEmailRegister" placeholder="Enter email" />
                             </div>
                         </div>
 
@@ -146,6 +159,7 @@
     <script src="https://cdn.jsdelivr.net/npm/matter-js@0.17.1/build/matter.min.js"></script>
     <script src="js/init.js"></script>
     <script type="module" src="./js/Views/ladingPageView.js"></script>
+    <script type="module" src="/js/common.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 
 </body>

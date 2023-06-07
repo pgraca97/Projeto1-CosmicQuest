@@ -1,4 +1,7 @@
 import * as User from "/js/Model/User.js";
+import { characterColor } from "/js/common.js";
+
+
 
 // Function to display a message in a specific modal
 function displayMessage(modal, message, type) {
@@ -18,7 +21,7 @@ function landingPageView() {
   let nav = `<div class="collapse navbar-collapse" id="navbarSupportedContent">`;
 
   User.initUsers();
-
+  console.log(localStorage.getItem("users"));
   if (User.isLoggedIn()) {
     // Add welcome message for authenticated users
     nav += `
@@ -104,6 +107,48 @@ function landingPageView() {
     });
   }
 
+  
+
+let currentCharacterColorIndex = 0;  // Initialize the counter
+const userCharacterColor = document.querySelector(".user-character img");
+
+// Function to update the user character color image
+function updateUserCharacterColor() {
+    userCharacterColor.src = characterColor[currentCharacterColorIndex];
+    console.log(userCharacterColor);
+}
+
+// Update the image for the first time
+updateUserCharacterColor();
+
+// Handle the arrow clicks
+document.querySelector('.arrow.right-arrow').addEventListener('click', function() {
+    // Increase the counter
+    currentCharacterColorIndex++;
+
+    // If the counter exceeds the last index of the array, reset it to 0
+    if (currentCharacterColorIndex > characterColor.length - 1) {
+        currentCharacterColorIndex = 0;
+    }
+
+    // Update the image
+    updateUserCharacterColor();
+});
+
+document.querySelector('.arrow.left-arrow').addEventListener('click', function() {
+    // Decrease the counter
+    currentCharacterColorIndex--;
+
+    // If the counter becomes less than 0, set it to the last index of the array
+    if (currentCharacterColorIndex < 0) {
+        currentCharacterColorIndex = characterColor.length - 1;
+    }
+
+    // Update the image
+    updateUserCharacterColor();
+});
+
+
   document.querySelector("#login-form")?.addEventListener("submit", (event) => {
     event.preventDefault();
     try {
@@ -126,11 +171,12 @@ function landingPageView() {
     const registerUsername = document.getElementById("txtUsernameRegister");
     const registerPassword = document.getElementById("txtPasswordRegister");
     const registerPassword2 = document.getElementById("txtPasswordRegister2");
+    const email = document.getElementById("txtEmailRegister");
     try {
       if (registerPassword.value !== registerPassword2.value) {
         throw Error("Password and Confirm Password are not equal");
       }
-      User.addUser(undefined, registerUsername.value, undefined, registerPassword.value, undefined);
+      User.addUser(undefined, registerUsername.value, email.value, registerPassword.value, characterColor[currentCharacterColorIndex]); //userCharacterColor.src
       displayMessage("msgRegister", "User registered with success!", "success");
       setTimeout(() => {
         location.reload();
@@ -148,6 +194,10 @@ document.querySelector("#new-game-btn")?.addEventListener("click", () => {
   location.href = "../html/new game.html";
 });
 
+document.querySelector("#personal-btn")?.addEventListener("click", () => {
+  location.href = "../html/personal.html";
+});
+
 document.querySelector("#exit-btn")?.addEventListener("click", () => {
   User.logout();
   location.reload();
@@ -156,4 +206,6 @@ document.querySelector("#exit-btn")?.addEventListener("click", () => {
 }
 
 landingPageView();
+
+
 

@@ -81,9 +81,16 @@ document.querySelector('form').addEventListener('submit', function(e) {
         userSessionStorage.addGameSession(gameName, difficulty);
         userLocalStorage.addGameSession(gameName, difficulty);
 
+        const newlyGameSession = User.gameSessions[User.gameSessions.length - 1];
+        newlyGameSession.new = true;
+        sessionStorage.currentGameSession = JSON.stringify(newlyGameSession);
 
         // If the game was added successfully, clear any existing error message
         document.querySelector('#error-message').style.display = 'none';
+        //Locate the user to the rooms html after 1 second
+        setTimeout(() => {
+            location.href = '../html/rooms.html';
+        }, 1000);
     } catch (error) {
         // If an error was thrown, display it in the error message div
         const errorMessage = document.querySelector('#error-message');
