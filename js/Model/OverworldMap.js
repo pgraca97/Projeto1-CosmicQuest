@@ -1,7 +1,7 @@
 import {GameObject} from "/js/Model/GameObject.js";
 import {utils} from "/js/Model/Utils.js";
 import {Person} from "/js/Model/Person.js";
-import { OverworldEvent } from "/js/Model/OverworldEvent.js";
+import  OverworldEvent  from "/js/Model/OverworldEvent.js";
 
 export class OverworldMap {
     constructor(config){
@@ -20,7 +20,7 @@ export class OverworldMap {
         this.isCutscenePlaying = false;
     }
     drawLowerImage(ctx){ //, cameraPerson = undefined
-        ctx.drawImage(this.lowerImage , 0, 0);
+        ctx.drawImage(this.lowerImage , utils.withGrid(1), utils.withGrid(1));
     }
     drawUpperImage(ctx){ //, cameraPerson = undefined
         ctx.drawImage(
@@ -47,6 +47,7 @@ export class OverworldMap {
             }
             
             object.mount(this);
+            console.dir(this);  // changed this line
         });    
     } // start calling mount on every game object in the map
 
@@ -59,7 +60,10 @@ export class OverworldMap {
             event: events[i],
             map: this,
         })
+        
         await eventHandler.init();
+        console.dir(eventHandler);
+        console.log(eventHandler.event.type);
     }
 
     this.isCutscenePlaying = false;
@@ -111,7 +115,7 @@ window.OverworldMaps = {
 
             character: new Person ({
                 isPlayerControlled: true,
-                x: utils.withGrid(6),
+                x: utils.withGrid(7),
                 y: utils.withGrid(6),
                 src:"/assets/img/Characters/User/Pink/Chara_Astronaut09_FullBody_Run_4Dir_6x4.png",
                 idleSrc: "/assets/img/Characters/User/Pink/Chara_Astronaut09_FullBody_Idle_8Dir_1x8.png",
@@ -122,8 +126,8 @@ window.OverworldMaps = {
                 shadowOffset: 2.4,
             }),
             vase: new Person({
-                x: utils.withGrid(6),
-                y: utils.withGrid(5.5),
+                x: utils.withGrid(6.5),
+                y: utils.withGrid(6),
                 idleSrc: '/assets/img/Room 1/Vase.png',
                 cutWidth: 16,  
                 cutHeight: 16, 
@@ -164,14 +168,24 @@ window.OverworldMaps = {
                     {type: "run", direction: "down"},
                 ], 
                 talking: [
-                {
-                    events: [
-                        { type : "textMessage", text: "Hi! I'm a robot. I'm a robot. I'm a robot. I'm a robot.", faceHero: "npcA"},
-                        { type : "textMessage", text: "Adios!"},
-                        {who: "character", type: "run", direction: "up"}, {who: "character", type: "run", direction: "left"},
-                    ]
-                }
-            ]
+                    {
+                        events: [
+                            { 
+                                type: "textMessage", 
+                                text: "Delighted to see you again, my astute explorer! The inner planets hold wonders beyond imagination. Are you prepared to tackle the challenge that lies ahead?", 
+                                faceHero: "npcA"
+                            },
+                            { 
+                                type: "confirmation", 
+                                text: "Start Main Challenge?", 
+                                onConfirm: { type: "battle", enemyId: "beth" },
+                                onCancel: { type: "textMessage", text: "Adios!" }
+                            },
+                            /*{ who: "character", type: "run", direction: "down" }, 
+                            { who: "character", type: "run", direction: "left" },*/
+                        ]
+                    }
+                ]
             }),
 
             /*npcB: new Person ({
@@ -190,51 +204,52 @@ window.OverworldMaps = {
             }),*/
         },
         walls: {
-            [utils.asGridCoord(0,5)]: true,
-            [utils.asGridCoord(0,6)]: true,
-            [utils.asGridCoord(0,7)]: true,
-            [utils.asGridCoord(0,10)]: true,
-            [utils.asGridCoord(1,4)]: true,
+            [utils.asGridCoord(1,6)]: true,
+            [utils.asGridCoord(1,7)]: true,
             [utils.asGridCoord(1,8)]: true,
-            [utils.asGridCoord(1,9)]: true,
             [utils.asGridCoord(1,11)]: true,
-            [utils.asGridCoord(2,4)]: true,
-            [utils.asGridCoord(2,11)]: true,
-            [utils.asGridCoord(3,4)]: true,
+            [utils.asGridCoord(2,5)]: true,
+            [utils.asGridCoord(2,9)]: true,
+            [utils.asGridCoord(2,10)]: true,
+            [utils.asGridCoord(2,12)]: true,
+            [utils.asGridCoord(3,5)]: true,
             [utils.asGridCoord(3,12)]: true,
-            [utils.asGridCoord(4,3)]: true,
-            [utils.asGridCoord(4,12)]: true,
-            [utils.asGridCoord(5,3)]: true,
-            [utils.asGridCoord(5,5)]: true,
-            [utils.asGridCoord(5,12)]: true,
-            [utils.asGridCoord(6,3)]: true,
+            [utils.asGridCoord(4,5)]: true,
+            [utils.asGridCoord(4,13)]: true,
+            [utils.asGridCoord(5,4)]: true,
+            [utils.asGridCoord(5,13)]: true,
+            [utils.asGridCoord(6,4)]: true,
+            [utils.asGridCoord(6,6)]: true,
             [utils.asGridCoord(6,13)]: true,
-            [utils.asGridCoord(7,3)]: true,
             [utils.asGridCoord(7,4)]: true,
-            [utils.asGridCoord(7,5)]: true,
-            [utils.asGridCoord(7,12)]: true,
-            [utils.asGridCoord(8,3)]: true,
+            [utils.asGridCoord(7,14)]: true,
             [utils.asGridCoord(8,4)]: true,
             [utils.asGridCoord(8,5)]: true,
-            [utils.asGridCoord(8,12)]: true,
-            [utils.asGridCoord(9,3)]: true,
-            [utils.asGridCoord(9,12)]: true,
-            [utils.asGridCoord(10,3)]: true,
-            [utils.asGridCoord(10,12)]: true,
-            [utils.asGridCoord(11,3)]: true,
-            [utils.asGridCoord(11,11)]: true,
-            [utils.asGridCoord(12,3)]: true,
-            [utils.asGridCoord(12,11)]: true,
-            [utils.asGridCoord(13,4)]:true,
-            [utils.asGridCoord(13,5)]:true,
-            [utils.asGridCoord(13,6)]:true,
-            [utils.asGridCoord(13,7)]:true,
-            [utils.asGridCoord(13,8)]:true,
-            [utils.asGridCoord(13,9)]:true,
-            [utils.asGridCoord(13,10)]:true,
+            [utils.asGridCoord(8,6)]: true,
+            [utils.asGridCoord(8,13)]: true,
+            [utils.asGridCoord(9,4)]: true,
+            [utils.asGridCoord(9,5)]: true,
+            [utils.asGridCoord(9,6)]: true,
+            [utils.asGridCoord(9,13)]: true,
+            [utils.asGridCoord(10,4)]: true,
+            [utils.asGridCoord(10,13)]: true,
+            [utils.asGridCoord(11,4)]: true,
+            [utils.asGridCoord(11,13)]: true,
+            [utils.asGridCoord(12,4)]: true,
+            [utils.asGridCoord(12,12)]: true,
+            [utils.asGridCoord(13,4)]: true,
+            [utils.asGridCoord(13,12)]: true,
+            [utils.asGridCoord(14,5)]: true,
+            [utils.asGridCoord(14,6)]:true,
+            [utils.asGridCoord(14,7)]:true,
+            [utils.asGridCoord(14,8)]:true,
+            [utils.asGridCoord(14,9)]:true,
+            [utils.asGridCoord(14,10)]:true,
+            [utils.asGridCoord(14,11)]:true,
         },
+        
         cutsceneSpaces: {
-            [utils.asGridCoord(6,12)]: [
+            [utils.asGridCoord(7,13)]: [
                 /*{
                     events: [
                         { who: "npcA", type: "run", direction: "down" },

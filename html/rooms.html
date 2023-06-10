@@ -10,12 +10,14 @@
     <link rel="stylesheet" href="/styles/rooms.css">
     <link rel="stylesheet" href="/styles/TextMessage.css">
     <link rel="stylesheet" href="/styles/SceneTransition.css">
-
+    <link rel="stylesheet" href="/styles/KeyboardMenu.css">
+    <link rel="stylesheet" href="/styles/Planets.css">
     <!-- Challenge CSS -->
     <link rel="stylesheet" href="/styles/Challenge.css">
     <link rel="stylesheet" href="/styles/PlanetMenu.css">
     <link rel="stylesheet" href="/styles/Planets.css">
     <link rel="stylesheet" href="/styles/Questions.css">
+    
 
     <!-- Title of the web page -->
     <title>Cosmic Quest</title>
@@ -51,9 +53,13 @@
     </main>
     <div class="asteroid"></div>
 
-    <!-- Content 
+    <!-- Content -->
     <script type="module" src="/js/Model/Content/Pizzas.js"></script>
-    <script type="module" src="/js/Model/Content/actions.js"></script>-->
+    <script type="module" src="/js/Model/Content/actions.js"></script>
+    <script type="module" src="/js/Model/Content/enemies.js"></script>
+
+    <!--State-->
+    <script type="module" src="/js/State/PlayerState.js"></script>
 
      <!-- JavaScript Scripts -->
      <script src="https://cdn.jsdelivr.net/npm/matter-js@0.17.1/build/matter.min.js"></script>
@@ -61,11 +67,11 @@
     <script type="module" src="/js/Model/overWorld.js"></script>
     <script type="module" src="/js/Views/roomsView.js"></script>
 
-    <!-- Challenges scripts
+    <!-- Challenges scripts-->
     <script type="module" src="/js/Model/Challenge/Challenge.js"></script>
     <script type="module" src="/js/Model/Challenge/Planets.js"></script>
     <script type="module" src="/js/Model/Challenge/Questions.js"></script>
-    <script type="module" src="/js/Model/Challenge/BattleAnimation.js"></script>-->
+    <script type="module" src="/js/Model/Challenge/BattleAnimation.js"></script>
 
 
     <script type="module" src="/js/init.js"></script>

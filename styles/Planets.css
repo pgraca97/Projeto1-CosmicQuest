@@ -1,0 +1,31 @@
+.Team {
+    display: flex;
+    position: absolute;
+    top: 4px;
+    gap: 4px;
+}
+
+.Team[data-team="player"] {
+    left: 4px;
+}
+
+.Team[data-team="enemy"] {
+    right: 4px;
+}
+
+.Team .dead-pizza {
+    display: none;
+}
+.Team .active-pizza-indicator {
+    display: none;
+}
+.Team [data-active="true"] .active-pizza-indicator {
+    display: block;
+}
+.Team [data-dead="true"] .dead-pizza {
+    display: block;
+}
+
+.Team [data-dead="true"].active-pizza-indicator {
+    display: none;
+}
