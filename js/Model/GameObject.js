@@ -1,5 +1,5 @@
 import {Sprite} from "/js/Model/Sprite.js";
-import { OverworldEvent } from "/js/Model/OverworldEvent.js";
+import  OverworldEvent  from "/js/Model/OverworldEvent.js";
 
 export class GameObject {
     constructor(config) {
@@ -25,7 +25,7 @@ export class GameObject {
         });
 
         this.behaviorLoop = config.behaviorLoop || [];
-        console.log(this.behaviorLoop);
+       
         this.behaviorLoopIndex = 0;
 
         this.talking = config.talking || [];
@@ -57,6 +57,7 @@ export class GameObject {
         // Setting up our event with relevant information
         let eventConfig = this.behaviorLoop[this.behaviorLoopIndex];
         eventConfig.who = this.id;
+       
         // Create an event instance out of our next event config
         const eventHandler = new OverworldEvent({ map, event: eventConfig});
 
@@ -67,7 +68,7 @@ export class GameObject {
         if (this.behaviorLoopIndex === this.behaviorLoop.length) {
             this.behaviorLoopIndex = 0;
         }
-        console.log(`Behavior loop index is ${this.behaviorLoopIndex}`)
+
 
         // At the end of the function, we stop the behavior loop
        // this.isBehaviorLoopRunning = false;

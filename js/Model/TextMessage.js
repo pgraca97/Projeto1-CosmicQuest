@@ -1,4 +1,4 @@
-import { KeyPressListener } from '/js/Model/KeyPressListener.js';
+import  KeyPressListener  from '/js/Model/KeyPressListener.js';
 import { RevealingText } from '/js/Model/RevealingText.js';
 
 export class TextMessage {

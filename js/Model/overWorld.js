@@ -1,6 +1,6 @@
 import { OverworldMap } from "/js/Model/OverworldMap.js";
 import { DirectionInput } from "/js/Model/DirectionInput.js";
-import { KeyPressListener } from '/js/Model/KeyPressListener.js';
+import  KeyPressListener  from '/js/Model/KeyPressListener.js';
 
 export class Overworld {
     constructor(config) {
@@ -82,14 +82,14 @@ export class Overworld {
      
         this.startGameLoop();
 
-       this.map.startCutscene([
-         //{type: "battle"}
+      /* this.map.startCutscene([
+         //{type: "battle", enemyId: "beth"}
             //{ type: 'changeMap', map: 'Room1'}
             {who: "character", type: "run", direction: "down"}, {who: "character", type: "run", direction: "down"},
             {who: "character", type: "idle", direction: "right"}, 
             {who: "npcA", type: "run", direction: "left"}, 
-            { type: 'textMessage', text: "Greetings, traveler! I am C.u.b.i, your guide and shopkeeper in Cosmic Quest. Dr. Sarah has entrusted me with providing you with valuable information and assistance as you progress through the 'Inner Planets Exploration Lab.' In this room, you'll be learning about and testing your knowledge on the inner planets of our solar system: Mercury, Venus, Earth, and Mars. Feel free to explore the room and gather knowledge about these celestial bodies. Whenever you feel ready to take on the Inner Planets Challenge, come back to me, and we'll begin." }
+            { type: 'textMessage', text: "Greetings, traveler! I am C.u.b.i, your guide in Cosmic Quest. Dr. Sarah has entrusted me with providing you with valuable information and assistance as you progress through the 'Inner Planets Exploration Lab.' In this room, you'll be learning about and testing your knowledge on the inner planets of our solar system: Mercury, Venus, Earth, and Mars. Feel free to explore the room and gather knowledge about these celestial bodies. Whenever you feel ready to take on the Inner Planets Challenge, come back to me, and we'll begin." }
             ,{who: "character", type: "idle", direction: "left"}, {who: "character", type: "run", direction: "left"}, 
-        ])
+        ])*/
 }
 }

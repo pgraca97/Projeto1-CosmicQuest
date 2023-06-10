@@ -4,10 +4,10 @@
     transform: translateX(-38%);
     right: 0;
     bottom: -6px;
-    height: 30px;
+    height: 60px;
     width: 380px;
     font-size: 12px;
-    padding: 4px;
+
     color: blue;
     background-color: white;
     border: 3px solid pink;
@@ -16,10 +16,11 @@
 
 .TextMessage_p{
  margin: 0;
- font-size: 9px;
- text-align: left;
- padding: 0 5px;
+ font-size: 8px;
+ text-align: justify;
+ padding: 5px 5px;
  line-height: 1;
+ overflow: hidden;
 }
 
 .TextMessage span {
@@ -43,4 +44,5 @@
     position: absolute;
     right: 2px;
     bottom: 0;
+    z-index: 1;
 }
