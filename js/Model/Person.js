@@ -1,4 +1,4 @@
-import { GameObject } from "./GameObject.js";
+import  GameObject  from "./GameObject.js";
 import {utils} from "/js/Model/Utils.js";
 
 export class Person extends GameObject {
@@ -47,7 +47,7 @@ export class Person extends GameObject {
 
                 behavior.retry && setTimeout (() => {
                     this.startBehavior(state, behavior);
-                }, 500);
+                }, 1000);
 
                 return;
             }

@@ -154,25 +154,6 @@ export function getAuthenticatedUser() {
     return JSON.parse(sessionStorage.getItem('loggedUser'));
 }
 
-/*
-export function updateUserInSessionStorage(updatedUser) {
-    sessionStorage.setItem('loggedUser', JSON.stringify(updatedUser));
-}
-*/
-
-/*
-export function updateUser(updatedUser) {
-    const userToUpdate = users.find(user => user.username === updatedUser);
-    return userToUpdate
-    // Replace the user at the found index with the updated user
-    //users[userIndex] = updatedUser;
-
-    console.log(userToUpdate);
-    // Update the users in local storage
-    //localStorage.users = JSON.stringify(users);
-}
-*/
-
 export function updateUser(updatedUser) {
     // Find the index of the user to update
     const userIndex = users.findIndex(user => user.username === updatedUser.username);

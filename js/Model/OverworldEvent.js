@@ -1,4 +1,3 @@
-import { TextMessage } from "/js/Model/TextMessage.js";
 import { utils } from "/js/Model/Utils.js";
 import { SceneTransition } from "/js/Model/SceneTransition.js";
 import { Challenge } from "/js/Model/Challenge/Challenge.js";
@@ -10,6 +9,7 @@ export default class OverworldEvent {
         // event: The current event happening
         this.map = map;
         this.event = event;
+        
     }
 
     // The idle function handles the idle event.
@@ -58,69 +58,56 @@ export default class OverworldEvent {
         document.addEventListener("PersonRunningComplete", completeHandler);
     };
 
-    // The textMessage function handles the textMessage event.
+    // The textMessage method handles the textMessage event.
     // It creates a new text message and when the message is done, the Promise is resolved.
-    textMessage(resolve){
+    textMessage(resolve) {
         if(this.event.faceHero) {
             const object = this.map.gameObjects[ this.event.faceHero ];
-            object.direction = utils.oppositeDirection(this.map.gameObjects["character"].direction);
+            object.direction = utils.oppositeDirection(this.map.gameObjects["playerCharacter"].direction);
         }
 
-        const message = new TextMessage({
-         text: this.event.text,
-         onComplete: () => resolve() // Promise resolved here
+        utils.emitEvent('textMessage', {
+            text: this.event.text,
+            onComplete: resolve // Promise resolved here
         });
-
-        message.init( document.querySelector(".room-container"));
     };
 
-    // The changeMap function handles the changeMap event.
+
+    // The changeMap method handles the changeMap event.
     // It creates a new scene transition, starts the new map, and when the transition is done, the Promise is resolved.
     changeMap (resolve) {
         const sceneTransition = new SceneTransition();
         sceneTransition.init( document.querySelector(".room-container"), () => {
-            this.map.overworld.startMap( window.OverworldMaps[this.event.map] );
+            this.map.overworld.startMap( window.EscapeRooms[this.event.map] );
             resolve(); // Promise resolved here
             sceneTransition.fadeOut();
         });
     };
 
-    // The confirmation function handles the confirmation event.
+    // The confirmation method handles the confirmation event.
     // It creates a confirmation box and when a choice is made, the Promise is resolved.
     confirmation(resolve) {
-        const confirmationBox = document.createElement('div');
-        confirmationBox.classList.add('confirmationBox');
-        confirmationBox.innerHTML = `
-            <p>${this.event.text}</p>
-            <button class="confirmButton">Yes</button>
-            <button class="cancelButton">No</button>
-        `;
-        document.querySelector(".room-container").appendChild(confirmationBox);
-
-        confirmationBox.querySelector('.confirmButton').addEventListener('click', async () => {
-            confirmationBox.remove();
-            await new OverworldEvent({ map: this.map, event: this.event.onConfirm }).init();
-            resolve(); // Promise resolved here
-        });
-
-        confirmationBox.querySelector('.cancelButton').addEventListener('click', async () => {
-            confirmationBox.remove();
-            await new OverworldEvent({ map: this.map, event: this.event.onCancel }).init();
-            resolve(); // Promise resolved here
+        console.log(this.map)
+        utils.emitEvent('confirmation', {
+            event: this.event,
+            onComplete: resolve // Promise resolved here
         });
     }
 
-    // The battle function handles the battle event.
+    // The mainTrivia method handles the battle event.
     // It starts a new battle and when the battle is done, the Promise is resolved.
-    battle(resolve){
-        const planet = new Challenge({
-            enemy: Enemies[this.event.enemyId],
-            onComplete: () => resolve() // Promise resolved here
+    mainTrivia(resolve){
+        console.dir(this.event)
+        console.log(EscapeRooms.RoomOne);  // Add this line
+        console.log(this.event.type);      // And this line
+        utils.emitEvent('mainTrivia', {
+            event: EscapeRooms.RoomOne[this.event.type],
+            onComplete: resolve // Promise resolved here
         });
-        planet.init( document.querySelector(".room-container"));
     };
+    
 
-    // The init function initializes the event by calling the appropriate method based on the event type.
+    // The init method initializes the event by calling the appropriate method based on the event type.
     // It returns a Promise which is resolved when the method is done.
     init(){
         return new Promise(resolve => {

@@ -9,52 +9,7 @@ export class Challenge {
         this.enemy = enemy;
         this.onComplete = onComplete;
      
-        this.combatants = {
-            /*
-            "player": new Question({
-                ...Pizzas.s001, 
-                team: "player", 
-                hp: 20,
-                maxHp: 50,
-                xp: 95,
-                maxXp: 100,
-                level: 1,
-                status: null,
-                isPlayerControlled: true,
-            }, this),
-            "player2": new Question({
-                ...Pizzas.s002, 
-                team: "player", 
-                hp: 20,
-                maxHp: 50,
-                xp: 75,
-                maxXp: 100,
-                level: 1,
-                status: null,
-                isPlayerControlled: true,
-            }, this),
-            "enemy1": new Question({
-                ...Pizzas.v001, 
-                team: "enemy", 
-                hp: 1,
-                maxHp: 50,
-                xp: 20,
-                maxXp: 100,
-                level: 1,
-                status: null
-            }, this),
-            "enemy2": new Question({
-                ...Pizzas.f001, 
-                team: "enemy", 
-                hp: 1,
-                maxHp: 50,
-                xp: 30,
-                maxXp: 100,
-                level: 1,
-                status: null
-            }, this),
-            */
-        };
+        this.combatants = {};
 
         this.activeCombatants = {
             player: null, //"player",
