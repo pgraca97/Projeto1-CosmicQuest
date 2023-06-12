@@ -1,18 +1,18 @@
-import {Sprite} from "/js/Model/Sprite.js";
-import  OverworldEvent  from "/js/Model/OverworldEvent.js";
+// Import dependencies
+import Sprite from "/js/Model/Sprite.js";
+import OverworldEvent from "/js/Model/OverworldEvent.js";
 
-export class GameObject {
+export default class GameObject {
     constructor(config) {
+        this.id = null;  // Unique identifier
+        this.isMounted = false;  // Determine if the object is mounted
 
-        this.id = null; // unique ID
-        // state to determined if the object is mounted or not  
-        this.isMounted = false;
-
+        // Initialize properties
         this.x = config.x || 0;
         this.y = config.y || 0;
         this.shadowOffset = config.shadowOffset || 0;
         this.direction = config.direction || "down";
-        this.sprite = new Sprite ({
+        this.sprite = new Sprite({
             gameObject: this,
             src: config.src || "/assets/img/Characters/User/Pink/Chara_Astronaut09_FullBody_Run_4Dir_6x4.png",
             idleSrc: config.idleSrc || undefined,
@@ -25,56 +25,39 @@ export class GameObject {
         });
 
         this.behaviorLoop = config.behaviorLoop || [];
-       
         this.behaviorLoopIndex = 0;
-
         this.talking = config.talking || [];
     }
 
-    mount (map) {
-
+    mount(map) {
         this.isMounted = true;
         map.addWall(this.x, this.y);
-
-        //If we have a beahvior, kick off after a short delay
-        setTimeout(() => {
-            this.doBehaviorEvent(map);
-        }, 2000);
+        setTimeout(() => this.doBehaviorEvent(map), 200);  // Execute behavior after delay
     }
 
-    update () {
-        
+    update() {
+        // Method to be implemented if required
     }
 
-    async doBehaviorEvent (map) {
+    async doBehaviorEvent(map) {
         // Don't do anything if there is a more important scene or there are not any events to execute
-        if  (map.isCutscenePlaying || this.behaviorLoop.length === 0 || this.isStanding ) {
-            return;
-        }
-        // We are starting the behavior loop
-        //this.isBehaviorLoopRunning = true;
+        if (map.isCutscenePlaying || this.behaviorLoop.length === 0 || this.isStanding) {return};
 
         // Setting up our event with relevant information
         let eventConfig = this.behaviorLoop[this.behaviorLoopIndex];
         eventConfig.who = this.id;
-       
+
         // Create an event instance out of our next event config
-        const eventHandler = new OverworldEvent({ map, event: eventConfig});
+        const eventHandler = new OverworldEvent({ map, event: eventConfig });
 
         await eventHandler.init();
-
         //Setting the next event to be executed
         this.behaviorLoopIndex++;
         if (this.behaviorLoopIndex === this.behaviorLoop.length) {
             this.behaviorLoopIndex = 0;
         }
 
-
-        // At the end of the function, we stop the behavior loop
-       // this.isBehaviorLoopRunning = false;
-
         // Do it again
         this.doBehaviorEvent(map);
-
     }
 }

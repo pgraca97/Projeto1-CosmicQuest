@@ -21,14 +21,10 @@ export class BattleEvent {
             .replace("{TARGET}", this.event.target?.name)
             .replace("{ACTION}", this.event.action?.name)
 
-            const message = new TextMessage({
-                text,
-                onComplete: () => {
-                    resolve();
-                }
+            utils.emitEvent('textMessage', {
+                text: this.event.text,
+                onComplete: resolve // Promise resolved here
             });
-
-            message.init( this.battle.element);
         }
 
         async stateChange(resolve) {

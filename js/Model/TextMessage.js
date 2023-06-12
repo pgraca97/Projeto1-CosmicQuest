@@ -8,7 +8,7 @@ export class TextMessage {
             this.element = null;
         }
 
-        createElement() {
+    /*    createElement() {
             //Create element
             this.element = document.createElement('div');
             this.element.classList.add('TextMessage');
@@ -31,7 +31,7 @@ export class TextMessage {
                 this.done();
             });
             
-        } // is going to create the div and populate with the things
+        } // is going to create the div and populate with the things */
 
         done () {
             if (this.revealingText.isDone){

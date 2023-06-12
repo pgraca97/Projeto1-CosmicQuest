@@ -1,6 +1,6 @@
 import {utils} from "/js/Model/Utils.js";
 
-export class Sprite {
+export default class Sprite {
     constructor(config) {
 
         // Set up the Image for the running animation
@@ -125,16 +125,16 @@ export class Sprite {
     
     
 
-    draw(ctx) { //, cameraPerson = undefined
+    draw(ctx) { 
          let x, y;
          
         const isRobot = this.isRobot;
         if (isRobot === true) {
-            x = this.gameObject.x  //+ utils.withGrid(6.5) - cameraPerson.x;
-            y = this.gameObject.y  //+ utils.withGrid(6.5) - cameraPerson.y;
+            x = this.gameObject.x 
+            y = this.gameObject.y  
         } else {
-             x = this.gameObject.x -8  //+ utils.withGrid(6.5) - cameraPerson.x;
-             y = this.gameObject.y -16 //+ utils.withGrid(6.5) - cameraPerson.y;
+             x = this.gameObject.x -8  
+             y = this.gameObject.y -16 
         }
     
         const shadowWidth = 32;
