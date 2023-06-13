@@ -47,7 +47,10 @@
   /*  Main Container */
   .main-container {
     height: 498px;
-    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
     width: 830px;
     position: absolute;
     background-image: url('../assets/img/Background.png');
@@ -86,12 +89,19 @@
     color: white; /* adjust as needed */
   }
   
+  .rooms {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
   .room-container {
 position: relative;
   color: red;
   width: 224px ;
   height: 224px;
 left: -10%;
+top: -28%;
 transform: scale(1.8) ;
 /*border: 1px solid red*/
   }
@@ -103,6 +113,8 @@ transform: scale(1.8) ;
 
 .triviaContainer {
   position: relative;
+  display: flex;
+  flex-direction: column;
   top: 50%;
   transform: translateY(-50%);
   margin: 0;
@@ -112,9 +124,12 @@ transform: scale(1.8) ;
 .buttonContainer {
   display: flex;
   flex-direction: row;
+  justify-content: space-evenly;
 }
 .quizzContainer {
   display: flex;
+  justify-content: space-evenly;
+  align-items: center;
 }
 
 .quizzTypeButtonsContainer {
@@ -124,4 +139,231 @@ transform: scale(1.8) ;
 
 .quizzTypeButtonsContainer button {
   font-size: 8px;
+}
+
+.answerField {
+  display: flex;
+}
+.questionContainer {
+      display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.quizzTypeButtonsContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.iconContainer {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  padding-bottom: 10px;
+};
+
+.question {
+  height: auto;
+  border: 1px solid rgb(0, 0, 0);
+}
+
+.progressBarContainer {
+  position: relative;
+}
+.hudContainer {
+  position: absolute;
+  top: -100px;
+left: -30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: auto;
+}
+
+.hudContainer2 {
+  position: absolute;
+  top: -80px;
+  display: flex;
+
+}
+
+.progressBarContainer {
+  display: flex;
+  align-items: center; /* this will vertically center children */
+  justify-content: center; /* this will horizontally center children */
+}
+
+.profileContainer {
+  display: inline-flex;
+  align-items: center;
+}
+
+
+
+.coinCounterContainer {
+  display: flex;
+  align-items: center;
+  
+}
+
+.progressBar {
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.progressContainer {
+  display: inline-flex;
+  position: relative;
+  right: 65px;
+  justify-content: space-between;
+  align-items: center;
+  transform: scale(1.8);
+  image-rendering: pixelated;
+  height: 50px;
+  width: 250px;
+  padding-top: 10px;
+}
+.progressBarRectangle {
+  padding-right: 10px;
+}
+.progressCounterContainer {
+  font-size: 10px;
+}
+
+.FillBar-container {
+  position: absolute;
+  left: 0px;
+  top: 6px;
+  width: 30px;
+  height: 15px;
+}
+
+.EducationalContent {
+  position: absolute;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  top: 40%;
+  left: 43%;
+  width: 500px;
+  height: 200px;
+  transform: translate(-50%, -40%);
+  border: 0px solid red;
+}
+
+.EducationalContent.NoVideo {
+  left: 54%;
+  align-items: center;
+  margin-top: 20px;
+  width: 300px;
+}
+
+.EducationalContent.NoVideo .Notes {
+  margin-top: 0;
+  width: 100%;
+}
+
+.EducationalContent.NoVideo .CloseButton {
+  top: -10px;
+  right:10px;
+}
+
+
+.EducationalContent .buttonContainer {
+  flex-direction: column;  /* Change from column to row */
+  justify-content: space-between;  /* Add space between each button */
+  height: 200px;
+  padding: 10px;
+}
+
+.buttonContainer button {
+  width: 50px;
+  height: 15px;
+  font-size: 8px;  /* Adjust the font size to fit the button size */
+  margin: 0 5px;  /* Add horizontal margin */
+  padding-bottom: 13px;
+}
+
+.VideoContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 50px;
+
+}
+
+.VideoTitle {
+  transform: rotate(-90deg);
+  padding-top: 80px;
+  width: 50px;
+}
+
+.Notes {
+  height: 180px;
+  width: 100%;
+  font-size: 8px;
+  margin-top: 30px;
+}
+
+.CloseButton {
+  position: absolute;
+  right: 0;
+  top: 10px;
+  cursor: pointer;
+  width: 20px;
+
+}
+
+.icons-container {
+  padding: 0 1em; /* adjust as needed */
+  margin-bottom: 5px;
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+}
+
+.icons-container img {
+  cursor: pointer;
+}
+.left-icons{
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  color: red;
+  gap: 1em; /* adjust as needed */
+  image-rendering: pixelated;
+  padding: 0 2.3rem;
+  top: 8.2%;
+}
+
+
+
+.right-icons {
+  position: fixed;
+  color: red;
+  gap: 1em; /* adjust as needed */
+  image-rendering: pixelated;
+  padding: 0 1.5rem;
+  right: 0;
+  top: 8.2%;
+}
+
+/* CSS */
+.icon {
+  transition: all 0.5s ease;
+}
+.hidden {
+  opacity: 0;
+  transform: translateY(-20px); /* adjust as needed */
+}
+
+.countdown-display {
+  position: absolute;
+  top: 105%;
+  color: red;
 }

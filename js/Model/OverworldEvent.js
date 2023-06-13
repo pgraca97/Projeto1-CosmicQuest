@@ -75,7 +75,7 @@ export default class OverworldEvent {
 
     // The changeMap method handles the changeMap event.
     // It creates a new scene transition, starts the new map, and when the transition is done, the Promise is resolved.
-    changeMap (resolve) {
+    changeMap2 (resolve) {
         const sceneTransition = new SceneTransition();
         sceneTransition.init( document.querySelector(".room-container"), () => {
             this.map.overworld.startMap( window.EscapeRooms[this.event.map] );
@@ -83,6 +83,13 @@ export default class OverworldEvent {
             sceneTransition.fadeOut();
         });
     };
+
+    changeMap(resolve) {
+        utils.emitEvent('changeMap', {
+            event: this.event,
+            onComplete: resolve // Promise resolved here
+        });
+    }
 
     // The confirmation method handles the confirmation event.
     // It creates a confirmation box and when a choice is made, the Promise is resolved.
@@ -94,16 +101,25 @@ export default class OverworldEvent {
         });
     }
 
-    // The mainTrivia method handles the battle event.
+    // The celestialBodies method handles the battle event.
     // It starts a new battle and when the battle is done, the Promise is resolved.
-    mainTrivia(resolve){
+    celestialBodies(resolve){
         console.dir(this.event)
         console.log(EscapeRooms.RoomOne);  // Add this line
-        console.log(this.event.type);      // And this line
-        utils.emitEvent('mainTrivia', {
-            event: EscapeRooms.RoomOne[this.event.type],
-            onComplete: resolve // Promise resolved here
-        });
+        console.log(this.event.type);   // And this line
+        if (this.event.initiate === "mainTrivia") {
+            console.log('Main Trivia intiated');
+            utils.emitEvent('mainTrivia', {
+                event: this.event, // EscapeRooms.RoomOne[this.event.type],
+                onComplete: resolve // Promise resolved here
+            });
+        } else {
+            utils.emitEvent('celestialBodies', {
+                event: this.event, // EscapeRooms.RoomOne[this.event.type],
+                onComplete: resolve // Promise resolved here
+            });
+            console.log(this.event)
+        }
     };
     
 

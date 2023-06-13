@@ -17,7 +17,7 @@ export class SceneTransition {
     init(container, callback) {
         this.createElement();
         container.appendChild(this.element);
-
+        console.log(this.element);
         this.element.addEventListener('animationend', () => {
             callback();
         }, {once: true});
