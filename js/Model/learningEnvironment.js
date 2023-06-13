@@ -98,14 +98,18 @@ export default class LearningEnvironment {
 
          // Save the room's key (i.e., its name) to currentRoom
         this.currentRoom = Object.keys(window.EscapeRooms).find(key => window.EscapeRooms[key] === mapConfig);
+        localStorage.setItem('currentRoom', 'RoomOne'); //CHANGE THIS LINE!!!
         console.log(this.currentRoom);
     }
     
 
     // Initialize the LearningEnvironment
     init() {
-        // Start the map using RoomOne's configuration
-        this.startMap(window.EscapeRooms.RoomOne);
+        // Get the current room from localStorage
+        const currentRoom = localStorage.getItem('currentRoom') || 'RoomOne';
+
+        // Start the map using the current room's configuration
+        this.startMap(window.EscapeRooms[currentRoom]);
 
         // Bind the action input to listen for 'Enter' key press
         this.bindActionInput();

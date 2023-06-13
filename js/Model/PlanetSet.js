@@ -3,15 +3,28 @@ import Quizz from "/js/Model/Quizz.js"
 class PlanetSet {
     // The constructor is called when a new instance of ChallengeSet is created.
     // The planet is passed in when the new ChallengeSet is created.
-    constructor(planet, icon) {
+    constructor(planet, icon, challengeTypes = []) {
         this.planet = planet;  // The planet that this set of challenges is about
         this.icon = icon || null; // The icon associated with this planet
-        // Initialize the challenges as an object where the keys are the challenge types and the values are empty arrays.
-        this.challenges = {
-            'multiple choice': [],
-            'short answer': [],
-            'fill in the blanks': []
+        this.notes = ""; // To keep the notes associated with each planet (Cosmic Diary)
+        this.researchTerminal = {
+            general: '',
+            geography: '',
+            atmosphere: '',
+            climate: '',
+            moons: '',
+            history: '',
+            discovery: '',
+            mythology: '',
+            missions: ''
         };
+        
+        // Initialize the challenges as an object where the keys are the challenge types and the values are empty arrays.
+        this.challenges = {};
+        challengeTypes.forEach(type => {
+            this.challenges[type] = [];
+        });
+        
         this.educationalContent = {};  // The educational content associated with the planet
     }
 
@@ -48,15 +61,78 @@ export function initializeLocalStorage() {
     // Planets list
     console.log('Initializing Local Storage');
     const planets = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune'];
+    const additionalTrivia = ['Sun', 'Meteor Showers']; //, 'Inner Planets Moons', 'Outer Planets Moons'
 
     // Loop through the planets
     for (const planet of planets) {
         // Check if there is a PlanetSet in localStorage for this planet
         if (!localStorage.getItem(planet)) {
-            // If not, create a default PlanetSet and Challenge for this planet
+            // Create a default educational content for the planet
+            let educationalContent;
+
+            switch(planet) {
+                case 'Mercury':
+                    educationalContent = {
+                        video: `/assets/video/Mercury/Mercury 101 _ National Geographic.mp4`,
+                        subtitles: `/assets/video/Mercury/Mercury.vtt`
+                    };
+                    break;
+                case 'Venus':
+                    educationalContent = {
+                        video: `/assets/video/Venus/Venus 101 _ National Geographic.mp4`,
+                        subtitles: `/assets/video/Venus/Venus.vtt`
+                    };
+                    break;
+                case 'Earth':
+                    educationalContent = {
+                        video: `/assets/video/Earth/Earth 101 _ National Geographic.mp4`,
+                        subtitles: `/assets/video/Earth/Earth.vtt`
+                    };
+                    break;
+                case 'Mars':
+                    educationalContent = {
+                        video: `/assets/video/Mars/Mars 101 _ National Geographic.mp4`,
+                        subtitles: `/assets/video/Mars/Mars.vtt` 
+                    };
+                    break;
+                case 'Jupiter':
+                    educationalContent = {
+                        video: `/assets/video/Jupiter/Jupiter 101 _ National Geographic.mp4`,
+                        subtitles: `/assets/video/Jupiter/Jupiter.vtt`
+                    };
+                    break;
+                case 'Saturn':
+                    educationalContent = {
+                        video: `/assets/video/Saturn/Saturn 101 _ National Geographic.mp4`,
+                        subtitles: `/assets/video/Saturn/Saturn.vtt`
+                    };
+                    break;
+                case 'Uranus':
+                    educationalContent = {
+                        video: `/assets/video/Uranus/Uranus 101 _ National Geographic.mp4`,
+                        subtitles: `/assets/video/Uranus/Uranus.vtt`
+                    };
+                    break;
+                case 'Neptune':
+                    educationalContent = {
+                        video: `/assets/video/Neptune/Neptune 101 _ National Geographic.mp4`,
+                        subtitles: `/assets/video/Neptune/Neptune.vtt`
+                    };
+                    break;
+                default:
+                    educationalContent = {
+                        video: `/assets/videos/${planet}.mp4`,
+                        subtitles: `This is a dummy narration for ${planet}.`
+                    };
+                    break;
+            }
+
+            // Create a default PlanetSet and Challenge for this planet
             let planetSet = generatePlanetSetsForRoom(
-                planet, 
+                planet,
+                educationalContent,
                 new Quizz('multiple choice', ['Option 1', 'Option 2', 'Option 3'], `Default question for ${planet}?`, 'Option 1'),
+                new Quizz('multiple choice', ['Option 4', 'Option 5', 'Option 6'], `Default question 2 for ${planet}?`, 'Option 4'),
                 new Quizz('short answer', null, 'Short Answer1?', 'Answer'), 
                 new Quizz('fill in the blanks', ['Drag 1', 'Drag 2', 'Drag 3'], 'Question, Drag 2.', 'Question, Drag 2 Drag 1.'),
             );
@@ -65,10 +141,63 @@ export function initializeLocalStorage() {
             console.log(`Stored default PlanetSet for ${planet}`);
         }
     }
+    
+    // Additional trivia
+    for (const trivia of additionalTrivia) {
+        if (!localStorage.getItem(trivia)) {
+            // Create a default educational content for the planet
+            let educationalContent;
+
+            switch(trivia) {
+                case 'Sun':
+                    educationalContent = {
+                        video: `/assets/video/Sun/Sun 101 _ National Geographic.mp4`,
+                        subtitles: `/assets/video/Sun/Sun.vtt`
+                    };
+                    break;
+                case 'Meteor Showers':
+                    educationalContent = {
+                        video: `/assets/video/Meteor Showers/Meteor Showers 101 _ National Geographic.mp4`,
+                        subtitles: `/assets/video/Meteor Showers/Meteor Showers.vtt`
+                    };
+                    break;
+                /*case 'Inner Planets Moons':
+                    educationalContent = {
+                        video: `/assets/video/Inner Planets Moons/Inner Planets Moons 101 _ National Geographic.mp4`,
+                        subtitles: `/assets/video/Inner Planets Moons/Inner Planets Moons.vtt`
+                    };
+                    break;
+                case 'Outer Planets Moons':
+                    educationalContent = {
+                        video: `/assets/video/Outer Planets Moons/Outer Planets Moons 101 _ National Geographic.mp4`,
+                        subtitles: `/assets/video/Outer Planets Moons/Outer Planets Moons.vtt`
+                    };
+                    break;*/
+                default:
+                    educationalContent = {
+                        video: `/assets/videos/${trivia}.mp4`,
+                        subtitles: `This is a dummy narration for ${trivia}.`
+                    };
+                    break;
+            }
+            // Create a default PlanetSet and Challenge for this trivia
+            let planetSet = generatePlanetSetsForRoom(
+                trivia,
+                educationalContent,
+                new Quizz('alphabet soup', ['Option 1', 'Option 2', 'Option 3'], `Default question for ${trivia}?`, 'Option 1')
+            );
+        
+            console.log(`Created default PlanetSet for ${trivia}`);
+            localStorage.setItem(trivia, JSON.stringify(planetSet));
+            console.log(`Stored default PlanetSet for ${trivia}`);
+        }
+    }
 }
 
+
+
 // Function to create or update a PlanetSet for a given planet with arbitrary number of quizzes
-export function generatePlanetSetsForRoom(planet, ...quizzes) {
+export function generatePlanetSetsForRoom(planet, educationalContent, ...quizzes) {
     let planetSet;
 
     // Check if there's already a PlanetSet in localStorage for this planet
@@ -77,16 +206,23 @@ export function generatePlanetSetsForRoom(planet, ...quizzes) {
         // If there is, retrieve it and convert it back to an object
         planetSet = JSON.parse(storedPlanetSet);
     } else {
-        // If there isn't, create a new PlanetSet
-        planetSet = new PlanetSet(planet);
+        // Get unique types from quizzes
+        let uniqueTypes = [...new Set(quizzes.map(quizz => quizz.type))]; // Remove duplicates (Set is a built-in JavaScript object that stores unique values of any type.)
+        // The spread operator is used to convert the Set back to an array
+
+        // Create a new PlanetSet with unique types
+        planetSet = new PlanetSet(planet, null, uniqueTypes);
     }
 
     quizzes.forEach(quizz => {
         if (planetSet.challenges[quizz.type].length >= 5) {
-            throw new Error(`There are already 5 challenges of type '${challenge.type}' in the PlanetSet for ${planet}. Please remove some challenges before adding new ones.`);
+            throw new Error(`There are already 5 challenges of type '${quizz.type}' in the PlanetSet for ${planet}. Please remove some challenges before adding new ones.`);
         }
         planetSet.addChallenge(quizz)
     });
+
+    // Add the educational content
+    planetSet.addEducationalContent(educationalContent);
    
     // Store the updated PlanetSet back to localStorage
     localStorage.setItem(planet, JSON.stringify(planetSet));
@@ -94,14 +230,15 @@ export function generatePlanetSetsForRoom(planet, ...quizzes) {
     return planetSet;
 }
 
+
 export const updateLocalStorage = (planetSet, question) => {
     // Get the PlanetSet from localStorage
-    const storedPlanetSet = JSON.parse(localStorage.getItem(planetSet.planet));
+    const storedPlanetSet = JSON.parse(localStorage.getItem(planetSet));
     
     // Find the question in the stored PlanetSet and update its isAnsweredCorrectly property
     const challengeType = question.type;
     storedPlanetSet.challenges[challengeType].find(storedQuestion => storedQuestion.question === question.question).isAnsweredCorrectly = question.isAnsweredCorrectly;
     
     // Save the updated PlanetSet back to localStorage
-    localStorage.setItem(planetSet.planet, JSON.stringify(storedPlanetSet));
+    localStorage.setItem(planetSet, JSON.stringify(storedPlanetSet));
 };
