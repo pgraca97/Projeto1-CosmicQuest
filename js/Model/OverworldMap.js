@@ -1,5 +1,6 @@
 import {utils} from "/js/Model/Utils.js";
 import  OverworldEvent  from "/js/Model/OverworldEvent.js";
+import gameController from './GameController.js';
 
 // Defining the OverworldMap class
 export default class OverworldMap {
@@ -41,6 +42,7 @@ export default class OverworldMap {
     // Check if a space is occupied by a wall
     isSpaceTaken(currentX, currentY, direction){
         const {x, y} = utils.nextPosition(currentX, currentY, direction);
+        //console.log(this.walls)
         return this.walls[`${x},${y}`] || false;
     }
 
@@ -69,7 +71,7 @@ export default class OverworldMap {
                 event: event,
                 map: this,
             })
-        
+            gameController.addGameEvent(eventHandler);
             await eventHandler.init();
             //console.dir(eventHandler);
             //console.log(eventHandler.event);
@@ -100,7 +102,6 @@ export default class OverworldMap {
         if (!this.isCutscenePlaying && match) {
             match.forEach(m => this.startCutscene(m.events)); //m represents each individual cutscene object in the match array
         }
-        
     }
 
     addWall(x, y){

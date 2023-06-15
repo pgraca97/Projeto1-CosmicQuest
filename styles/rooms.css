@@ -5,6 +5,7 @@
   body#custom-body {
     background-color: #0d0c13;
     overflow: hidden;
+    color: red;
   }
   
   .title-banner-container {
@@ -94,6 +95,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
   }
   .room-container {
 position: relative;
@@ -317,6 +319,62 @@ left: -30px;
 
 }
 
+.ResearchTerminalContainer {
+  display: flex;
+  position: absolute;
+  top: 60%;
+  left: 65%;
+  transform: translate(-50%, -50%);
+  width: 450px;
+  height: 250px;
+
+  padding: 2rem;
+
+  
+  
+}
+
+.TerminalContent {
+  color: blue;
+  display: flex;
+  justify-content: center;
+  font-size: 8px;
+  background-color: white;
+  text-align: justify;
+  padding: 2rem;
+  overflow: hidden scroll;
+  width: 100%;
+  height: 100%;
+}
+
+.themeContainer {
+  color: red;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  padding-bottom: 10px;
+  top: 15%;
+}
+
+.themeTitle {
+  margin-bottom: 3px;
+}
+.left-arrow {
+  transform: rotate(0deg);
+  margin-bottom: 2px;
+}
+
+.left-arrow ,
+.right-arrow  {
+  width: 19px;
+  height: 19px;
+  image-rendering: pixelated;
+}
+
+.ResearchTerminalContainer .buttonContainer {
+  display: flex;
+  flex-direction: column;
+}
 .icons-container {
   padding: 0 1em; /* adjust as needed */
   margin-bottom: 5px;
@@ -366,4 +424,53 @@ left: -30px;
   position: absolute;
   top: 105%;
   color: red;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+#btnYes, #btnNo {
+  margin-top: 20px;
+}
+
+.challenge-container {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;  /* Adjust as needed */
+  height: 80%;  /* Auto height will grow with content */
+  padding: 20px;  /* Spacing inside the div */
+  background-color: rgba(0, 0, 0, 0.5);  /* Semi-transparent black */
+  color: white;  /* Text color */
+  border: 1px solid red;
+  margin: 20px auto;  /* Center the div and add spacing outside */
+  border-radius: 10px;  /* Rounded corners */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;  /* If content overflows, show a scrollbar */
+}
+
+.challenge-type, .challenge-question, .challenge-answer {
+  margin: 10px 0;  /* Add some vertical spacing between challenges */
 }

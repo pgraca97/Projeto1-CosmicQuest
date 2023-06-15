@@ -1,6 +1,4 @@
 import { utils } from "/js/Model/Utils.js";
-import { SceneTransition } from "/js/Model/SceneTransition.js";
-import { Challenge } from "/js/Model/Challenge/Challenge.js";
 
 // The OverworldEvent class defines how different types of events are handled in the app.
 export default class OverworldEvent {
@@ -10,6 +8,20 @@ export default class OverworldEvent {
         this.map = map;
         this.event = event;
         
+    }
+
+    pause() {
+        // Pause the current event's animation, if any
+        if (this.currentAnimation) {
+            this.currentAnimation.pause();
+        }
+    }
+
+    resume() {
+        // Resume the current event's animation, if it was paused
+        if (this.currentAnimation && this.currentAnimation.isPaused) {
+            this.currentAnimation.resume();
+        }
     }
 
     // The idle function handles the idle event.
@@ -38,6 +50,7 @@ export default class OverworldEvent {
     // The run function handles the run event.
     // The object starts a run behavior and when it's done, the Promise is resolved.
     run(resolve){
+        console.log('Running...');
         const who = this.map.gameObjects[ this.event.who ];
         who.startBehavior({
             map: this.map
@@ -75,14 +88,14 @@ export default class OverworldEvent {
 
     // The changeMap method handles the changeMap event.
     // It creates a new scene transition, starts the new map, and when the transition is done, the Promise is resolved.
-    changeMap2 (resolve) {
+    /*changeMap2 (resolve) {
         const sceneTransition = new SceneTransition();
         sceneTransition.init( document.querySelector(".room-container"), () => {
             this.map.overworld.startMap( window.EscapeRooms[this.event.map] );
             resolve(); // Promise resolved here
             sceneTransition.fadeOut();
         });
-    };
+    };*/
 
     changeMap(resolve) {
         utils.emitEvent('changeMap', {

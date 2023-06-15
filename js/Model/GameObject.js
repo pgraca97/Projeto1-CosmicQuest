@@ -1,6 +1,7 @@
 // Import dependencies
 import Sprite from "/js/Model/Sprite.js";
 import OverworldEvent from "/js/Model/OverworldEvent.js";
+import gameController from './GameController.js';
 
 export default class GameObject {
     constructor(config) {
@@ -11,7 +12,9 @@ export default class GameObject {
         this.x = config.x || 0;
         this.y = config.y || 0;
         this.shadowOffset = config.shadowOffset || 0;
-        this.direction = config.direction || "down";
+        this.direction = config.direction || 'down';
+
+        console.log(this.direction);
         this.sprite = new Sprite({
             gameObject: this,
             src: config.src || "/assets/img/Characters/User/Pink/Chara_Astronaut09_FullBody_Run_4Dir_6x4.png",
@@ -25,7 +28,7 @@ export default class GameObject {
         });
 
         this.behaviorLoop = config.behaviorLoop || [];
-        this.behaviorLoopIndex = 0;
+        this.behaviorLoopIndex = config.behaviorLoopIndex || 0;
         this.talking = config.talking || [];
     }
 
@@ -41,7 +44,10 @@ export default class GameObject {
 
     async doBehaviorEvent(map) {
         // Don't do anything if there is a more important scene or there are not any events to execute
-        if (map.isCutscenePlaying || this.behaviorLoop.length === 0 || this.isStanding) {return};
+        if (map.isCutscenePlaying || this.behaviorLoop.length === 0 || this.isStanding || window.EscapeRooms.timeLimit.remaining <= 0) {
+            console.log('No more events to execute');
+            return
+        };
 
         // Setting up our event with relevant information
         let eventConfig = this.behaviorLoop[this.behaviorLoopIndex];
@@ -49,8 +55,9 @@ export default class GameObject {
 
         // Create an event instance out of our next event config
         const eventHandler = new OverworldEvent({ map, event: eventConfig });
-
+        gameController.addGameEvent(eventHandler);
         await eventHandler.init();
+
         //Setting the next event to be executed
         this.behaviorLoopIndex++;
         if (this.behaviorLoopIndex === this.behaviorLoop.length) {

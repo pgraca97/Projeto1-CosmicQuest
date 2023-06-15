@@ -8,15 +8,15 @@ class PlanetSet {
         this.icon = icon || null; // The icon associated with this planet
         this.notes = ""; // To keep the notes associated with each planet (Cosmic Diary)
         this.researchTerminal = {
-            general: '',
-            geography: '',
-            atmosphere: '',
-            climate: '',
-            moons: '',
-            history: '',
-            discovery: '',
-            mythology: '',
-            missions: ''
+            General: '',
+            Geography: '',
+            Atmosphere: '',
+            Climate: '',
+            Moons: '',
+            History: '',
+            Discovery: '',
+            Mythology: '',
+            Missions: ''
         };
         
         // Initialize the challenges as an object where the keys are the challenge types and the values are empty arrays.
