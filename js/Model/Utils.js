@@ -5,6 +5,9 @@ export const utils = {
     asGridCoord(x, y) {
         return `${x*16},${y*16}`
     },
+    snapToGrid(coord) {
+        return Math.round(coord / 16) * 16
+    },
     nextPosition(initialX, initialY, direction) {
         let x = initialX;
         let y = initialY;

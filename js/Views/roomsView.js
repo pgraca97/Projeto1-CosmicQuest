@@ -3,19 +3,23 @@ import OverworldEvent from "/js/Model/OverworldEvent.js";
 import  KeyPressListener  from '/js/Model/KeyPressListener.js';
 import {utils} from "/js/Model/Utils.js";
 import {Person} from "/js/Model/Person.js";
-import * as Quizz from "/js/Model/Quizz.js"
 import * as PlanetSet from "/js/Model/PlanetSet.js";
+import gameController from '/js/Model/GameController.js';
 
 let cosmicQuest
 let currentRoom
+
+window.onload = checkForGameEnd;
+
 // Listen for the pageshow event to resume the countdown
 window.addEventListener('pageshow', function() {
     // Check if the current page is 'rooms.html'
     if (window.location.href.includes('rooms.html')) {
-        console.log('Page is rooms.html');
-        // Resume the countdown if time remains
+       
+       
         if (window.EscapeRooms.timeLimit.remaining > 0) {
             startCountdown();
+
         }
     }
 });
@@ -32,20 +36,17 @@ const initialize = () => {
       });
       cosmicQuest.init();
       currentRoom = cosmicQuest.map.overworld.currentRoom;
-      console.dir(cosmicQuest);
-      console.dir(cosmicQuest.map.overworld.currentRoom);
-      console.log(currentRoom);
-      console.log('Initialized cosmicQuest')
+
          // Check if game has started before
     if (window.EscapeRooms.timeLimit.startTime) {
         // Calculate remaining time
         const elapsed = Math.floor((new Date().getTime() - window.EscapeRooms.timeLimit.startTime) / 1000);
         window.EscapeRooms.timeLimit.remaining = window.EscapeRooms.timeLimit.total - elapsed;
-        console.log('Has started before');
+        
     } else {
         // Set the start time if it's the first time
         window.EscapeRooms.timeLimit.startTime = new Date().getTime();
-        console.log('First time');
+
     }
 
     // Store the timeLimit object in localStorage
@@ -57,6 +58,13 @@ PlanetSet.initializeLocalStorage();
 //Get the  main containers of Cosmic Quest
 const frameContainer = document.querySelector(".frame-container");
 const roomContainer = document.querySelector(".room-container");
+
+let storedDirection = localStorage.getItem('playerDirection');
+
+// Get CUBI's stored properties
+const storedCUBIBehaviorLoopIndex = localStorage.getItem('CUBI_behaviorLoopIndex');
+const storedCUBIDirection = localStorage.getItem('CUBI_direction');
+const storedCUBIMovingProgressRemaining = localStorage.getItem('CUBI_movingProgressRemaining');
 
 // We use the window object to create a global object called "EscapeRooms". 
 // This object will hold all the data related to different rooms of our game.
@@ -72,14 +80,18 @@ window.EscapeRooms = {
             JSON.parse(localStorage.getItem('Earth')),
             JSON.parse(localStorage.getItem('Mars')),
         ],
+        bonusCelestialBodies: [JSON.parse(localStorage.getItem('Sun'))],
         progressBar: localStorage.getItem('RoomOneProgress') || 0,
         // Game objects are dynamic entities in the room, like characters, NPCS etc.
         gameObjects: {
             // playerCharacter is the main character controlled by the player
             playerCharacter: new Person ({
                 isPlayerControlled: true, // isPlayerControlled property is used to define whether this character is controlled by the player or not
-                x: utils.withGrid(7), // The x, y properties determine the starting position of the character in the room
-                y: utils.withGrid(6),
+                // The x, y properties determine the starting position of the character in the room
+                x: localStorage.getItem('playerX') ? utils.withGrid(Number(localStorage.getItem('playerX'))/16) : utils.withGrid(7),
+                y: localStorage.getItem('playerY') ? utils.withGrid(Number(localStorage.getItem('playerY'))/16) : utils.withGrid(6),
+                // Set the direction of the player character to playerDirection if it exists if not set it to 'down'
+                direction: storedDirection ? storedDirection : 'down',
                 src:"/assets/img/Characters/User/Pink/Chara_Astronaut09_FullBody_Run_4Dir_6x4.png",  // src and idleSrc properties are the source of the character's spritesheet images for running and idle state respectively
                 idleSrc: "/assets/img/Characters/User/Pink/Chara_Astronaut09_FullBody_Idle_8Dir_1x8.png",
                 cutWidth: 32,  // cutWidth and cutHeight properties are used to define the size of the character's image from the spritesheet
@@ -99,8 +111,10 @@ window.EscapeRooms = {
                 imgHeight: 16
             }),
             CUBI: new Person ({
-                x: utils.withGrid(8),
-                y: utils.withGrid(8),
+                //movingProgressRemaining: storedCUBIMovingProgressRemaining? Number(storedCUBIMovingProgressRemaining) : 0,
+                x: localStorage.getItem('npcX') ? utils.withGrid(Number(localStorage.getItem('npcX'))/16) : utils.withGrid(7),
+                y: localStorage.getItem('npcY') ? utils.withGrid(Number(localStorage.getItem('npcY'))/16) : utils.withGrid(9),
+                direction: storedCUBIDirection? storedCUBIDirection : 'down',
                 src: '/assets/img/CleanBot.png',
                 idleSrc: undefined,
                 cutWidth: 16,  
@@ -128,7 +142,8 @@ window.EscapeRooms = {
                     {type: "idle", direction: "right", time: 2000},
                     {type: "run", direction: "right"},
                     {type: "run", direction: "down"},
-                ], 
+                ],
+                behaviorLoopIndex: storedCUBIBehaviorLoopIndex ? Number(storedCUBIBehaviorLoopIndex) : 0 ,
                 talking: [
                     {
                         events: [
@@ -205,6 +220,15 @@ window.EscapeRooms = {
                     ]
                 },
             ],
+
+            // Coordinate (11, 5) triggers the bonus Trivia challenge
+            [utils.asGridCoord(11, 5)]: [
+                { events:  [
+                    { type: 'textMessage', text: "You've unlocked access to the Sun Challenge, a special bonus task dedicated to our solar system's central star. In this challenge, you'll meet SolarProbe, a small robot designed to test your knowledge of the Sun and its many fascinating features. By entering the compartment, you accept the challenge, and the door will remain locked until you successfully complete it. Good luck!"},
+                    { type: "celestialBodies", planet: 'Sun' },
+                    ] 
+                },
+            ],
         
             // Coordinate (6,5) triggers educational content for Venus
             [utils.asGridCoord(6,5)]: [
@@ -244,12 +268,12 @@ window.EscapeRooms = {
         },        
         // initialCutscene is an array of events that plays at the start of the game in each room.
         initialCutscene: [
-            { who: "playerCharacter", type: "run", direction: "down" }, 
+            /*{ who: "playerCharacter", type: "run", direction: "down" }, 
             { who: "playerCharacter", type: "run", direction: "down" },
             { who: "playerCharacter", type: "idle", direction: "right" },
             { type: 'textMessage', text: "Greetings, traveler! I am C.u.b.i!", faceHero: "CUBI" },
-            { who: "playerCharacter", type: "idle", direction: "left" }, 
-            { who: "playerCharacter", type: "run", direction: "left" },
+           { who: "playerCharacter", type: "idle", direction: "left" }, 
+            { who: "playerCharacter", type: "run", direction: "left" },*/
         ]
     },
     // RoomTwo holds all the data for the second room of Cosmic Quest
@@ -276,7 +300,7 @@ window.EscapeRooms = {
                 imgHeight: 32,
                 shadowOffset: 2.4
             }),
-            CUBI: new Person ({
+           CUBI: new Person ({
                 x: utils.withGrid(6),
                 y: utils.withGrid(8),
                 src: '/assets/img/Characters/NPC.png',
@@ -299,13 +323,18 @@ window.EscapeRooms = {
         ],
     },
     timeLimit: JSON.parse(localStorage.getItem('timeLimit')) || { 
-        total: 60 * 30, // Total time limit for the game, for example 30 minutes
-        remaining: 60 * 30, // Remaining time, initialize to total time limit
+        total: 60 * 1, // Total time limit for the game, for example 30 minutes
+        remaining: 60 * 1, // Remaining time, initialize to total time limit
         startTime: null, // Will hold the time when the game starts
     }
 }
 
+
+
 initialize();
+let playerCharacter = window.EscapeRooms[currentRoom].gameObjects.playerCharacter;
+let CUBI = window.EscapeRooms[currentRoom].gameObjects.CUBI;
+console.log(CUBI)
 
 // Function to start the countdown
 function startCountdown() {
@@ -323,17 +352,34 @@ function startCountdown() {
 
         // Check if the countdown has finished
         if (window.EscapeRooms.timeLimit.remaining <= 0) {
+            // If the player is currently moving, delay ending the game until they have finished
+            console.log(CUBI)
+            if (playerCharacter.isMoving) {
+                console.log("Player is moving, delaying end of game");
+                const movementDuration = 400; // Adjust this based on the duration of your movement
+                setTimeout(() => {
+                    gameController.gameOver();
+                    handleEndOfGame();
+                }, movementDuration);
+            } else {
+                console.log("Player is not moving, ending game");
+                // If the player isn't moving, end the game immediately
+                gameController.gameOver();
+                handleEndOfGame();
+            }
 
-        // Handle the end of the game
-        handleEndOfGame();
-
+            console.log(localStorage.getItem('playerDirection'));
+            // Stop the countdown
+            clearInterval(window.EscapeRooms.timeLimit.intervalId);
         }
+        
+        
         // Update the countdown display
         countdownDisplay.innerText = formatTime(window.EscapeRooms.timeLimit.remaining);
     }, 1000);  // Update every second
 
 }
-//startCountdown()
+
 // Function to format a time in seconds into a MM:SS string
 function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
@@ -342,14 +388,103 @@ function formatTime(seconds) {
 }
 // Function to handle the end of the game
 function handleEndOfGame() {
-    // Do whatever you need to do when the game ends
-    clearInterval(window.EscapeRooms.timeLimit.intervalId);
-    window.EscapeRooms.timeLimit.remaining = 60 * 30;
-    window.EscapeRooms.timeLimit.startTime = null;
-        // Store the updated timeLimit object back to localStorage
-        localStorage.setItem('timeLimit', JSON.stringify(window.EscapeRooms.timeLimit));
-        const timeLimit = JSON.parse(localStorage.getItem('timeLimit'));
-        console.log(timeLimit);
+    // Get the modal
+    const modal = document.getElementById("modalContainer");
+
+    // Get the buttons
+    const btnYes = document.getElementById("btnYes");
+    const btnNo = document.getElementById("btnNo");
+
+    // Get the modal text
+    const modalText = document.getElementById("modalText");
+    modalText.innerHTML = "Explorer, your time has ended. Do you wish to restart your learning journey?";
+
+    // Make the modal visible
+    modal.style.display = "block";
+
+    // Store the player character's direction
+    localStorage.setItem('playerDirection', playerCharacter.direction);
+
+    // Store CUBI's properties
+   // const CUBI = getCharacterById('CUBI'); // replace with your function to get CUBI
+    localStorage.setItem('CUBI_behaviorLoopIndex', CUBI.behaviorLoopIndex);
+    localStorage.setItem('CUBI_direction', CUBI.direction);
+    localStorage.setItem('CUBI_movingProgressRemaining', CUBI.movingProgressRemaining);
+
+    // Set value in LocalStorage indicating that game has ended
+    localStorage.setItem('gameEnded', 'true');
+
+    // When the user clicks on "Yes", restart the game
+    btnYes.onclick = function() {
+        modal.style.display = "none";
+        // Remove gameEnded from LocalStorage
+        localStorage.removeItem('gameEnded');
+        // Code to reset the game here
+       
+        resetGame();
+    }
+
+    // When the user clicks on "No", redirect to index.html
+    btnNo.onclick = function() {
+        modal.style.display = "none";
+
+
+        // Remove gameEnded from LocalStorage
+        localStorage.removeItem('gameEnded');
+        window.location.href = "/index.html";
+    }
+}
+
+function resetGame() {
+    gameController.restartGame();
+    const celestialBodies = getRoomsCelestialBodies(currentRoom);
+    
+    // Iterate over each celestial body
+    celestialBodies.forEach(body => {
+        // Iterate over each type of challenge
+        Object.keys(body.challenges).forEach(challengeType => {
+            // Reset 'isAnsweredCorrectly' for each challenge
+            body.challenges[challengeType].forEach(challenge => {
+                challenge.isAnsweredCorrectly = null;
+            });
+        });
+    });
+
+    // Get the player's direction from localStorage
+    const playerDirection = localStorage.getItem('playerDirection');
+
+    // Set the player character's direction
+    if (playerDirection) {
+        playerCharacter.direction = playerDirection;
+    }
+
+
+    // Remove items from localStorage
+    localStorage.removeItem('timeLimit');
+    localStorage.removeItem(`${currentRoom}Progress`);
+
+    // Reset progress counter
+    const progressCounterContainer = document.querySelector('.progressCounterContainer');
+    progressCounterContainer.innerText = (`0% completed of ${currentRoom} `);
+
+    // Get the two rect elements
+    const fillBarRect = document.querySelector('.FillBar-container rect:nth-child(1)');
+    const backgroundRect = document.querySelector('.FillBar-container rect:nth-child(2)');
+
+    // Set the width attributes to 0%
+    fillBarRect.setAttribute('width', '0%');
+    backgroundRect.setAttribute('width', '0%');
+
+    // Refresh the page
+    location.reload();
+    gameController.restartGame();
+}
+
+function checkForGameEnd() {
+    if (localStorage.getItem('gameEnded') === 'true') {
+        handleEndOfGame();
+        gameController.gameOver();
+    }
 }
 
 function createHUD() {
@@ -525,8 +660,51 @@ function createRevealingText(element, text, speed = 30) {
 // The 'celestialBodies' event fires when a new celestial body's educational content needs to be displayed
 document.addEventListener("celestialBodies", function(e) {
     const eventData = e.detail;
-    displayEducationalContent(eventData)
+    console.log(eventData); //eventData.event.planet gives the name of the planet/celestialBody
+    console.log(getRoomsCelestialBodies(currentRoom))
+    if (getRoomsCelestialBodies(currentRoom).some(name => name.planet === eventData.event.planet)) {displayEducationalContent(eventData)}
+    else {displayChallengeContent(eventData)}
 });
+
+function displayChallengeContent(eventData) {
+    // Get the room-container
+    const roomContainer = document.querySelector('.room-container');
+    const planet = getPlanetSet(eventData.event.planet)
+    // Create main div
+    const mainDiv = document.createElement('div');
+    mainDiv.classList.add('challenge-container');
+
+    // For each challenge type in eventData
+    for (let challengeType in planet.challenges) {
+        // Get the array of challenges for this challenge type
+        let challenges = planet.challenges[challengeType];
+        console.log(challenges);
+        // Loop over each challenge in the challenges array
+        challenges.forEach(challenge => {
+            // Create a div for the challenge type
+            const challengeTypeDiv = document.createElement('div');
+            challengeTypeDiv.classList.add('challenge-type');
+            challengeTypeDiv.innerText = challengeType;
+            mainDiv.appendChild(challengeTypeDiv);
+
+            // Create a div for the question
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('challenge-question');
+            questionDiv.innerText = challenge.question;
+            mainDiv.appendChild(questionDiv);
+
+            // Create a div for the answer
+            const answerDiv = document.createElement('div');
+            answerDiv.classList.add('challenge-answer');
+            answerDiv.innerText = challenge.answer;
+            mainDiv.appendChild(answerDiv);
+        });
+    }
+
+    // Append the main div to the room-container
+    roomContainer.appendChild(mainDiv);
+}
+
 
 //Get the current planet set from local storage
 const getPlanetSet = eventPlanet => JSON.parse(localStorage.getItem(eventPlanet));
@@ -648,7 +826,8 @@ function displayEducationalContent(eventData) {
     });
 }
 
-function createButtons(currentRoom = null) {
+function getRoomsCelestialBodies(currentRoom) {
+    // Get celestial bodies from all rooms
     const celestialBodies = [];
 
     // Get celestial bodies from all rooms if currentRoom isn't provided, or from the current room otherwise
@@ -658,7 +837,12 @@ function createButtons(currentRoom = null) {
     } else {
         celestialBodies.push(...window.EscapeRooms[currentRoom].celestialBodies);
     }
-    console.log(celestialBodies);
+    return celestialBodies;
+};
+
+function createButtons(currentRoom = null) {
+    const celestialBodies = getRoomsCelestialBodies(currentRoom)
+
     // Buttons that hold the questions for each planet
     const buttonContainer = document.createElement('div');
     buttonContainer.classList.add('buttonContainer');
@@ -750,6 +934,7 @@ function createConfirmationBox({ event, onComplete }) {
     confirmationBox.querySelector('.confirmButton').addEventListener('click', async () => {
         confirmationBox.remove();
         const newOverworldEvent = new OverworldEvent({ map: cosmicQuest.map, event: event.onConfirm });
+        gameController.addGameEvent(newOverworldEvent);
         await newOverworldEvent.init();
         onComplete();
     });
@@ -757,6 +942,7 @@ function createConfirmationBox({ event, onComplete }) {
     confirmationBox.querySelector('.cancelButton').addEventListener('click', async () => {
         confirmationBox.remove();
         const newOverworldEvent = new OverworldEvent({ map: cosmicQuest.map, event: event.onCancel });
+        gameController.addGameEvent(newOverworldEvent);
         await newOverworldEvent.init();
         onComplete();
     });
@@ -766,7 +952,7 @@ console.log(JSON.parse(localStorage.getItem('Mars')),
 JSON.parse(localStorage.getItem('Venus')),
 JSON.parse(localStorage.getItem('Earth')),
 JSON.parse(localStorage.getItem('Mercury')),);
-
+console.log(window.EscapeRooms[currentRoom].bonusCelestialBodies);
 // The 'mainTrivia' event fires when a new trivia needs to be displayed in the UI
 document.addEventListener("mainTrivia", function(e) {
     const eventData = e.detail;
@@ -793,9 +979,10 @@ const giveEducationalContent = (currentPlanetSet) => {
         //If all challenges were answered correctly, populate the planet's Research Terminal
         for (let category in planetSet.researchTerminal) {
             //fetch(`path/to/${planetSet.planet}/${category}.txt`)
-            fetch(`/assets/txt/Mercury/Mercury.txt`)
-            .then(response => response.text())
-            .then(data => {
+            fetch(`/assets/txt/${planetSet.planet}/${category}.txt`)
+            //fetch(`/assets/txt/Mercury/Mercury.txt`) //Fetch (request) the resource for each txt fvile for the Research Terminal
+            .then(response => response.text()) //Turn the response (returned value from the fetch) into a string
+            .then(data => { //then do this with the data obtained
                 planetSet.researchTerminal[category] = data;
                 console.dir(planetSet)
                 // Save to localStorage
@@ -1410,6 +1597,145 @@ document.querySelector('.CosmicDiary').addEventListener('click', function() {
         contentContainer.remove();
     }
 });
+
+// Event listener for the 'click' event on the Research Terminal button
+let currentIndex = { value : 0}
+
+// This function handles the click event for the 'ResearchTerminal' element
+document.querySelector('.ResearchTerminal').addEventListener('click', function() {
+    handleResearchTerminalClick();
+});
+
+// This function handles the click event for the 'ResearchTerminal' element
+// This function handles the click event for the 'ResearchTerminal' element
+function handleResearchTerminalClick() {
+    // If there's a text message, exit the function
+    if (textMessagePresent()) {
+        return;
+    }
+
+    let researchTerminalContainer = document.querySelector('.ResearchTerminalContainer');
+
+    // If the Research Terminal does not contain the class hidden then add it
+    if (researchTerminalContainer) {
+        researchTerminalContainer.remove();
+    } else {
+        researchTerminalContainer = createResearchTerminalContainer();
+        console.log(researchTerminalContainer);
+        // Add the Research Terminal to the roomContainer
+        roomContainer.appendChild(researchTerminalContainer);
+
+        let planetSet = getPlanetSet('Mercury');
+        console.log(`Here the planetSet is ${planetSet}`);
+
+        const researchTerminal = researchTerminalContainer.querySelector('.ResearchTerminalContent');
+
+        const buttonContainer = researchTerminalContainer.querySelector('.buttonContainer');
+        const terminalContent = researchTerminalContainer.querySelector('.TerminalContent');
+
+        let keysResearchTerminal = Object.keys(planetSet.researchTerminal);
+        console.log(keysResearchTerminal);
+
+        // Get all buttons within the container
+        const buttons = buttonContainer.querySelectorAll('button');
+
+        // Iterate through each button and add the event listener
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                const planetName = this.dataset.planet;
+                console.log(planetName)
+                planetSet = getPlanetSet(planetName);
+                console.log(`Button was clicked and the planetSet is ${planetSet.planet}`);
+                console.dir(planetSet);
+                console.log(planetSet.planet);
+                console.log(planetSet.researchTerminal);
+
+                populateResearchTerminal(researchTerminal, planetSet, keysResearchTerminal[0]);
+
+                handleThemeChange(terminalContent, keysResearchTerminal, planetSet, researchTerminal);
+            });
+        });
+
+        populateResearchTerminal(researchTerminal, planetSet, keysResearchTerminal[0]);
+
+        handleThemeChange(terminalContent, keysResearchTerminal, planetSet, researchTerminal);
+    }
+}
+
+
+// This function creates the Research Terminal container along with its child elements
+function createResearchTerminalContainer() {
+    const researchTerminalContainer = document.createElement('div');
+    researchTerminalContainer.classList.add('ResearchTerminalContainer');
+    
+    const researchTerminal = document.createElement('div');
+    researchTerminal.classList.add('ResearchTerminalContent');
+
+    const buttonContainer = createButtons();
+    const terminalContent = document.createElement('div');
+    terminalContent.classList.add('TerminalContent');
+    
+    researchTerminalContainer.appendChild(terminalContent);
+    researchTerminalContainer.appendChild(researchTerminal);
+    researchTerminalContainer.appendChild(buttonContainer);
+
+    return researchTerminalContainer;
+}
+
+// This function populates the Research Terminal with content
+function populateResearchTerminal(researchTerminal, planetSet, theme) {
+    researchTerminal.innerText = '';
+    const planetSetContent = planetSet.researchTerminal[theme];
+    researchTerminal.innerText = planetSetContent;
+}
+
+// This function handles the theme change when the left or right arrow is clicked
+function handleThemeChange(terminalContent, keysResearchTerminal, planetSet, researchTerminal) {
+    let themeContainer = terminalContent.querySelector('.themeContainer');
+
+    if (!themeContainer) {
+        // If themeContainer doesn't exist, create it
+        themeContainer = document.createElement('div');
+        themeContainer.classList.add('themeContainer');
+
+        terminalContent.appendChild(themeContainer);
+        terminalContent.appendChild(researchTerminal);
+    }
+
+    // Update the themeContainer's inner HTML
+    themeContainer.innerHTML = (`<img class="arrow left-arrow" src="/assets/img/Glass_Arrow_Small.png" alt="Left arrow">
+    <div class="themeTitle">${keysResearchTerminal[0]}</div>
+    <img class="arrow right-arrow" src="/assets/img/Glass_Arrow_Small.png" alt="Right arrow">`);
+
+    const leftArrow = themeContainer.querySelector('.left-arrow');
+    const rightArrow = themeContainer.querySelector('.right-arrow');
+    const themeTitle = themeContainer.querySelector('.themeTitle');
+
+    leftArrow.addEventListener('click', () => {
+        handleArrowClick(keysResearchTerminal, 'left', themeTitle, currentIndex);
+        populateResearchTerminal(researchTerminal, planetSet, themeTitle.innerText);
+    });
+
+    rightArrow.addEventListener('click', () => {
+        handleArrowClick(keysResearchTerminal, 'right', themeTitle, currentIndex);
+        populateResearchTerminal(researchTerminal, planetSet, themeTitle.innerText);
+    });
+}
+
+// This function handles the click event for the left or right arrow
+function handleArrowClick(keysResearchTerminal, direction, themeTitle, currentIndex) {
+    let updateIndex
+    if (direction === 'left') {
+        console.log('left arrow clicked');
+        updateIndex = currentIndex.value <= 0 ? keysResearchTerminal.length - 1 : currentIndex.value -= 1;
+    } else {  // direction === 'right'
+        console.log('right arrow clicked');
+        updateIndex = currentIndex.value >= keysResearchTerminal.length - 1 ? 0 : currentIndex.value += 1;
+    }
+    themeTitle.innerText = keysResearchTerminal[updateIndex];
+    currentIndex.value = updateIndex;
+}
+
 
 /*
 // Function to start the game

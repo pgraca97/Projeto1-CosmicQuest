@@ -97,13 +97,15 @@ container.innerHTML += `<div class="title-banner-container ${clickedButton} pt-5
 <form id="personal-form" action="">
 <div id="form-fields" class="form-group gap-1">
    <!--<label for="gameName">New Game Name</label>--> 
-   <!--<div class="username-container">--> 
+   <div class="input-container">
         <input type="text" id="username" class="form-control" placeholder="USERNAME" maxlength="20" required>
-   <!-- </div>--> 
-
+   </div>
+   <div class="input-container">
    <input type="password" id="password" class="form-control" placeholder="PASSWORD" maxlength="15" required>
+   </div>
+   <div class="input-container">
    <input type="email" id="email" class="form-control" placeholder="EMAIL" maxlength="30" required>
-   
+   </div>
     <button type="submit" class="btn btn-primary"><img class="check-mark" src="/assets/img/UI_Glass_Checkmark_Large_01a.png" alt="Right arrow"></button>
 </div>
 

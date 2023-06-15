@@ -18,47 +18,59 @@ export class Person extends GameObject {
 
     update(state) {
         if (this.movingProgressRemaining > 0) {
-         this.updatePosition();
+            this.updatePosition();
+            if(this.movingProgressRemaining === 0) {
+                this.isMoving = false; // set isMoving to false after a move has completed
+            }
         } else { 
-
+    
             //More cases for starting to walk will come here
             //
             //
-
+    
             //Case: we're keyboard ready (it's okay for the player to be providing input) and have an arrow key pressed
             // we dont want to allow users to change directions until they're moving to that cell
             if (!state.map.isCutscenePlaying && this.isPlayerControlled && state.arrow) {
-            //move to this direction
-            this.startBehavior(state, {
-                type: "run",
-                direction: state.arrow,
-            });
-        }
-        this.updateSprite(state);
+                //move to this direction
+                this.startBehavior(state, {
+                    type: "run",
+                    direction: state.arrow,
+                });
+            }
+            this.updateSprite(state);
         }
     }
-
+    
     startBehavior (state, behavior) {
+        //console.log(`The person ${this.id} started to ${behavior.type}`);
+        
+        // Don't start a new move if the time limit has expired
+        if (window.EscapeRooms.timeLimit.remaining <= 0) {
+      
+            return;
+        }
+        this.isMoving = true; // set isMoving to true when a move starts
+
         // Set the direction of the character to whatever behavior has
         this.direction = behavior.direction;
         if (behavior.type === "run") {
             //Stop here if space is not free
             if (state.map.isSpaceTaken(this.x, this.y, this.direction)) {
-
+    
                 behavior.retry && setTimeout (() => {
                     this.startBehavior(state, behavior);
                 }, 1000);
-
+    
                 return;
             }
             // console.log(state.map.isSpaceTaken(this.x, this.y, this.direction));
-
+    
             // Ready to move
             state.map.moveWall(this.x, this.y, this.direction); // setting a wall in our future position (purpose reserving a place for the player); the wall is moving with the player
             this.movingProgressRemaining = 16;
             this.updateSprite(state);
         } // fire a run/walk command from a character without it coming specifically from the arrow keys
-
+    
         if(behavior.type === "idle"){
             this.isStanding = true;
             setTimeout(() => {
@@ -69,6 +81,7 @@ export class Person extends GameObject {
             }, behavior.time);
         }
     }
+    
     updatePosition() {
             const [property, change] = this.directionUpdate[this.direction];
             this[property] += change;
