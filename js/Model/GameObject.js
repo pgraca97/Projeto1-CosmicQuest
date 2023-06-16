@@ -13,6 +13,7 @@ export default class GameObject {
         this.y = config.y || 0;
         this.shadowOffset = config.shadowOffset || 0;
         this.direction = config.direction || 'down';
+        
 
         console.log(this.direction);
         this.sprite = new Sprite({
@@ -30,12 +31,14 @@ export default class GameObject {
         this.behaviorLoop = config.behaviorLoop || [];
         this.behaviorLoopIndex = config.behaviorLoopIndex || 0;
         this.talking = config.talking || [];
+        console.log(this)
+        console.log(this.behaviorLoop[1])
     }
 
     mount(map) {
         this.isMounted = true;
         map.addWall(this.x, this.y);
-        setTimeout(() => this.doBehaviorEvent(map), 200);  // Execute behavior after delay
+        setTimeout(() => this.doBehaviorEvent(map), 10);  // Execute behavior after delay
     }
 
     update() {
@@ -44,7 +47,7 @@ export default class GameObject {
 
     async doBehaviorEvent(map) {
         // Don't do anything if there is a more important scene or there are not any events to execute
-        if (map.isCutscenePlaying || this.behaviorLoop.length === 0 || this.isStanding || window.EscapeRooms.timeLimit.remaining <= 0) {
+        if (map.isCutscenePlaying || this.behaviorLoop.length === 0 || this.isStanding ) {
             console.log('No more events to execute');
             return
         };
@@ -66,5 +69,44 @@ export default class GameObject {
 
         // Do it again
         this.doBehaviorEvent(map);
+    };
+    /*
+    async doBehaviorEvent(map) {
+        console.log(this)
+        if (this.direction === 'left') {console.log('CUBI')};
+        // Don't do anything if there is a more important scene or there are not any events to execute
+        if (map.isCutscenePlaying || this.behaviorLoop.length === 0 || this.isStanding) {
+            console.log('No more events to execute');
+            return
+        };
+    
+        // Check if the current behavior is an idle action with a time property
+        let currentBehavior = this.behaviorLoop[this.behaviorLoopIndex];
+        console.log(currentBehavior);
+        if (currentBehavior.type === "idle" && currentBehavior.time) {
+            // Delay the execution of doBehaviorEvent() by the duration of the idle time
+            await new Promise(resolve => setTimeout(resolve, currentBehavior.time));
+        }
+    
+        // Setting up our event with relevant information
+        let eventConfig = this.behaviorLoop[this.behaviorLoopIndex];
+        eventConfig.who = this.id;
+    
+        // Create an event instance out of our next event config
+        const eventHandler = new OverworldEvent({ map, event: eventConfig });
+        gameController.addGameEvent(eventHandler);
+        await eventHandler.init();
+    
+        //Setting the next event to be executed
+        this.behaviorLoopIndex++;
+        if (this.behaviorLoopIndex === this.behaviorLoop.length) {
+            this.behaviorLoopIndex = 0;
+        }
+        console.log(this.behaviorLoopIndex);
+    
+        // Do it again
+        this.doBehaviorEvent(map);
     }
+    */
 }
+

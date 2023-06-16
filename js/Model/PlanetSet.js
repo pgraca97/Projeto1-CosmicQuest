@@ -184,7 +184,7 @@ export function initializeLocalStorage() {
             let planetSet = generatePlanetSetsForRoom(
                 trivia,
                 educationalContent,
-                new Quizz('alphabet soup', ['Option 1', 'Option 2', 'Option 3'], `Default question for ${trivia}?`, 'Option 1')
+                new Quizz('alphabet soup', null, `Default question for ${trivia}?`, 'Option 1')
             );
         
             console.log(`Created default PlanetSet for ${trivia}`);

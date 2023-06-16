@@ -39,12 +39,12 @@ startGameLoop() {
         const npcPerson = this.map.gameObjects.CUBI;
 
         // Store the player's position
-        localStorage.setItem('playerX', utils.snapToGrid(cameraPerson.x));
+       localStorage.setItem('playerX', utils.snapToGrid(cameraPerson.x));
         localStorage.setItem('playerY', utils.snapToGrid(cameraPerson.y));
         
         // Store the NPC's position
-        //localStorage.setItem('npcX', utils.snapToGrid(npcPerson.x));
-        //localStorage.setItem('npcY', utils.snapToGrid(npcPerson.y));
+        localStorage.setItem('npcX', utils.snapToGrid(npcPerson.x));
+        localStorage.setItem('npcY', utils.snapToGrid(npcPerson.y));
 
         // Clear the canvas before drawing again
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -64,7 +64,7 @@ startGameLoop() {
         Object.values(this.map.gameObjects).sort((a, b) => {
             return a.y - b.y;
         }).forEach(obj => {
-
+            
             obj.sprite.draw(this.ctx);
         });
 

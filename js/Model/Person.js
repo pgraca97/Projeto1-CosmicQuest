@@ -59,7 +59,7 @@ export class Person extends GameObject {
     
                 behavior.retry && setTimeout (() => {
                     this.startBehavior(state, behavior);
-                }, 1000);
+                }, 20);
     
                 return;
             }
@@ -93,7 +93,8 @@ export class Person extends GameObject {
                     whoId: this.id,
                 });
         
-            }   
+            } 
+
     }
 
     updateSprite(){

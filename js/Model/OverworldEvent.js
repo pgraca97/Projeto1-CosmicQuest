@@ -50,7 +50,6 @@ export default class OverworldEvent {
     // The run function handles the run event.
     // The object starts a run behavior and when it's done, the Promise is resolved.
     run(resolve){
-        console.log('Running...');
         const who = this.map.gameObjects[ this.event.who ];
         who.startBehavior({
             map: this.map
@@ -121,7 +120,6 @@ export default class OverworldEvent {
         console.log(EscapeRooms.RoomOne);  // Add this line
         console.log(this.event.type);   // And this line
         if (this.event.initiate === "mainTrivia") {
-            console.log('Main Trivia intiated');
             utils.emitEvent('mainTrivia', {
                 event: this.event, // EscapeRooms.RoomOne[this.event.type],
                 onComplete: resolve // Promise resolved here
@@ -131,7 +129,7 @@ export default class OverworldEvent {
                 event: this.event, // EscapeRooms.RoomOne[this.event.type],
                 onComplete: resolve // Promise resolved here
             });
-            console.log(this.event)
+
         }
     };
     

@@ -456,8 +456,8 @@ left: -30px;
   top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 80%;  /* Adjust as needed */
-  height: 80%;  /* Auto height will grow with content */
+  width: 100%;  /* Adjust as needed */
+  height: 100%;  /* Auto height will grow with content */
   padding: 20px;  /* Spacing inside the div */
   background-color: rgba(0, 0, 0, 0.5);  /* Semi-transparent black */
   color: white;  /* Text color */
@@ -468,9 +468,9 @@ left: -30px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: auto;  /* If content overflows, show a scrollbar */
+  overflow: hidden scroll;  /* If content overflows, show a scrollbar */
 }
 
 .challenge-type, .challenge-question, .challenge-answer {
-  margin: 10px 0;  /* Add some vertical spacing between challenges */
+  margin: 5px 0;  /* Add some vertical spacing between challenges */
 }
