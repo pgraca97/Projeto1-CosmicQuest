@@ -62,9 +62,13 @@ const roomContainer = document.querySelector(".room-container");
 let storedDirection = localStorage.getItem('playerDirection');
 
 // Get CUBI's stored properties
-const storedCUBIBehaviorLoopIndex = localStorage.getItem('CUBI_behaviorLoopIndex');
+let storedCUBIBehaviorLoopIndex = localStorage.getItem('CUBI_behaviorLoopIndex');
+const storedIndex = Number(storedCUBIBehaviorLoopIndex)
+console.log(typeof storedCUBIBehaviorLoopIndex);
+console.log(storedCUBIBehaviorLoopIndex);
+console.log(typeof Number(storedCUBIBehaviorLoopIndex));
 const storedCUBIDirection = localStorage.getItem('CUBI_direction');
-const storedCUBIMovingProgressRemaining = localStorage.getItem('CUBI_movingProgressRemaining');
+let storedCUBIMovingProgressRemaining = Number(localStorage.getItem('CUBI_movingProgressRemaining'));
 
 // We use the window object to create a global object called "EscapeRooms". 
 // This object will hold all the data related to different rooms of our game.
@@ -111,10 +115,11 @@ window.EscapeRooms = {
                 imgHeight: 16
             }),
             CUBI: new Person ({
-                //movingProgressRemaining: storedCUBIMovingProgressRemaining? Number(storedCUBIMovingProgressRemaining) : 0,
-                x: localStorage.getItem('npcX') ? utils.withGrid(Number(localStorage.getItem('npcX'))/16) : utils.withGrid(7),
-                y: localStorage.getItem('npcY') ? utils.withGrid(Number(localStorage.getItem('npcY'))/16) : utils.withGrid(9),
-                direction: storedCUBIDirection? storedCUBIDirection : 'down',
+                
+              
+                x: utils.withGrid(7), //localStorage.getItem('npcX') ? utils.withGrid(Number(localStorage.getItem('npcX'))/16) : utils.withGrid(7),
+                y: utils.withGrid(9), //localStorage.getItem('npcY') ? utils.withGrid(Number(localStorage.getItem('npcY'))/16) : utils.withGrid(9),
+                //direction: storedCUBIDirection? storedCUBIDirection : 'down',
                 src: '/assets/img/CleanBot.png',
                 idleSrc: undefined,
                 cutWidth: 16,  
@@ -143,7 +148,8 @@ window.EscapeRooms = {
                     {type: "run", direction: "right"},
                     {type: "run", direction: "down"},
                 ],
-                behaviorLoopIndex: storedCUBIBehaviorLoopIndex ? Number(storedCUBIBehaviorLoopIndex) : 0 ,
+               // behaviorLoopIndex: storedIndex || 0 ,
+                //movingProgressRemaining: storedCUBIMovingProgressRemaining > 0? storedCUBIBehaviorLoopIndex : 0,
                 talking: [
                     {
                         events: [
@@ -216,7 +222,11 @@ window.EscapeRooms = {
             [utils.asGridCoord(7,13)]: [
                 {
                     events: [
-                        { type: "changeMap", map: "RoomTwo" },
+                        { 
+                            type: "changeMap", map: "RoomTwo",
+                            notAllowed: { type: "textMessage", text: "You can't go there!" },
+                    
+                    },
                     ]
                 },
             ],
@@ -267,14 +277,14 @@ window.EscapeRooms = {
             ],
         },        
         // initialCutscene is an array of events that plays at the start of the game in each room.
-        initialCutscene: [
-            /*{ who: "playerCharacter", type: "run", direction: "down" }, 
+        /*initialCutscene: [
+            { who: "playerCharacter", type: "run", direction: "down" }, 
             { who: "playerCharacter", type: "run", direction: "down" },
             { who: "playerCharacter", type: "idle", direction: "right" },
             { type: 'textMessage', text: "Greetings, traveler! I am C.u.b.i!", faceHero: "CUBI" },
            { who: "playerCharacter", type: "idle", direction: "left" }, 
-            { who: "playerCharacter", type: "run", direction: "left" },*/
-        ]
+            { who: "playerCharacter", type: "run", direction: "left" },
+        ]*/
     },
     // RoomTwo holds all the data for the second room of Cosmic Quest
     // Similar structure to RoomOne
@@ -323,18 +333,15 @@ window.EscapeRooms = {
         ],
     },
     timeLimit: JSON.parse(localStorage.getItem('timeLimit')) || { 
-        total: 60 * 1, // Total time limit for the game, for example 30 minutes
-        remaining: 60 * 1, // Remaining time, initialize to total time limit
+        total: 60 * 20, // Total time limit for the game, for example 30 minutes
+        remaining: 60 * 20, // Remaining time, initialize to total time limit
         startTime: null, // Will hold the time when the game starts
     }
 }
 
-
-
 initialize();
 let playerCharacter = window.EscapeRooms[currentRoom].gameObjects.playerCharacter;
 let CUBI = window.EscapeRooms[currentRoom].gameObjects.CUBI;
-console.log(CUBI)
 
 // Function to start the countdown
 function startCountdown() {
@@ -352,18 +359,19 @@ function startCountdown() {
 
         // Check if the countdown has finished
         if (window.EscapeRooms.timeLimit.remaining <= 0) {
-            // If the player is currently moving, delay ending the game until they have finished
+            // If the player or CUBI is currently moving, delay ending the game until they have finished
             console.log(CUBI)
-            if (playerCharacter.isMoving) {
-                console.log("Player is moving, delaying end of game");
+            console.log(playerCharacter)
+            if (playerCharacter.isMoving || CUBI.movingProgressRemaining > 0) {
+                console.log("Either Player or CUBI is moving, delaying end of game");
                 const movementDuration = 400; // Adjust this based on the duration of your movement
                 setTimeout(() => {
                     gameController.gameOver();
                     handleEndOfGame();
                 }, movementDuration);
             } else {
-                console.log("Player is not moving, ending game");
-                // If the player isn't moving, end the game immediately
+                console.log("Neither Player nor CUBI is moving, ending game");
+                // If neither the player nor CUBI are moving, end the game immediately
                 gameController.gameOver();
                 handleEndOfGame();
             }
@@ -386,6 +394,7 @@ function formatTime(seconds) {
     seconds %= 60;
     return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 }
+
 // Function to handle the end of the game
 function handleEndOfGame() {
     // Get the modal
@@ -406,7 +415,8 @@ function handleEndOfGame() {
     localStorage.setItem('playerDirection', playerCharacter.direction);
 
     // Store CUBI's properties
-   // const CUBI = getCharacterById('CUBI'); // replace with your function to get CUBI
+
+
     localStorage.setItem('CUBI_behaviorLoopIndex', CUBI.behaviorLoopIndex);
     localStorage.setItem('CUBI_direction', CUBI.direction);
     localStorage.setItem('CUBI_movingProgressRemaining', CUBI.movingProgressRemaining);
@@ -475,6 +485,8 @@ function resetGame() {
     fillBarRect.setAttribute('width', '0%');
     backgroundRect.setAttribute('width', '0%');
 
+    const tempo = CUBI.behaviorLoop[storedIndex].time
+    console.log(tempo)
     // Refresh the page
     location.reload();
     gameController.restartGame();
@@ -667,12 +679,16 @@ document.addEventListener("celestialBodies", function(e) {
 });
 
 function displayChallengeContent(eventData) {
+
+    //playerCharacter.direction = 'up';
     // Get the room-container
     const roomContainer = document.querySelector('.room-container');
     const planet = getPlanetSet(eventData.event.planet)
     // Create main div
     const mainDiv = document.createElement('div');
     mainDiv.classList.add('challenge-container');
+
+    let answer = '';
 
     // For each challenge type in eventData
     for (let challengeType in planet.challenges) {
@@ -682,10 +698,10 @@ function displayChallengeContent(eventData) {
         // Loop over each challenge in the challenges array
         challenges.forEach(challenge => {
             // Create a div for the challenge type
-            const challengeTypeDiv = document.createElement('div');
+           /* const challengeTypeDiv = document.createElement('div');
             challengeTypeDiv.classList.add('challenge-type');
             challengeTypeDiv.innerText = challengeType;
-            mainDiv.appendChild(challengeTypeDiv);
+            mainDiv.appendChild(challengeTypeDiv);*/
 
             // Create a div for the question
             const questionDiv = document.createElement('div');
@@ -694,15 +710,121 @@ function displayChallengeContent(eventData) {
             mainDiv.appendChild(questionDiv);
 
             // Create a div for the answer
-            const answerDiv = document.createElement('div');
+            /*const answerDiv = document.createElement('div');
             answerDiv.classList.add('challenge-answer');
             answerDiv.innerText = challenge.answer;
-            mainDiv.appendChild(answerDiv);
+            mainDiv.appendChild(answerDiv);*/
+            //Save the first answer to be inserted into the grid
+            if (answer == ''){
+                answer = challenge.answer;
+            }
         });
     }
 
+        // Append the grid to the main div
+        const grid = createAlphabetSoupGrid(7, 10, answer);
+        console.log(grid);
+        mainDiv.appendChild(grid);
+
     // Append the main div to the room-container
     roomContainer.appendChild(mainDiv);
+}
+
+function createAlphabetSoupGrid(rows, cols, answer) {
+    // Create a multidimensional array (grid) and fill it with random letters
+    let grid = Array.from({ length: rows }, () => 
+        Array.from({ length: cols }, () => getRandomLetter())
+    );
+
+    // Convert the answer to an array of uppercase letters and remove spaces
+    let answerArray = answer.toUpperCase().replace(/\s/g, '').split('');
+   
+    // Decide randomly if the answer will be inserted normally or reversed
+    if (Math.random() < 0.5) {
+        answerArray = answerArray.reverse();
+        console.log(answerArray);
+    }
+
+    let answerLength = answerArray.length;
+
+    //console.log(`The number of rows is ${grid.length} and the number of columns is ${grid[0].length}`);
+    // Check if answer length is more than the grid dimensions
+    if (answerLength > grid.length && answerLength > grid[0].length) {
+        alert("Answer is longer than both grid dimensions. Please adjust the answer or grid size.");
+        return;
+    }
+    
+    let isHorizontal;
+    // Decide if the answer will be placed horizontally or vertically
+    if (answerLength > grid.length) { // can only be placed horizontally
+        isHorizontal = true;
+        console.log('Horizontal');
+    } else if (answerLength > grid[0].length) { // can only be placed vertically
+        console.log('Vertical');
+        isHorizontal = false;
+    } else { // can be placed either horizontally or vertically
+        console.log('Both');
+        isHorizontal = Math.random() < 0.5;
+    }
+    
+    if (isHorizontal) {
+        console.log('Horizontal');
+        let randomRowIndex = Math.floor(Math.random() * grid.length);
+        let maxStartColumnIndex = grid[0].length - answerLength;
+        
+        // Check if maxStartColumnIndex is negative
+        if (maxStartColumnIndex <= -1) {
+            alert("Cannot place answer horizontally. Please adjust the answer or grid size.");
+            return;
+        }
+        
+        let randomColumnIndex = Math.floor(Math.random() * (maxStartColumnIndex + 1));
+        grid[randomRowIndex].splice(randomColumnIndex, answerLength, ...answerArray);
+    } else {
+        console.log('Vertical');
+        let randomColumnIndex = Math.floor(Math.random() * grid[0].length);
+        let maxStartRowIndex = grid.length - answerLength;
+        
+        // Check if maxStartRowIndex is negative
+        if (maxStartRowIndex <= -1) {
+            alert("Cannot place answer vertically. Please adjust the answer or grid size.");
+            return;
+        }
+        
+        let randomRowIndex = Math.floor(Math.random() * (maxStartRowIndex + 1));
+    
+        console.log('Grid dimensions:', grid.length, 'x', grid[0].length);
+        console.log('Random row:', randomRowIndex, ', Random column:', randomColumnIndex);
+        console.log('Answer length:', answerLength);
+    
+        for (let i = 0; i < answerLength; i++) {
+            console.log('Setting grid[', randomRowIndex + i, '][', randomColumnIndex, '] to', answerArray[i]);
+            grid[randomRowIndex + i][randomColumnIndex] = answerArray[i];
+        }
+    }
+    
+
+
+    // Create a table and fill it with the data from the grid
+    const table = document.createElement('table');
+    table.classList.add('alphabet-soup-grid');
+
+    grid.forEach((row) => {
+        const tr = document.createElement('tr');
+        row.forEach((letter) => {
+            const td = document.createElement('td');
+            td.innerText = letter;
+            tr.appendChild(td);
+        });
+        table.appendChild(tr);
+    });
+
+    return table;
+}
+
+function getRandomLetter() {
+    // Generates a random uppercase letter
+    return String.fromCharCode(Math.floor(Math.random() * 26) + 65);
 }
 
 
@@ -794,16 +916,20 @@ function displayEducationalContent(eventData) {
     // Event listener for document visibility change event
     document.addEventListener('visibilitychange', function() {
         console.log('fired');
+        let educationContainer = document.querySelector('.EducationalContent');
+
         // If the document becomes hidden (user switches tabs, minimizes browser, etc.), store the video time
         if (document.visibilityState === 'hidden') {
             // pause the video
             videoElement.pause();
             storeVideoTime();
-        } else if (document.visibilityState === 'visible') {
+        } else if (document.visibilityState === 'visible' && educationContainer && !educationContainer.classList.contains('NoVideo')) {
             // resume the video
+            console.log('resuming video');
             videoElement.play();
         }
     });
+
 
     notes.addEventListener('change', function() {
         // Get the updated note from the text area
@@ -1512,6 +1638,25 @@ document.addEventListener('changeMap', (e) => {
     const eventData = e.detail;
     const newMap = eventData.event.map;
 
+    
+    if (window.EscapeRooms.RoomOne.progressBar === 0) { 
+        console.log(eventData)
+        console.log(eventData.event.notAllowed)
+    
+        const newOverworldEvent = new OverworldEvent({ map: cosmicQuest.map, event: eventData.event.notAllowed });
+
+        console.log(eventData.event.notAllowedEvent)
+        //gameController.addGameEvent(newOverworldEvent);
+        console.log(newOverworldEvent)
+        console.log('event created')
+   
+        gameController.addGameEvent(newOverworldEvent);
+    
+        newOverworldEvent.init();
+        eventData.onComplete();
+        return; 
+    };
+    
     // Update the current room to reflect the new map
     currentRoom = newMap;
     // Also update the currentRoom in localStorage
@@ -1661,7 +1806,6 @@ function handleResearchTerminalClick() {
         handleThemeChange(terminalContent, keysResearchTerminal, planetSet, researchTerminal);
     }
 }
-
 
 // This function creates the Research Terminal container along with its child elements
 function createResearchTerminalContainer() {

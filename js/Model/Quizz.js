@@ -6,10 +6,10 @@ export default class Quizz {
         this.question = question;  // The question text
         this.answer = answer;  // The correct answer
         this.isAnsweredCorrectly = null;  // Whether the challenge is answered correctly or not
+        this.choices = choices;
         
-        // If the type is not 'short answer', assign choices to the Quizz instance
-        if (type !== 'short answer') {
-            this.choices = choices || null;  // The choices for the challenge
+        if (type == 'alphabet soup') {
+            this.alphabetSoup = []; // Will hold the alphabet soup clicked letters 
         }
     }
 }

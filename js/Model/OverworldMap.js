@@ -53,12 +53,12 @@ export default class OverworldMap {
 
             object.id = key;
 
-            if (object.x === 80 || object.y === 64){
+            if (object.x === 96 || object.y === 80){
                 return;
             }
             
             object.mount(this);
-            console.log('Mounted'+ object.name);
+            console.log('Mounted');
         });    
     }
 
