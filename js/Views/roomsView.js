@@ -56,6 +56,7 @@ const initialize = () => {
 PlanetSet.initializeLocalStorage();
 
 //Get the  main containers of Cosmic Quest
+const roomsContainer = document.querySelector('.rooms');
 const frameContainer = document.querySelector(".frame-container");
 const roomContainer = document.querySelector(".room-container");
 
@@ -275,6 +276,54 @@ window.EscapeRooms = {
                     ]
                 },
             ],
+            [utils.asGridCoord(2,6)]: [
+                {
+                    events: [
+                        { 
+                            type: 'textMessage', 
+                            text: "Welcome, traveler! At the intergalactic shop, we offer a variety of items that can help you on your journey. Here's a rundown of what you can find: \n\n" + 
+                                  "1. **Assist Tokens**: These can provide you hints, manipulate time or provide power-ups to boost your gameplay. \n\n" +
+                                  "   a. **Hints**: Need a nudge in the right direction? Our hints can guide you through the toughest challenges. \n\n" +
+                                  "   b. **Time manipulation**: Feel the pressure of time? This allows you to slow down the pace, giving you the precious moments you need. \n\n" +
+                                  "   c. **Power-ups**: For when you need that extra edge, our power-ups can reveal parts of an answer or eliminate wrong options, helping you get to the right answer quicker.\n\n" + 
+                                  "Choose wisely and they can make your journey a lot smoother. Good luck, adventurer!"
+                        },
+                        { type: "shopKeeper" },
+                    ]
+                },
+            ],
+            [utils.asGridCoord(3,6)]: [
+                {
+                    events: [
+                        { 
+                            type: 'textMessage', 
+                            text: "Welcome, traveler! At the intergalactic shop, we offer a variety of items that can help you on your journey. Here's a rundown of what you can find: \n\n" + 
+                                  "1. **Assist Tokens**: These can provide you hints, manipulate time or provide power-ups to boost your gameplay. \n\n" +
+                                  "   a. **Hints**: Need a nudge in the right direction? Our hints can guide you through the toughest challenges. \n\n" +
+                                  "   b. **Time manipulation**: Feel the pressure of time? This allows you to slow down the pace, giving you the precious moments you need. \n\n" +
+                                  "   c. **Power-ups**: For when you need that extra edge, our power-ups can reveal parts of an answer or eliminate wrong options, helping you get to the right answer quicker.\n\n" + 
+                                  "Choose wisely and they can make your journey a lot smoother. Good luck, adventurer!"
+                        },
+                        { type: "shopKeeper" },
+                    ]
+                },
+            ],
+            [utils.asGridCoord(4,6)]: [
+                {
+                    events: [
+                        { 
+                            type: 'textMessage', 
+                            text: "Welcome, traveler! At the intergalactic shop, we offer a variety of items that can help you on your journey. Here's a rundown of what you can find: \n\n" + 
+                                  "1. **Assist Tokens**: These can provide you hints, manipulate time or provide power-ups to boost your gameplay. \n\n" +
+                                  "   a. **Hints**: Need a nudge in the right direction? Our hints can guide you through the toughest challenges. \n\n" +
+                                  "   b. **Time manipulation**: Feel the pressure of time? This allows you to slow down the pace, giving you the precious moments you need. \n\n" +
+                                  "   c. **Power-ups**: For when you need that extra edge, our power-ups can reveal parts of an answer or eliminate wrong options, helping you get to the right answer quicker.\n\n" + 
+                                  "Choose wisely and they can make your journey a lot smoother. Good luck, adventurer!"
+                        },
+                        { type: "shopKeeper" },
+                    ]
+                },
+            ],
         },        
         // initialCutscene is an array of events that plays at the start of the game in each room.
         /*initialCutscene: [
@@ -343,14 +392,19 @@ initialize();
 let playerCharacter = window.EscapeRooms[currentRoom].gameObjects.playerCharacter;
 let CUBI = window.EscapeRooms[currentRoom].gameObjects.CUBI;
 
+// Create the countdown display once
+const countdownDisplay = document.createElement('div');
+countdownDisplay.classList.add('countdown-display');
+
+roomsContainer.appendChild(countdownDisplay);
+
 // Function to start the countdown
-function startCountdown() {
-    
-    // Update the countdown display
-    const countdownDisplay = document.createElement('div');
-    countdownDisplay.classList.add('countdown-display');
-    const roomsContainer = document.querySelector('.rooms');
-    roomsContainer.appendChild(countdownDisplay);
+function startCountdown(interval = 1000) {
+    // If there's an existing interval, clear it
+    if (window.EscapeRooms.timeLimit.intervalId) {
+        clearInterval(window.EscapeRooms.timeLimit.intervalId);
+    }
+
 
     // Start the countdown interval
     window.EscapeRooms.timeLimit.intervalId = setInterval(function() {
@@ -381,11 +435,10 @@ function startCountdown() {
             clearInterval(window.EscapeRooms.timeLimit.intervalId);
         }
         
-        
+                
         // Update the countdown display
         countdownDisplay.innerText = formatTime(window.EscapeRooms.timeLimit.remaining);
-    }, 1000);  // Update every second
-
+        }, interval);  // Update every second
 }
 
 // Function to format a time in seconds into a MM:SS string
@@ -553,7 +606,7 @@ function createHUD() {
     
     // Create coinCounterNumber
     const coinCounterNumber = document.createElement('span');
-    coinCounterNumber.innerText = 0; // Replace 0 with authenticatedUser.coins when the logic is ready
+    coinCounterNumber.innerText = String(localStorage.getItem('totalCoins')); // Replace 0 with authenticatedUser.coins when the logic is ready
     coinCounterNumber.classList.add('coinCounterNumber');
     coinCounterContainer.appendChild(coinCounterNumber);
     
@@ -578,6 +631,7 @@ function createHUD() {
 // Usage:
 const hud = createHUD();
 frameContainer.appendChild(hud);
+console.log(hud);
 
 /*  Event listeners for UI updates and interactivity */
 
@@ -675,122 +729,423 @@ document.addEventListener("celestialBodies", function(e) {
     console.log(eventData); //eventData.event.planet gives the name of the planet/celestialBody
     console.log(getRoomsCelestialBodies(currentRoom))
     if (getRoomsCelestialBodies(currentRoom).some(name => name.planet === eventData.event.planet)) {displayEducationalContent(eventData)}
-    else {displayChallengeContent(eventData)}
+    else {displayChallengeContent(eventData); console.log(eventData.event)}
 });
+
+
+// Store the icons paths in an object for later reference
+const iconPaths = {
+    correctIconSrc: '/assets/img/GUI/CorrectIcon.png',
+    incorrectIconSrc: '/assets/img/GUI/IncorrectIcon.png',
+    unansweredIconSrc: '/assets/img/GUI/UnansweredIcon.png',
+};
+
+const sortAlphabetSoup = (challenge) => {
+    challenge.alphabetSoup.sort((a, b) => {
+        let valueA, valueB;
+        // Define the sorting values depending on the answerOrganization
+        switch (challenge.answerOrganization) {
+            case 'horizontal':
+                valueA = a.colIndex;
+                valueB = b.colIndex;
+                break;
+            case 'vertical':
+                valueA = a.rowIndex;
+                valueB = b.rowIndex;
+                break;
+            case 'diagonalTopBottomLeftRight':
+            case 'diagonalTopBottomRightLeft':
+            case 'diagonalBottomTopRightLeft':
+            case 'diagonalBottomTopLeftRight':
+                valueA = (challenge.answerOrganization.startsWith('diagonalBottomTop') ? 1000 - a.rowIndex : a.rowIndex) * 1000 +
+                         (challenge.answerOrganization.endsWith('RightLeft') ? 1000 - a.colIndex : a.colIndex);
+                valueB = (challenge.answerOrganization.startsWith('diagonalBottomTop') ? 1000 - b.rowIndex : b.rowIndex) * 1000 +
+                         (challenge.answerOrganization.endsWith('RightLeft') ? 1000 - b.colIndex : b.colIndex);
+                break;
+            default:
+                valueA = a.rowIndex;
+                valueB = b.rowIndex;
+        }
+        // Define the sorting order depending on the isReversed attribute
+        return challenge.isReversed ? valueB - valueA : valueA - valueB;
+    });
+};
+
+const checkCorrectAnswer = (planet, challenge) => {
+        // Call the sorting function
+        
+       
+        sortAlphabetSoup(challenge);
+
+        // Check if the selected answer is correct by comparing the sorted letters with the correct answer
+        let selectedAnswer = challenge.alphabetSoup.map(cell => cell.letter).join('');
+        let answerWithoutSpaces = challenge.answer.replace(/\s/g, '').toUpperCase();
+        console.log(`The selected answer is: ${selectedAnswer} and the correct answer is: ${answerWithoutSpaces}`);
+        if (selectedAnswer === answerWithoutSpaces) {
+            console.log('Correct answer!');
+            challenge.isAnsweredCorrectly = true;
+        } else {
+            console.log('Incorrect answer.');
+            challenge.isAnsweredCorrectly = false;
+
+        }
+        PlanetSet.updateLocalStorage(planet.planet, challenge);
+
+
+        const index = planet.challenges['alphabet soup'].indexOf(challenge);
+        const iconContainer = document.querySelector('.iconContainer');
+            // Select the corresponding img
+        const correspondingIcon = iconContainer.children[index];
+
+        // Update the src attribute
+        if (challenge.isAnsweredCorrectly) {
+            correspondingIcon.src = iconPaths.correctIconSrc;
+        } else {
+            correspondingIcon.src = iconPaths.incorrectIconSrc;
+        }
+
+};
+
+let selectedLettersDiv
+function updateSelectedLettersDiv(challenge) {
+    // First sort the alphabetSoup
+    sortAlphabetSoup(challenge);
+
+    selectedLettersDiv  = document.querySelector('.selected-letters-container');
+
+    // Create a string with all the selected letters, separated by a space
+    const selectedLetters = challenge.alphabetSoup.map(cell => cell.letter).join(' ');
+
+
+
+    selectedLettersDiv.innerText = selectedLetters;
+}
+
+let mainDiv
+function startBonusTriviaCountdown(difficulty, countdownDisplay, currentChallenge, planet, challenges, icons, currentIndex, resolve) {
+    let timeLimit;
+
+    if (Number(currentChallenge.timeLimit) === 0) {
+        switch (difficulty) {
+            case 'easy':
+                timeLimit = 120;
+                break;
+            case 'medium':
+                timeLimit = 60;
+                break;
+            case 'hard':
+                timeLimit = 10;
+                break;
+            default:
+                timeLimit = 300;
+                break;
+        }
+    } else {
+        timeLimit = Number(currentChallenge.timeLimit);
+    }
+
+    // Start the countdown interval
+    const intervalId = setInterval(() => {
+        timeLimit--;
+
+           // Check if the countdown has finished
+    // Check if the countdown has finished
+    if (timeLimit <= 0) {
+        // Handle the end of bonus trivia here
+        clearInterval(intervalId);
+        checkCorrectAnswer(planet, currentChallenge); 
+
+        // Disable the icon and mark as incorrect
+        const icon = icons[currentIndex];
+        icon.classList.add('disabled');
+
+        // Find the next challenge that hasn't been answered
+        const nextUnansweredIndex = challenges.findIndex(challenge => challenge.isAnsweredCorrectly === null);
+
+        if (nextUnansweredIndex !== -1) {
+            const nextIcon = icons[nextUnansweredIndex];
+            nextIcon.click();  // trigger a click event on the next icon
+        } else if (challenges.every(challenge => challenge.isAnsweredCorrectly !== null)) {
+            // If there is no next unanswered challenge, and all challenges have been answered
+            setTimeout(() => {
+            mainDiv.remove();  // remove the main div
+            const coinsEarned = calculateCoins(challenges, 'hard');  // replace 'hard' with the actual difficulty
+            alert(`You earned ${coinsEarned} coins!`);
+            resolve();  // resolve the promise
+            }, 1000);
+        }
+    }
+
+        // Update the countdown display and the challenge object
+        countdownDisplay.innerText = formatTime(timeLimit);
+        currentChallenge.timeLimit = timeLimit;
+    }, 1000);
+
+    return intervalId;  // returning intervalId instead of timeLimit
+}
 
 function displayChallengeContent(eventData) {
 
-    //playerCharacter.direction = 'up';
-    // Get the room-container
     const roomContainer = document.querySelector('.room-container');
-    const planet = getPlanetSet(eventData.event.planet)
-    // Create main div
-    const mainDiv = document.createElement('div');
+    const planet = getPlanetSet(eventData.event.planet);
+    const resolve = eventData.onComplete
+    console.log(resolve);
+    mainDiv = document.createElement('div');
     mainDiv.classList.add('challenge-container');
 
-    let answer = '';
+    const iconContainer = document.createElement('div');
+    iconContainer.classList.add('iconContainer');
 
-    // For each challenge type in eventData
+    const countdownDisplay = document.createElement('div');
+    countdownDisplay.classList.add('countdown-display-bonus-trivia');
+    mainDiv.appendChild(countdownDisplay);
+
+    const questionDiv = document.createElement('div');
+    questionDiv.classList.add('challenge-question');
+    const selectedLettersDiv = document.createElement('div');
+    selectedLettersDiv.classList.add('selected-letters-container');
+    mainDiv.appendChild(questionDiv);
+
+    let grids = [];
+    let currentChallenge;
+    let countdownResult;
+    const icons = [];  // Save the icons to use them later
+    let challengesArray = [];
+
     for (let challengeType in planet.challenges) {
-        // Get the array of challenges for this challenge type
-        let challenges = planet.challenges[challengeType];
-        console.log(challenges);
-        // Loop over each challenge in the challenges array
-        challenges.forEach(challenge => {
-            // Create a div for the challenge type
-           /* const challengeTypeDiv = document.createElement('div');
-            challengeTypeDiv.classList.add('challenge-type');
-            challengeTypeDiv.innerText = challengeType;
-            mainDiv.appendChild(challengeTypeDiv);*/
+        const challenges = planet.challenges[challengeType];
+        challengesArray = challengesArray.concat(challenges);
+        challenges.forEach((challenge, index) => {
+            const questionText = challenge.question;
 
-            // Create a div for the question
-            const questionDiv = document.createElement('div');
-            questionDiv.classList.add('challenge-question');
-            questionDiv.innerText = challenge.question;
-            mainDiv.appendChild(questionDiv);
+            const icon = document.createElement('img');
+            icon.style.width = (32/1.8) + 'px';
+            icon.style.height = (32/1.8) + 'px';
+            icon.src = challenge.isAnsweredCorrectly ? 
+                iconPaths.correctIconSrc : 
+                (challenge.isAnsweredCorrectly === false ? 
+                    iconPaths.incorrectIconSrc : 
+                    iconPaths.unansweredIconSrc);
 
-            // Create a div for the answer
-            /*const answerDiv = document.createElement('div');
-            answerDiv.classList.add('challenge-answer');
-            answerDiv.innerText = challenge.answer;
-            mainDiv.appendChild(answerDiv);*/
-            //Save the first answer to be inserted into the grid
-            if (answer == ''){
-                answer = challenge.answer;
+            icons.push(icon);
+
+            icon.addEventListener('click', () => {
+                    // Prevent click if the icon is "disabled"
+                if (icon.classList.contains('disabled')) {
+                    return;
+                }
+                questionDiv.innerText = questionText;
+                grids.forEach(grid => grid.style.display = "none");
+                grids[index].style.display = "block";
+                    console.log(countdownResult)
+    
+                    clearInterval(countdownResult);
+          
+                currentChallenge = challenge;
+
+             
+                countdownDisplay.innerText = '';
+                countdownResult = startBonusTriviaCountdown('easy', countdownDisplay, currentChallenge, planet, challengesArray, icons, index, resolve);
+
+            });
+
+            iconContainer.appendChild(icon);
+
+            const grid = createAlphabetSoupGrid(11, 13, challenge.answer, challenge);
+            grid.style.display = "none";
+            grids.push(grid);
+
+            if(index === 0) {
+                questionDiv.innerText = questionText;
+                grid.style.display = "block";
+                currentChallenge = challenge;
             }
+            challenge.timeLimit = null;
         });
     }
+ 
 
-        // Append the grid to the main div
-        const grid = createAlphabetSoupGrid(7, 10, answer);
-        console.log(grid);
-        mainDiv.appendChild(grid);
+    // Start the countdown for the first challenge outside the loop
+    countdownResult = startBonusTriviaCountdown('easy', countdownDisplay, currentChallenge, planet, challengesArray, icons, 0, resolve);
+    console.log(countdownResult);
+ 
+    currentChallenge.timeLimit = 0;
 
-    // Append the main div to the room-container
+    console.log(currentChallenge);
+    grids.forEach(grid => mainDiv.appendChild(grid));
+    mainDiv.appendChild(iconContainer);
+
+    const submitButton = document.createElement('button');
+    submitButton.innerText = "Submit";
+    submitButton.addEventListener('click', () => {
+        checkCorrectAnswer(planet, currentChallenge); 
+        currentChallenge.alphabetSoup = [];
+    
+        // Clear the interval when the submit button is clicked
+        if (currentChallenge && currentChallenge.intervalId) {
+            clearInterval(currentChallenge.intervalId);
+            currentChallenge.intervalId = null;
+        }
+    
+        // Get the index of the current challenge
+        const currentIndex = challengesArray.indexOf(currentChallenge);
+    
+        // Disable the icon and mark it as answered
+        const icon = icons[currentIndex];
+        icon.classList.add('disabled');
+    
+        // Find the next challenge that hasn't been answered
+        const nextUnansweredIndex = challengesArray.findIndex(challenge => challenge.isAnsweredCorrectly === null);
+    
+        if (nextUnansweredIndex !== -1) {
+            const nextIcon = icons[nextUnansweredIndex];
+            nextIcon.click();  // trigger a click event on the next icon
+            selectedLettersDiv.innerText = '';
+        } else if (challengesArray.every(challenge => challenge.isAnsweredCorrectly !== null)) {
+            // If there is no next unanswered challenge, and all challenges have been answered
+            mainDiv.remove();  // remove the main div
+            const coinsEarned = calculateCoins(challengesArray, 'easy');  // replace 'easy' with the actual difficulty
+            alert(`You earned ${coinsEarned} coins!`);
+            hud.querySelector('.coinCounterNumber').innerText = String(localStorage.getItem('totalCoins'));
+            resolve(); // resolve the promise
+        }
+    });
+    
+    // Set the text of the div to the selected letters
+    mainDiv.appendChild(selectedLettersDiv);
+    mainDiv.appendChild(submitButton);
     roomContainer.appendChild(mainDiv);
 }
 
-function createAlphabetSoupGrid(rows, cols, answer) {
+function calculateCoins(challenges, difficulty) {
+    const baseScore = {
+        'easy': 1,
+        'medium': 2,
+        'hard': 3
+    };
+
+    let totalCoins = 0;
+
+    challenges.forEach(challenge => {
+        if(challenge.isAnsweredCorrectly) {
+            // Increase the total number of coins according to the time remaining and difficulty
+            totalCoins += baseScore[difficulty] * (challenge.timeLimit || 0);
+        }
+    });
+    localStorage.setItem('totalCoins', totalCoins);
+    return totalCoins;
+}
+
+
+function createAlphabetSoupGrid(rows, cols, answer, currentChallenge) {
+    
     // Create a multidimensional array (grid) and fill it with random letters
     let grid = Array.from({ length: rows }, () => 
         Array.from({ length: cols }, () => getRandomLetter())
     );
 
-    // Convert the answer to an array of uppercase letters and remove spaces
-    let answerArray = answer.toUpperCase().replace(/\s/g, '').split('');
-   
-    // Decide randomly if the answer will be inserted normally or reversed
-    if (Math.random() < 0.5) {
-        answerArray = answerArray.reverse();
-        console.log(answerArray);
+    const maxRows = 11;
+    const maxCols = 17;
+    
+    // Filter the wordList and only include words that fit in the grid and aren't the answer
+    let filteredWordList = wordList.filter(word => word.length <= rows && word.length <= cols && word !== answer);
+
+    // Randomly select a few words from the filteredWordList and add them to an array
+    let wordArray = filteredWordList.sort(() => 0.5 - Math.random()).slice(0, 2);
+
+    // Add the answer to the beginning of the array
+    wordArray.push(answer);
+
+
+    let placementOption;
+    let isReversed = false;
+
+    // Go through the array and try to place each word in the grid
+    wordArray.forEach(word => {
+    // Convert the word to an array of uppercase letters and remove spaces
+    let answerArray = word.toUpperCase().replace(/\s/g, '').split('');
+    let answerLength = answerArray.length;
+    let minGridDimension = answerLength;
+
+    // Check if rows or cols exceed the maximum
+    if (rows > maxRows || cols > maxCols) {
+        alert(`At least one of the grid's dimensions should be ${maxRows}x${maxCols}. Please adjust the grid size.`);
+        return;
+    }
+    // Check if rows and cols are less than the minimum required
+    if (rows < minGridDimension && cols < minGridDimension) {
+        alert(`At least one of the grid's dimensions should be ${minGridDimension}. Please adjust the grid size.`);
+        return;
     }
 
-    let answerLength = answerArray.length;
+    if (word === answer) {
+        // Decide randomly if the answer will be inserted normally or reversed
+        if (Math.random() < 0.5) {
+            console.log('Reversed');
+            answerArray = answerArray.reverse();
+            isReversed = true;
+        }
+    }
 
-    //console.log(`The number of rows is ${grid.length} and the number of columns is ${grid[0].length}`);
+    
     // Check if answer length is more than the grid dimensions
     if (answerLength > grid.length && answerLength > grid[0].length) {
         alert("Answer is longer than both grid dimensions. Please adjust the answer or grid size.");
         return;
     }
     
-    let isHorizontal;
-    // Decide if the answer will be placed horizontally or vertically
+
+
     if (answerLength > grid.length) { // can only be placed horizontally
-        isHorizontal = true;
+        placementOption = "horizontal";
         console.log('Horizontal');
     } else if (answerLength > grid[0].length) { // can only be placed vertically
         console.log('Vertical');
-        isHorizontal = false;
+        placementOption = "vertical";
+    } else if (grid.length >= answerLength && grid[0].length >= answerLength) { // can be placed horizontally, vertically, or diagonally
+        console.log('All options');
+        let randomOption = Math.random();
+        if (randomOption < 0.33) {
+            placementOption = "horizontal";
+        } else if (randomOption < 0.66) {
+            placementOption = "vertical";
+        } else {
+            placementOption = "diagonal";
+        }
     } else { // can be placed either horizontally or vertically
         console.log('Both');
-        isHorizontal = Math.random() < 0.5;
+        let randomOption = Math.random();
+        if (randomOption < 0.5) {
+            placementOption = "horizontal";
+        } else {
+            placementOption = "vertical";
+        }
     }
-    
-    if (isHorizontal) {
+    placementOption = "horizontal";
+    if (placementOption === "horizontal") {
         console.log('Horizontal');
         let randomRowIndex = Math.floor(Math.random() * grid.length);
         let maxStartColumnIndex = grid[0].length - answerLength;
-        
+    
         // Check if maxStartColumnIndex is negative
         if (maxStartColumnIndex <= -1) {
-            alert("Cannot place answer horizontally. Please adjust the answer or grid size.");
+            alert(`Cannot place answer ${answer} horizontally. Please adjust the answer or grid size.`);
             return;
         }
-        
+    
         let randomColumnIndex = Math.floor(Math.random() * (maxStartColumnIndex + 1));
         grid[randomRowIndex].splice(randomColumnIndex, answerLength, ...answerArray);
-    } else {
+    } else if (placementOption === "vertical") {
         console.log('Vertical');
         let randomColumnIndex = Math.floor(Math.random() * grid[0].length);
         let maxStartRowIndex = grid.length - answerLength;
-        
+    
         // Check if maxStartRowIndex is negative
         if (maxStartRowIndex <= -1) {
-            alert("Cannot place answer vertically. Please adjust the answer or grid size.");
+            alert(`Cannot place answer ${answer}, ${answerArray.join('')} vertically. Because it has a ${answerArray.length} Please adjust the answer or grid size.`);
             return;
         }
-        
+    
         let randomRowIndex = Math.floor(Math.random() * (maxStartRowIndex + 1));
     
         console.log('Grid dimensions:', grid.length, 'x', grid[0].length);
@@ -801,32 +1156,451 @@ function createAlphabetSoupGrid(rows, cols, answer) {
             console.log('Setting grid[', randomRowIndex + i, '][', randomColumnIndex, '] to', answerArray[i]);
             grid[randomRowIndex + i][randomColumnIndex] = answerArray[i];
         }
-    }
+    } else if (placementOption === "diagonal") {
+        console.log('Diagonal');
+        // Calculate the maximum possible start indices for the row and column
+        let maxStartRowIndex = grid.length - answerLength; // Maximum start row index
+        let maxStartColumnIndex = grid[0].length - answerLength; // Maximum start column index
     
-
-
+        // Generate a random number from 0 to 3 to determine the diagonal direction
+        let randomDirection = Math.floor(Math.random() * 4);
+    
+        switch(randomDirection) {
+            case 0:  // Diagonal from top to bottom, left to right
+                let randomStartRowIndex0 = Math.floor(Math.random() * (maxStartRowIndex + 1));
+                let randomStartColumnIndex0 = Math.floor(Math.random() * (maxStartColumnIndex + 1));
+                for (let i = 0; i < answerLength; i++) {
+                    grid[randomStartRowIndex0 + i][randomStartColumnIndex0 + i] = answerArray[i];
+                }
+                placementOption = 'diagonalTopBottomLeftRight';
+                break;
+            case 1:  // Diagonal from bottom to top, right to left
+                let randomStartRowIndex1 = Math.floor(Math.random() * (maxStartRowIndex + 1)) + answerLength - 1;
+                let randomStartColumnIndex1 = Math.floor(Math.random() * (maxStartColumnIndex + 1)) + answerLength - 1;
+                for (let i = 0; i < answerLength; i++) {
+                    grid[randomStartRowIndex1 - i][randomStartColumnIndex1 - i] = answerArray[i];
+                }
+                placementOption = 'diagonalBottomTopRightLeft';
+                break;
+            case 2:  // Diagonal from top to bottom, right to left
+                let randomStartRowIndex2 = Math.floor(Math.random() * (maxStartRowIndex + 1));
+                let randomStartColumnIndex2 = Math.floor(Math.random() * (maxStartColumnIndex + 1)) + answerLength - 1;
+                for (let i = 0; i < answerLength; i++) {
+                    grid[randomStartRowIndex2 + i][randomStartColumnIndex2 - i] = answerArray[i];
+                }
+                placementOption = 'diagonalTopBottomRightLeft';
+                break;
+            case 3:  // Diagonal from bottom to top, left to right
+                let randomStartRowIndex3 = Math.floor(Math.random() * (maxStartRowIndex + 1)) + answerLength - 1;
+                let randomStartColumnIndex3 = Math.floor(Math.random() * (maxStartColumnIndex + 1));
+                for (let i = 0; i < answerLength; i++) {
+                    grid[randomStartRowIndex3 - i][randomStartColumnIndex3 + i] = answerArray[i];
+                }
+                placementOption = 'diagonalBottomTopLeftRight';
+                break;
+            default:
+                break;
+        }
+    }
+});
     // Create a table and fill it with the data from the grid
     const table = document.createElement('table');
     table.classList.add('alphabet-soup-grid');
 
-    grid.forEach((row) => {
+    grid.forEach((row, rowIndex) => {
         const tr = document.createElement('tr');
-        row.forEach((letter) => {
+        
+        row.forEach((letter, colIndex) => {
             const td = document.createElement('td');
             td.innerText = letter;
+            td.addEventListener('click', function() {
+                if (td.classList.contains('selected')) {
+                    // Cell is already selected, so we'll deselect it
+                    td.classList.remove('selected');
+                
+                    // Find the index of the corresponding item in alphabetSoup
+                    const index = currentChallenge.alphabetSoup.findIndex(item => item.letter === letter && item.rowIndex === rowIndex && item.colIndex === colIndex);
+                
+                    if (index > -1) {
+                        // Remove the item from alphabetSoup
+                        currentChallenge.alphabetSoup.splice(index, 1);
+                    }
+                } else {
+                    // Cell is not selected, so we'll select it
+                    td.classList.add('selected');
+                
+                    if (isReversed) {
+                        currentChallenge.isReversed = true;
+                    }
+                    currentChallenge.answerOrganization = placementOption;
+                    currentChallenge.alphabetSoup.push({letter: letter, rowIndex: rowIndex, colIndex: colIndex});
+                }
+                // Update the selected letters div every time a td is clicked
+                updateSelectedLettersDiv(currentChallenge);
+            });
             tr.appendChild(td);
         });
+        
         table.appendChild(tr);
     });
+    
 
     return table;
 }
 
 function getRandomLetter() {
+
     // Generates a random uppercase letter
     return String.fromCharCode(Math.floor(Math.random() * 26) + 65);
 }
 
+const wordList = [
+    "MERCURY",
+    "VENUS",
+    "EARTH",
+    "MARS",
+    "JUPITER",
+    "SATURN",
+    "URANUS",
+    "NEPTUNE",
+    "PLUTO",
+    "SUN",
+    "MOON",
+    "SOLAR",
+    "GALAXY",
+    "ORBIT",
+    "COMET",
+    "ASTEROID",
+    "METEOR",
+    "TELESCOPE",
+    "ROCKET",
+    "SPACESHIP",
+    "PLANET",
+    "STAR",
+    "SATELLITE",
+    "ALIEN",
+    "EXPLORATION",
+    "CRATER",
+    "ECLIPSE",
+    "GRAVITY",
+    "SPACEWALK",
+    "MISSION",
+  ];
+  
+  document.addEventListener('shopKeeper', (eventData) => {
+
+    const resolve = eventData.detail.onComplete
+ 
+    const shopContainer = document.createElement('div');
+    shopContainer.classList.add('shop-container');
+
+    localStorage.setItem('totalCoins', 30);
+    hud.querySelector('.coinCounterNumber').innerText = localStorage.getItem('totalCoins');
+
+    const shopTitle = document.createElement('h2');
+    shopTitle.innerText = "Intergalactic Shop";
+    shopContainer.appendChild(shopTitle);
+
+    const shopKeeper = document.createElement('div');
+    shopKeeper.classList.add('shop-keeper');
+    shopContainer.appendChild(shopKeeper);
+
+    let total = 0;
+    const tokens = [
+        {name: 'Hints', description: 'Provides guidance for challenges', price: 5, iconName: 'helps'},
+        {name: 'Time manipulation', description: 'Slows down time', price: 10, iconName: 'reduce-time'},
+        {name: 'Power-ups', description: 'Boosts your gameplay', price: 15, iconName: 'power-ups'}
+    ];
+
+    const tokenQuantities = {
+        'Hints': 0,
+        'Time manipulation': 0,
+        'Power-ups': 0
+    };
+
+    // Create a div to hold the tokens
+    const tokenContainerDiv = document.createElement('div');
+    shopKeeper.appendChild(tokenContainerDiv);
+
+    // Create a div to hold a 'receipt'
+    const receiptContainer = document.createElement('div');
+    receiptContainer.classList.add('receipt-container');
+    receiptContainer.innerHTML = `<h3>Receipt</h3>`;
+    shopKeeper.appendChild(receiptContainer);
+
+    // Create a div for the total
+    const totalDiv = document.createElement('div');
+    totalDiv.id = 'receipt-total';
+    totalDiv.classList.add('receipt-total');
+    receiptContainer.appendChild(totalDiv);
+
+    const receiptElements = {};
+
+    const updateTotal = () => {
+        totalDiv.innerText = `Total: ${total} coins`;
+    }
+
+    const resetReceiptAndQuantities = () => {
+        for(let tokenName in receiptElements) {
+            receiptElements[tokenName].innerHTML = '';
+           
+        }
+        total = 0;
+        updateTotal();
+        const quantityContainers = tokenContainerDiv.querySelectorAll('.quantity-container');
+        quantityContainers.forEach(quantityContainer => {
+            quantityContainer.innerText = '0';
+        });
+        totalDiv.innerText = '';
+    }
+
+    tokens.forEach(token => {
+        const tokenContainer = document.createElement('div');
+        tokenContainer.classList.add('token-container');
+
+        const tokenName = document.createElement('p');
+        tokenName.innerText = token.name;
+        tokenContainer.appendChild(tokenName);
+
+        const tokenDescription = document.createElement('p');
+        tokenDescription.innerText = token.description;
+        tokenContainer.appendChild(tokenDescription);
+
+        const tokenPrice = document.createElement('p');
+        tokenPrice.innerText = `Price: ${token.price} coins`;
+        tokenContainer.appendChild(tokenPrice);
+
+        // Create a div to hold the quantity
+        const quantityContainer = document.createElement('div');
+        quantityContainer.classList.add('quantity-container');
+        quantityContainer.innerText = '0';
+        tokenContainer.appendChild(quantityContainer);
+
+        const tokenReceipt = document.createElement('div');
+        tokenReceipt.id = `token-receipt-${token.name}`;
+        tokenReceipt.classList.add('token-receipt');
+        receiptContainer.insertBefore(tokenReceipt, totalDiv);
+
+        // Store the reference to this element
+        receiptElements[token.name] = tokenReceipt;
+
+        const buyButton = document.createElement('button');
+        buyButton.innerText = '+';
+        buyButton.addEventListener('click', () => {
+            if (total >= Number(localStorage.getItem('totalCoins'))) {
+                alert('You do not have enough coins to buy more.');
+                return;
+            }
+
+            quantityContainer.innerText = parseInt(quantityContainer.innerText) + 1;
+            total += Number(token.price);
+
+            // Increase the quantity of this token
+            tokenQuantities[token.name]++;
+
+
+            // Update the corresponding receipt element
+            receiptElements[token.name].innerHTML = `${token.name}: ${Number(quantityContainer.innerText) * Number(token.price)} coins`;
+
+            // Update total
+            updateTotal();
+        });
+        tokenContainer.insertBefore(buyButton, quantityContainer);
+
+        const sellButton = document.createElement('button');
+        sellButton.innerText = '-';
+        sellButton.addEventListener('click', () => {
+            if (parseInt(quantityContainer.innerText) == 0) {
+                return;
+            }
+            quantityContainer.innerText = parseInt(quantityContainer.innerText) - 1;
+            total -= Number(token.price);
+
+            // Decrease the quantity of this token
+            tokenQuantities[token.name]--;
+  
+
+            // Update the corresponding receipt element
+            if (Number(quantityContainer.innerText) * Number(token.price) == 0) {
+                receiptElements[token.name].innerHTML = '';
+                updateTotal();
+                totalDiv.innerText = '';
+                return;
+            };
+            receiptElements[token.name].innerHTML = `${token.name}: ${Number(quantityContainer.innerText) * Number(token.price)} coins`;
+
+            // Update total
+            updateTotal();
+        });
+        tokenContainer.appendChild(sellButton);
+
+        tokenContainerDiv.appendChild(tokenContainer);
+    });
+
+    const buyAllButton = document.createElement('button');
+    buyAllButton.innerText = 'Buy';
+    buyAllButton.addEventListener('click', () => {
+        // Calculate total price and check if user has enough coins
+        if (total == 0 ) {
+            alert ('You dont have anything to buy.');
+        
+        } else if (total <= Number(localStorage.getItem('totalCoins'))) {
+            localStorage.setItem('totalCoins', Number(localStorage.getItem('totalCoins')) - total);
+            alert(`You bought all tokens. You now have ${localStorage.getItem('totalCoins')} coins left.`);
+            
+            // Update the token quantities
+            updateTokenQuantities(tokenQuantities);
+            
+            // Reset total and update it
+            resetReceiptAndQuantities();
+            hud.querySelector('.coinCounterNumber').innerText = localStorage.getItem('totalCoins');
+            shopContainer.remove();
+            resolve();
+
+        }
+    });
+    receiptContainer.appendChild(buyAllButton);
+
+    roomContainer.appendChild(shopContainer);
+});
+
+// Reduce time button click event
+document.querySelector('#reduce-time').addEventListener('click', function() {
+    let reduceTimeQuantity = parseInt(document.querySelector('.reduce-time-quantity').innerText, 10);
+    if (isNaN(reduceTimeQuantity) || reduceTimeQuantity === 0) {
+        alert('No Time Manipulation tokens left!');
+        return;
+    }
+
+    // Decrease token quantity
+    reduceTimeQuantity--;
+    document.querySelector('.reduce-time-quantity').innerText = reduceTimeQuantity.toString();
+    
+    // Update the countdown's interval
+    startCountdown(5000); // slow down the countdown
+    setTimeout(() => startCountdown(), 10000); // after 10s, return the countdown to its normal pace
+});
+
+
+// Add a flag for tracking if a hint is currently being displayed
+let isHintInProgress = false;
+
+let currentPlanet = "Earth";  // These should be dynamically set based on the current game state
+let currentChallenge = "multiple choice";
+
+document.querySelector('#helps').addEventListener('click', async function() {
+    if (isHintInProgress) {
+        alert('Wait for the current hint to finish!');
+        return;
+    }
+
+    let helpQuantity = parseInt(document.querySelector('.helps-quantity').innerText, 10);
+    if (isNaN(helpQuantity) || helpQuantity === 0) {
+        alert('No help tokens left!');
+        return;
+    }
+
+    // Decrease token quantity
+    helpQuantity--;
+    document.querySelector('.helps-quantity').innerText = helpQuantity.toString();
+
+    // Load the planet data from local storage
+    let planetData = JSON.parse(localStorage.getItem(currentPlanet));
+    if (!planetData) {
+        alert('No data found for the current planet!');
+        return;
+    }
+
+    // Get the challenge data
+    let challengeData = planetData.challenges[currentChallenge];
+    if (!challengeData) {
+        alert('No challenge data found for the current planet!');
+        return;
+    }
+
+    // Get a random hint from the current challenge
+    let hintsArray = challengeData.map(challenge => challenge.hints);  // Combine all hints arrays into one
+    let flattenedHintsArray = [].concat(...hintsArray);  // Flatten the array
+    let hintIndex = Math.floor(Math.random() * flattenedHintsArray.length);
+    let hintMessage = flattenedHintsArray[hintIndex];
+
+    // Create a new OverworldEvent with the helpMessage
+    let helpEvent = { type: 'textMessage', text: hintMessage };
+    const newOverworldEvent = new OverworldEvent({ map: cosmicQuest.map, event: helpEvent });
+
+    gameController.addGameEvent(newOverworldEvent);
+    isHintInProgress = true;  // Set the flag to true when the hint starts
+    await newOverworldEvent.init();
+    const textMessage = document.querySelector('.TextMessage');
+    textMessage.remove();
+    isHintInProgress = false; // Set the flag back to false when the hint ends
+});
+
+
+document.getElementById('power-ups').addEventListener('click', function() {
+    if (isHintInProgress) {
+        alert('Wait for the current hint to finish!');
+        return;
+    }
+
+    let powerUpsQuantity = parseInt(document.querySelector('.power-ups-quantity').innerText, 10);
+    if (isNaN(powerUpsQuantity) || powerUpsQuantity === 0) {
+        alert('No power-ups left!');
+        return;
+    }
+
+    // Obtain the current challenge from the localStorage
+    let currentChallenge = JSON.parse(localStorage.getItem('currentChallenge'));
+
+    if (currentChallenge.isPowerUpUsed) {
+        alert('Power-up already used for this challenge!');
+        return;
+    }
+
+    // Decrease token quantity
+    powerUpsQuantity--;
+    document.querySelector('.power-ups-quantity').innerText = powerUpsQuantity.toString();
+
+    // Mark power-up as used for the current challenge
+    currentChallenge.isPowerUpUsed = true;
+
+    switch (currentChallenge.type) {
+        case 'multiple choice':
+            handleMultipleChoicePowerUp(currentChallenge);
+            break;
+        case 'short answer':
+            handleShortAnswerPowerUp(currentChallenge);
+            break;
+        case 'fill in the blanks':
+            handleFillInBlanksPowerUp(currentChallenge);
+            break;
+        default:
+            console.log('Unsupported challenge type for power-ups.');
+            break;
+    }
+
+    // Update the challenge in the localStorage
+    localStorage.setItem('currentChallenge', JSON.stringify(currentChallenge));
+});
+
+
+function updateTokenQuantities(tokenQuantities) {
+
+    const assistTokensElement = document.querySelector('.assist-tokens-quantity');
+
+    const powerUpsQuantity = document.querySelector('.power-ups-quantity');
+    powerUpsQuantity.innerText = tokenQuantities['Power-ups'];
+    const reduceTimeQuantity = document.querySelector('.reduce-time-quantity');
+    reduceTimeQuantity.innerText = tokenQuantities['Time manipulation'];
+    const helpQuantity = document.querySelector('.helps-quantity');
+    helpQuantity.innerText = tokenQuantities['Hints'];
+
+
+
+    // Update the total tokens
+    const totalTokens = Object.values(tokenQuantities).reduce((a, b) => a + b, 0);
+    assistTokensElement.innerText = totalTokens;
+}
 
 //Get the current planet set from local storage
 const getPlanetSet = eventPlanet => JSON.parse(localStorage.getItem(eventPlanet));
@@ -1074,11 +1848,7 @@ function createConfirmationBox({ event, onComplete }) {
     });
 }
 
-console.log(JSON.parse(localStorage.getItem('Mars')),
-JSON.parse(localStorage.getItem('Venus')),
-JSON.parse(localStorage.getItem('Earth')),
-JSON.parse(localStorage.getItem('Mercury')),);
-console.log(window.EscapeRooms[currentRoom].bonusCelestialBodies);
+
 // The 'mainTrivia' event fires when a new trivia needs to be displayed in the UI
 document.addEventListener("mainTrivia", function(e) {
     const eventData = e.detail;
@@ -1189,19 +1959,6 @@ function createTriviaElements(eventData) {
     triviaContainer.appendChild(buttonContainer);
     quizzContainer.appendChild(questionContainer);
     quizzContainer.appendChild(quizzTypeButtonsContainer);
-
-    /*eventData.forEach(planetSet => {
-        const button = document.createElement('button');
-        button.classList.add('triviaButton');
-        button.innerText = planetSet.planet;
-        button.dataset.planet = planetSet.planet;  // Store the planet name in the button for later reference
-        button.addEventListener('click', function() {
-            const planetSet = eventData.find(set => set.planet === this.dataset.planet);
-            displayQuestions(planetSet);  // pass quizzContainer as argument
-            console.log(planetSet)
-        });        
-        buttonContainer.appendChild(button);
-    });*/
 
     //Variables to hold needed values
     let total = 0;    // Total of questions on the celestialBodies
@@ -1701,12 +2458,15 @@ const textMessagePresent = () => document.querySelector('.TextMessage') !== null
 
 let iconsVisible = false;
 
-document.getElementById('assist-tokens').addEventListener('click', function() {
+
+document.querySelector('.assist-tokens-icon').addEventListener('click', function() {
+
     // If there's a text message, exit the function
     if (textMessagePresent()) {
         return;
+        console.log('clicked')
     }
-
+    console.log('clicked')
     const otherIcons = ['power-ups', 'reduce-time', 'helps'];
 
     if (!iconsVisible) { // if icons are not visible, show them

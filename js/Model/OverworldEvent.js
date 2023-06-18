@@ -85,17 +85,6 @@ export default class OverworldEvent {
     };
 
 
-    // The changeMap method handles the changeMap event.
-    // It creates a new scene transition, starts the new map, and when the transition is done, the Promise is resolved.
-    /*changeMap2 (resolve) {
-        const sceneTransition = new SceneTransition();
-        sceneTransition.init( document.querySelector(".room-container"), () => {
-            this.map.overworld.startMap( window.EscapeRooms[this.event.map] );
-            resolve(); // Promise resolved here
-            sceneTransition.fadeOut();
-        });
-    };*/
-
     changeMap(resolve) {
         utils.emitEvent('changeMap', {
             event: this.event,
@@ -133,7 +122,12 @@ export default class OverworldEvent {
         }
     };
     
-
+    shopKeeper(resolve){ 
+        utils.emitEvent('shopKeeper', {
+            event: this.event,
+            onComplete: resolve // Promise resolved here
+        });
+    };
     // The init method initializes the event by calling the appropriate method based on the event type.
     // It returns a Promise which is resolved when the method is done.
     init(){

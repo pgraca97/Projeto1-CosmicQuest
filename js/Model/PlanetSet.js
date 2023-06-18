@@ -127,14 +127,14 @@ export function initializeLocalStorage() {
                     break;
             }
 
-            // Create a default PlanetSet and Challenge for this planet
+            // Update the creation of Quizz instances to include hints
             let planetSet = generatePlanetSetsForRoom(
                 planet,
                 educationalContent,
-                new Quizz('multiple choice', ['Option 1', 'Option 2', 'Option 3'], `Default question for ${planet}?`, 'Option 1'),
-                new Quizz('multiple choice', ['Option 4', 'Option 5', 'Option 6'], `Default question 2 for ${planet}?`, 'Option 4'),
-                new Quizz('short answer', null, 'Short Answer1?', 'Answer'), 
-                new Quizz('fill in the blanks', ['Drag 1', 'Drag 2', 'Drag 3'], 'Question, Drag 2.', 'Question, Drag 2 Drag 1.'),
+                new Quizz('multiple choice', ['Option 1', 'Option 2', 'Option 3'], `Default question for ${planet}?`, 'Option 1', ['Hint 1', 'Hint 2']),
+                new Quizz('multiple choice', ['Option 4', 'Option 5', 'Option 6'], `Default question 2 for ${planet}?`, 'Option 4', ['Hint 3', 'Hint 4']),
+                new Quizz('short answer', null, 'Short Answer1?', 'Answer', ['Hint 1', 'Hint 2']), 
+                new Quizz('fill in the blanks', ['Drag 1', 'Drag 2', 'Drag 3'], 'Question, Drag 2.', 'Question, Drag 2 Drag 1.', ['Hint 1', 'Hint 2']),
             );
             console.log(`Created default PlanetSet for ${planet}`);
             localStorage.setItem(planet, JSON.stringify(planetSet));
@@ -161,18 +161,6 @@ export function initializeLocalStorage() {
                         subtitles: `/assets/video/Meteor Showers/Meteor Showers.vtt`
                     };
                     break;
-                /*case 'Inner Planets Moons':
-                    educationalContent = {
-                        video: `/assets/video/Inner Planets Moons/Inner Planets Moons 101 _ National Geographic.mp4`,
-                        subtitles: `/assets/video/Inner Planets Moons/Inner Planets Moons.vtt`
-                    };
-                    break;
-                case 'Outer Planets Moons':
-                    educationalContent = {
-                        video: `/assets/video/Outer Planets Moons/Outer Planets Moons 101 _ National Geographic.mp4`,
-                        subtitles: `/assets/video/Outer Planets Moons/Outer Planets Moons.vtt`
-                    };
-                    break;*/
                 default:
                     educationalContent = {
                         video: `/assets/videos/${trivia}.mp4`,
@@ -184,12 +172,14 @@ export function initializeLocalStorage() {
             let planetSet = generatePlanetSetsForRoom(
                 trivia,
                 educationalContent,
-                new Quizz('alphabet soup', null, `Default question for ${trivia}?`, 'Option 1')
+                new Quizz('alphabet soup', null, `What element makes up most of the Sun's mass?`, 'Hydrogen', ['Hint 1', 'Hint 2']),
+                new Quizz('alphabet soup', null, `What is the process that generates the Sun's energy?`, 'Nuclear fusion', ['Hint 1', 'Hint 2']),
+                new Quizz('alphabet soup', null, `Name the outermost layer of the Sun`, 'Corona', ['Hint 1', 'Hint 2'])
             );
         
-            console.log(`Created default PlanetSet for ${trivia}`);
+
             localStorage.setItem(trivia, JSON.stringify(planetSet));
-            console.log(`Stored default PlanetSet for ${trivia}`);
+
         }
     }
 }
