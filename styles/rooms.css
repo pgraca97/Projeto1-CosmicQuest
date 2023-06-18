@@ -112,7 +112,9 @@ transform: scale(1.8) ;
     image-rendering: pixelated;
     
 }
-
+.TextMessage_p {
+  overflow: hidden scroll;
+}
 .triviaContainer {
   position: relative;
   display: flex;
@@ -376,49 +378,64 @@ left: -30px;
   flex-direction: column;
 }
 .icons-container {
-  padding: 0 1em; /* adjust as needed */
+  padding: 0 1em;
   margin-bottom: 5px;
   display: flex;
-
   justify-content: space-between;
   align-items: center;
-
 }
 
 .icons-container img {
   cursor: pointer;
 }
-.left-icons{
+
+.left-icons {
   position: fixed;
   display: flex;
   flex-direction: column;
   color: red;
-  gap: 1em; /* adjust as needed */
   image-rendering: pixelated;
   padding: 0 2.3rem;
-  top: 8.2%;
+  top: 8%;
 }
 
-
+.left-icons p {
+  margin: 0;
+  padding-left: 5px;
+}
 
 .right-icons {
   position: fixed;
   color: red;
-  gap: 1em; /* adjust as needed */
+  gap: 1em;
   image-rendering: pixelated;
   padding: 0 1.5rem;
   right: 0;
   top: 8.2%;
 }
 
-/* CSS */
 .icon {
+  opacity: 1;
   transition: all 0.5s ease;
+  padding-bottom: 15px;
 }
+
+#assist,
+#power-ups.icon,
+#reduce-time.icon,
+#helps.icon {
+  display: flex;
+  align-items: center;
+}
+
 .hidden {
+  visibility: hidden;
+
   opacity: 0;
-  transform: translateY(-20px); /* adjust as needed */
+  transform: translateY(-20px);
+  overflow: hidden;
 }
+
 
 .countdown-display {
   position: absolute;
@@ -456,8 +473,8 @@ left: -30px;
   top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 100%;  /* Adjust as needed */
-  height: 100%;  /* Auto height will grow with content */
+  width: 150%;  /* Adjust as needed */
+  height: 150%;  /* Auto height will grow with content */
   padding: 20px;  /* Spacing inside the div */
   background-color: rgba(0, 0, 0, 0.5);  /* Semi-transparent black */
   color: white;  /* Text color */
@@ -468,9 +485,109 @@ left: -30px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden scroll;  /* If content overflows, show a scrollbar */
+  overflow: hidden;  /* If content overflows, show a scrollbar */
+  font-size: 8px;
 }
 
 .challenge-type, .challenge-question, .challenge-answer {
   margin: 5px 0;  /* Add some vertical spacing between challenges */
+}
+
+.alphabet-soup-grid td {
+  cursor: pointer; 
+}
+
+/* Define the glowing animation */
+@keyframes glowing {
+  0% {
+    text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff, 0 0 40px #ffffff, 0 0 55px #ffffff, 0 0 75px #ffffff;
+  }
+  50% {
+    text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff, 0 0 40px #ffffff, 0 0 55px #ffffff, 0 0 75px #ffffff, 0 0 80px #ffffff;
+  }
+  100% {
+    text-shadow: 0 0 5px #ffffff, 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff, 0 0 40px #ffffff, 0 0 55px #ffffff, 0 0 75px #ffffff, 0 0 80px #ffffff, 0 0 85px #ffffff;
+  }
+}
+
+/* Apply the animation to the selected <td> elements */
+td.selected {
+  animation: glowing 1.5s ease-in-out infinite;
+}
+
+.iconContainer img {
+  cursor: pointer;
+}
+
+
+.shop-container {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #222;
+  color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  width: 100%;
+  width: 500px;
+  margin: 20px auto;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+  font-size: 8px;
+}
+
+.shop-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #FFD700;
+}
+.shop-keeper {
+  display: flex;
+  justify-content: space-around;
+}
+
+.token-container {
+  background-color: #333;
+  padding: 10px;
+  flex-grow: 1;
+  width: 330px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.token-container p {
+  margin: 0;
+}
+
+.token-container button {
+  padding: 5px 10px;
+  background-color: #FFD700;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #000;
+}
+
+.token-container button:hover {
+  background-color: #b8860b;
+}
+
+.receipt-container > button {
+  display: block;
+  margin: 20px auto 0 auto;
+  background-color: #FFD700;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: #000;
+}
+
+.shop-container > button:hover {
+  background-color: #b8860b;
 }
