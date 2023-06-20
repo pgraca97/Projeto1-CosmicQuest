@@ -6,7 +6,7 @@ export class Person extends GameObject {
         super(config);
         this.movingProgressRemaining = 0;
         this.isStanding = false;
-
+        this.currentEventResolve = null;
         this.isPlayerControlled = config.isPlayerControlled || false;
         this.directionUpdate = {
             "up": ["y", -1],
@@ -42,13 +42,7 @@ export class Person extends GameObject {
     }
     
     startBehavior (state, behavior) {
-        //console.log(`The person ${this.id} started to ${behavior.type}`);
-        
-        // Don't start a new move if the time limit has expired
-        if (window.EscapeRooms.timeLimit.remaining <= 0) {
-      
-            return;
-        }
+
         this.isMoving = true; // set isMoving to true when a move starts
 
         // Set the direction of the character to whatever behavior has
@@ -59,7 +53,8 @@ export class Person extends GameObject {
     
                 behavior.retry && setTimeout (() => {
                     this.startBehavior(state, behavior);
-                }, 20);
+                    console.log(`Trying to move again`)
+                }, 50);
     
                 return;
             }
@@ -69,6 +64,10 @@ export class Person extends GameObject {
             state.map.moveWall(this.x, this.y, this.direction); // setting a wall in our future position (purpose reserving a place for the player); the wall is moving with the player
             this.movingProgressRemaining = 16;
             this.updateSprite(state);
+
+            // Keep a reference to the resolve function of the current event
+            this.currentEventResolve = behavior.onComplete;
+            
         } // fire a run/walk command from a character without it coming specifically from the arrow keys
     
         if(behavior.type === "idle"){

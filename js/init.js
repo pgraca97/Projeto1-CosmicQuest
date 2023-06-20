@@ -15,7 +15,5 @@
     console.log("inject");
     localStorage.setItem("users", JSON.stringify(users));
   }
-  console.log('It is working!!');
-  console.log(localStorage.getItem("users"));
 })();
 

@@ -71,11 +71,7 @@ function landingPageView() {
       </button>
     `;
 
-    const userSessionStorage = User.getAuthenticatedUser();
-    console.log(userSessionStorage);
-    console.log(userSessionStorage.username);
-    const userLocalStorage = User.updateUser(userSessionStorage.username)
-    console.log(userLocalStorage);
+
     // Update navbar's HTML for authenticated users
     btnGroupTop.innerHTML = btnGroupTopContent;
     btnGroup.innerHTML = btnGroupContent;
@@ -107,28 +103,36 @@ function landingPageView() {
     });
   }
 
+ // Initialize the counter
+  const userCharacterColor = document.querySelector(".user-character img");
   
+  // Get the array of keys from the characterColor object
+  const characterColorArray = Object.values(characterColor);
 
-let currentCharacterColorIndex = 0;  // Initialize the counter
-const userCharacterColor = document.querySelector(".user-character img");
+  let currentColorKey = 0
 
-// Function to update the user character color image
-function updateUserCharacterColor() {
-    userCharacterColor.src = characterColor[currentCharacterColorIndex];
-    console.log(userCharacterColor);
-}
+console.log(characterColorArray[currentColorKey])
+
+  // Function to update the user character color image
+  function updateUserCharacterColor() {
+      // Get the head image for the current color
+      userCharacterColor.src = characterColorArray[currentColorKey].head;
+
+  }
+  
 
 // Update the image for the first time
 updateUserCharacterColor();
 
 // Handle the arrow clicks
 document.querySelector('.arrow.right-arrow').addEventListener('click', function() {
+  console.log("right arrow clicked");
     // Increase the counter
-    currentCharacterColorIndex++;
+    currentColorKey++;
 
     // If the counter exceeds the last index of the array, reset it to 0
-    if (currentCharacterColorIndex > characterColor.length - 1) {
-        currentCharacterColorIndex = 0;
+    if (currentColorKey > characterColorArray.length - 1) {
+      currentColorKey = 0;
     }
 
     // Update the image
@@ -137,11 +141,11 @@ document.querySelector('.arrow.right-arrow').addEventListener('click', function(
 
 document.querySelector('.arrow.left-arrow').addEventListener('click', function() {
     // Decrease the counter
-    currentCharacterColorIndex--;
+    currentColorKey--;
 
     // If the counter becomes less than 0, set it to the last index of the array
-    if (currentCharacterColorIndex < 0) {
-        currentCharacterColorIndex = characterColor.length - 1;
+    if (currentColorKey < 0) {
+      currentColorKey = characterColorArray.length - 1;
     }
 
     // Update the image
@@ -176,7 +180,8 @@ document.querySelector('.arrow.left-arrow').addEventListener('click', function()
       if (registerPassword.value !== registerPassword2.value) {
         throw Error("Password and Confirm Password are not equal");
       }
-      User.addUser(undefined, registerUsername.value, email.value, registerPassword.value, characterColor[currentCharacterColorIndex]); //userCharacterColor.src
+      const selectedColor = characterColorArray[currentColorKey]; // get selected color object
+      User.addUser(registerUsername.value, email.value, registerPassword.value, selectedColor); // pass color object
       displayMessage("msgRegister", "User registered with success!", "success");
       setTimeout(() => {
         location.reload();
@@ -185,7 +190,7 @@ document.querySelector('.arrow.left-arrow').addEventListener('click', function()
       displayMessage("msgRegister", e.message, "danger");
     }
   });
-
+  
   document.querySelector("#instructions-btn")?.addEventListener("click", () => {
     location.href = "./html/instructions.html";
 });

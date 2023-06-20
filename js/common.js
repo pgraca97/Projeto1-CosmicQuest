@@ -1,18 +1,16 @@
 
-//DOMCONTENTLOAD EVENT TO THE WINDOW  
 
-window.addEventListener("DOMContentLoaded", function() {
+export function setWidth(extraWidth = 45) {
   const title = document.querySelector(".title");
-  const bannerContainer = document.querySelector(".title-banner-container");
+const bannerContainer = document.querySelector(".title-banner-container");
 
-  // Get the width of the title
-  const titleWidth = title.getBoundingClientRect().height;
+// Get the width of the title
+const titleWidth = title.getBoundingClientRect().height;
 
-  // Set the width of the banner container to match the title's width, plus some extra padding
-  const bannerWidth = titleWidth + 45;  // adjust the added value to your needs
-  bannerContainer.style.width = `${bannerWidth}px`;
-});
-
+// Set the width of the banner container to match the title's width, plus some extra padding
+const bannerWidth = titleWidth + extraWidth;  // adjust the added value to your needs
+bannerContainer.style.width = `${bannerWidth}px`;
+}
 
 window.onload = function() {
     const starCount = 100;
@@ -25,7 +23,7 @@ window.onload = function() {
     }
   };
 
-
+/*
 
 // create an engine
 var engine = Matter.Engine.create();
@@ -112,21 +110,77 @@ var render = Matter.Render.create({
     wireframes: false
   }
 });
-Matter.Render.run(render);
+Matter.Render.run(render); */
 
-export const characterColor = [
-    "/assets/img/Characters/User/BiColor/BiColor.png",
-    "/assets/img/Characters/User/Black/Black.png",
-    "/assets/img/Characters/User/Blue/Blue.png",
-    "/assets/img/Characters/User/Brown/Brown.png",
-    "/assets/img/Characters/User/Green/Green.png",
-    "/assets/img/Characters/User/Grey/Grey.png",
-    "/assets/img/Characters/User/Orange/Orange.png",
-    "/assets/img/Characters/User/Pink/Pink.png",
-    "/assets/img/Characters/User/Purple/Purple.png",
-    "/assets/img/Characters/User/Red/Red.png",
-    "/assets/img/Characters/User/Salmon/Salmon.png",
-    "/assets/img/Characters/User/Turquoise/Turquoise.png",
-    "/assets/img/Characters/User/White/White.png",
-    "/assets/img/Characters/User/Yellow/Yellow.png",
-    ];
+export const characterColor = {
+  BiColor: {
+      src: "/assets/img/Characters/User/BiColor/Chara_Astronaut01_FullBody_Run_4Dir_6x4.png",
+      idleSrc: "/assets/img/Characters/User/BiColor/Chara_Astronaut01_FullBody_Idle_8Dir_1x8.png",
+      head: "/assets/img/Characters/User/BiColor/BiColor.png",
+  },
+  Black: {
+      src: "/assets/img/Characters/User/Black/Chara_Astronaut02_FullBody_Run_4Dir_6x4.png",
+      idleSrc: "/assets/img/Characters/User/Black/Chara_Astronaut02_FullBody_Idle_8Dir_1x8.png",
+      head: "/assets/img/Characters/User/Black/Black.png",
+  },
+  Blue: {
+      src: "/assets/img/Characters/User/Blue/Chara_Astronaut03_FullBody_Run_4Dir_6x4.png",
+      idleSrc: "/assets/img/Characters/User/Blue/Chara_Astronaut03_FullBody_Idle_8Dir_1x8.png",
+      head: "/assets/img/Characters/User/Blue/Blue.png",
+  },
+  Brown: {
+      src: "/assets/img/Characters/User/Brown/Chara_Astronaut04_FullBody_Run_4Dir_6x4.png",
+      idleSrc: "/assets/img/Characters/User/Brown/Chara_Astronaut04_FullBody_Idle_8Dir_1x8.png",
+      head: "/assets/img/Characters/User/Brown/Brown.png",
+  },
+  Green: {
+      src: "/assets/img/Characters/User/Green/Chara_Astronaut05_FullBody_Run_4Dir_6x4.png",
+      idleSrc: "/assets/img/Characters/User/Green/Chara_Astronaut05_FullBody_Idle_8Dir_1x8.png",
+      head: "/assets/img/Characters/User/Green/Green.png",
+  },
+  Grey: {
+      src: "/assets/img/Characters/User/Grey/Chara_Astronaut06_FullBody_Run_4Dir_6x4.png",
+      idleSrc: "/assets/img/Characters/User/Grey/Chara_Astronaut06_FullBody_Idle_8Dir_1x8.png",
+      head: "/assets/img/Characters/User/Grey/Grey.png",
+  },
+  Orange: {
+      src: "/assets/img/Characters/User/Orange/Chara_Astronaut07_FullBody_Run_4Dir_6x4.png",
+      idleSrc: "/assets/img/Characters/User/Orange/Chara_Astronaut07_FullBody_Idle_8Dir_1x8.png",
+      head: "/assets/img/Characters/User/Orange/Orange.png",
+  },
+  Pink: {
+      src: "/assets/img/Characters/User/Pink/Chara_Astronaut09_FullBody_Run_4Dir_6x4.png",
+      idleSrc: "/assets/img/Characters/User/Pink/Chara_Astronaut09_FullBody_Idle_8Dir_1x8.png",
+      head: "/assets/img/Characters/User/Pink/Pink.png",
+  },
+  Purple: {
+      src: "/assets/img/Characters/User/Purple/Chara_Astronaut10_FullBody_Run_4Dir_6x4.png",
+      idleSrc: "/assets/img/Characters/User/Purple/Chara_Astronaut10_FullBody_Idle_8Dir_1x8.png",
+      head: "/assets/img/Characters/User/Purple/Purple.png",
+  },
+  Red: {
+      src: "/assets/img/Characters/User/Red/Chara_Astronaut11_FullBody_Run_4Dir_6x4.png",
+      idleSrc: "/assets/img/Characters/User/Red/Chara_Astronaut11_FullBody_Idle_8Dir_1x8.png",
+      head: "/assets/img/Characters/User/Red/Red.png",
+  },
+  Salmon: {
+      src: "/assets/img/Characters/User/Salmon/Chara_Astronaut12_FullBody_Run_4Dir_6x4.png",
+      idleSrc: "/assets/img/Characters/User/Salmon/Chara_Astronaut12_FullBody_Idle_8Dir_1x8.png",
+      head: "/assets/img/Characters/User/Salmon/Salmon.png",
+  },
+  Turquoise: {
+      src: "/assets/img/Characters/User/Turquoise/Chara_Astronaut13_FullBody_Run_4Dir_6x4.png",
+      idleSrc: "/assets/img/Characters/User/Turquoise/Chara_Astronaut13_FullBody_Idle_8Dir_1x8.png",
+      head: "/assets/img/Characters/User/Turquoise/Turquoise.png",
+  },
+  White: {
+      src: "/assets/img/Characters/User/White/Chara_Astronaut14_FullBody_Run_4Dir_6x4.png",
+      idleSrc: "/assets/img/Characters/User/White/Chara_Astronaut14_FullBody_Idle_8Dir_1x8.png",
+      head: "/assets/img/Characters/User/White/White.png",
+  },
+  Yellow: {
+      src: "/assets/img/Characters/User/Yellow/Chara_Astronaut15_FullBody_Run_4Dir_6x4.png",
+      idleSrc: "/assets/img/Characters/User/Yellow/Chara_Astronaut15_FullBody_Idle_8Dir_1x8.png",
+      head: "/assets/img/Characters/User/Yellow/Yellow.png",
+  }
+};

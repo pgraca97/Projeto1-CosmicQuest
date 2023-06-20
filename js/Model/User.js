@@ -1,19 +1,17 @@
-import * as GameSession from "/js/Model/GameSession.js";
+
 import { characterColor } from "/js/common.js";
 
 
 // Global variable that will hold the user list
-let users = [];
+let users = localStorage.getItem('users')? JSON.parse(localStorage.getItem('users')) : [];
 
 
-export class User {
-    constructor(name, username, email, password, characterColor, savedGames = [], settings = {sound: true, fxSound: true, subtitles: true}) {
-        this.name = name;
+export default class User {
+    constructor(username, email, password, characterColor, settings = {sound: true, fxSound: true}) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.characterColor = characterColor; // E.g. 'blue', 'red', etc.
-        this.characterPng = this.setCharacterPng(characterColor); // Set the corresponding PNG based on the chosen color
         this.gameSessions = []; // Each game session is a GameSession object
         this.settings = settings;
         this.trophies = [
@@ -35,27 +33,9 @@ export class User {
         ];
     }
 
-    // Initialize the new game sessions
-    initGameSessions() {
-    // Load the games from localStorage or start with an empty array
-    User.gameSessions = localStorage.gameSessions? JSON.parse(localStorage.gameSessions) : [];
-}
 
-// Adds a new game session
-    addGameSession(gameName, difficulty) {
-    const existingGame = User.gameSessions.some(game => game.gameName === gameId);
-    if (existingGame) {
-        throw new Error(`Game with the id ${gameName} already exists`);
-    } else {
-        // If the length of the game sessions array is less than 3, add a new game session, if it's 3 don't add a new gameSession
-        if (User.gameSessions.length < 3) {
-            User.gameSessions.push(new GameSession(gameName, difficulty)); //???
-            localStorage.gameSessions = JSON.stringify(User.gameSessions);
-        } else {
-            throw new Error('You have reached the maximum number of game sessions. Please delete an existing game before starting a new one.');
-        }        
-    }
-}
+
+
     
     //Method to render the game sessions and present them in the CONTINUE container
     renderGameSessions() {
@@ -72,28 +52,8 @@ export class User {
         });
     }
 
-    /*
-    updateGameSession(gameId, updatedGameSession) {
-        const gameIndex = this.gameSessions.findIndex(game => game.gameId === gameId);
-        
-        if (gameIndex === -1) {
-            throw new Error('The game does not exist.');
-        }
 
-        this.gameSessions[gameIndex] = updatedGameSession;
-    }*/
-    
-    setCharacterPng(color) {
-        // Object that maps color names to PNG paths
-        const pngColors = {
-            blue: 'path/to/blue.png',
-            red: 'path/to/red.png',
-            // Add as many colors as you have
-        };
-        
-        return pngColors[color];
-    }
-    
+
     // Method to earn a trophy
     earnTrophy(trophyName) {
         const trophy = this.trophies.find(trophy => trophy.name === trophyName);
@@ -114,23 +74,28 @@ export class User {
 // Initializes the user list
 export function initUsers() {
     // Load the users from localStorage or start with an empty array
-    users = localStorage.users ? JSON.parse(localStorage.users) : [];
+    users = localStorage.getItem('users') ? JSON.parse(localStorage.getItem('users')) : [];
+    return users;
 }
 
 // Adds a new user
-export function addUser(name, username, email, password, characterColor) {
+export function addUser( username, email, password, characterColor) {
     const existingUser = users.some(user => user.username === username);
     if (existingUser) {
         throw new Error(`User with the username ${username} already exists`);
     } else {
-        users.push(new User(name, username, email, password, characterColor));
-        localStorage.users = JSON.stringify(users);
+        const newUser = new User(username, email, password, characterColor);
+        users.push(newUser);
+        // Save the entire users array to local storage
+        localStorage.setItem('users', JSON.stringify(users));
     }
 }
 
+
 // Log in function
 export function login(username, password) {
-    const user = users.find(user => user.username === username && user.password === password);
+    const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+    const user = storedUsers.find(user => user.username === username && user.password === password);
     if (user) {
         sessionStorage.setItem('loggedUser', JSON.stringify(user));
         return true; // Signal that the login was successful
@@ -138,6 +103,7 @@ export function login(username, password) {
         throw new Error('Invalid login');
     }
 }
+
 
 // Log out function
 export function logout() {
@@ -154,15 +120,62 @@ export function getAuthenticatedUser() {
     return JSON.parse(sessionStorage.getItem('loggedUser'));
 }
 
-export function updateUser(updatedUser) {
-    // Find the index of the user to update
-    const userIndex = users.findIndex(user => user.username === updatedUser.username);
-    
-    // Replace the user at the found index with the updated user
-    users[userIndex] = updatedUser;
-
-    // Update the users in local storage
-    localStorage.users = JSON.stringify(users);
+// Function to get a user from local storage
+export function getUserFromLocalStorage(username) {
+    const users = localStorage.getItem('users') ? JSON.parse(localStorage.getItem('users')) : [];
+    const user = users.find(user => user.username === username);
+    return user ? user : null;
 }
 
+export function updateUser( updatedUser, oldUsername = null) {
+    // Update the user in the users array
+
+    let userIndex 
+    if (oldUsername) {
+        userIndex = users.findIndex(user => user.username === oldUsername);
+    } else {
+        userIndex = users.findIndex(user => user.username === updatedUser.username);
+    };
+
+    if (userIndex !== -1) {
+        users[userIndex] = updatedUser;
+    } else {
+        throw new Error(`User ${updatedUser.username} not found`);
+    }
+
+    // Update the user in session storage if it's the currently logged in user
+    if (getAuthenticatedUser() && getAuthenticatedUser().username === updatedUser.username || oldUsername ) {
+        console.log('Updating user in session')
+        sessionStorage.setItem('loggedUser', JSON.stringify(updatedUser));
+    }
+
+    // Update the user in local storage
+    localStorage.setItem('users', JSON.stringify(users));
+}
+
+
+export function updateGameSession(username, gameSession) {
+    // Get the stored users
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+
+    // Find the index of the user to update
+    const userIndex = users.findIndex(user => user.username === username);
+
+    if (userIndex === -1) {
+        throw Error('User not found');
+    }
+
+    // Find the index of the game session to update
+    const gameSessionIndex = users[userIndex].gameSessions.findIndex(session => session.gameName === gameSession.gameName);
+
+    if (gameSessionIndex === -1) {
+        throw Error('Game session not found');
+    }
+
+    // Update the game session
+    users[userIndex].gameSessions[gameSessionIndex] = gameSession;
+    console.log(users[userIndex]);
+    // Update the user with updateUser
+    updateUser(users[userIndex]);
+}
 

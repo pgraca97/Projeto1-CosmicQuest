@@ -28,7 +28,141 @@ padding-top: 10px;
   background-position: center;
   background-size: 100% 50%;
 }
+#content.stats-dashboard,
+#content.settings-dashboard
+ {
+  display: flex;
+  flex-direction: column;
+  left: -10px;
+}
+.settings-options {
+  display: flex;
+  flex-direction: row;
+}
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  color: red;
+  width: 250px;
+  padding-top: 10px;
+  padding-bottom: 20px;
+  align-items: center;
+}
 
+#content.trophy-dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 400px;
+  left: -10px;
+}
+.trophies-header {
+  color: red;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.trophy-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  color: red;
+}
+.trophies-pages{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.trophy-icons{
+  position: relative;
+  display: inline-flex;
+}
+.trophy-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 20px;
+}
+.not-earned-image {
+  position: absolute;
+  width: 40px;
+  image-rendering: pixelated;
+  top: -5px;
+  left: -2.5px;
+  cursor: pointer;
+  transition: left 0.3s ease; 
+}
+
+.toggle-container {
+  position: relative;
+  display: inline-flex;
+}
+
+.toggle-bar {
+  width: auto;
+  height: auto;
+
+}
+
+.toggle-button {
+  position: absolute;
+  top: 0;
+  left: -10px;
+  cursor: pointer;
+  transition: left 0.3s ease; 
+}
+
+
+#leaderboard-content{
+  display: flex;
+  flex-direction: column; 
+  align-items: flex-end;
+  margin-right:45px
+}
+
+#leaderboard-content .player-entry:nth-child(-n+3) {
+  /* Apply your CSS styles here */
+  /* Example styles: */
+padding-bottom: 5px
+}
+
+#leaderboard-content .player-entry:nth-last-child(-n+2) {
+margin-left: 40px;   padding-bottom: 10px;
+
+}
+
+  #content.leaderboard-dashboard {
+    display: flex;
+    flex-direction: column;
+    left: -10px;
+    padding-bottom: 15px;
+    color: red;
+  }
+
+.subtitle-container {
+  display: flex;
+  align-items: center;
+  color: green;
+  font-size: 12;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.subtitle-container .arrow.left-arrow,
+.trophies-pages .arrow.left-arrow
+ {
+  transform: rotate(0deg);
+}
+ .subtitle-container .arrow.right-arrow,
+ .trophies-pages .arrow.right-arrow {
+    transform: rotate(180deg);
+}
+#stats-content {
+  color: red;
+  padding-bottom: 10px;
+}
 .title-banner-container.dashboard{
   transform: rotate(-90deg);
   left: 6%;

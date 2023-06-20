@@ -117,12 +117,13 @@ startGameLoop() {
     
         // Start the initial cutscene for the room, if it has one
         if (mapConfig.initialCutscene) {
+            console.log("Starting initial cutscene");
             this.map.startCutscene(mapConfig.initialCutscene);
         };
 
          // Save the room's key (i.e., its name) to currentRoom
         this.currentRoom = Object.keys(window.EscapeRooms).find(key => window.EscapeRooms[key] === mapConfig);
-        localStorage.setItem('currentRoom', 'RoomOne'); //CHANGE THIS LINE!!!
+        localStorage.setItem('currentRoom', this.currentRoom); //CHANGE THIS LINE!!!
         console.log(this.currentRoom);
     }
     

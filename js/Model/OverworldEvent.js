@@ -77,7 +77,7 @@ export default class OverworldEvent {
             const object = this.map.gameObjects[ this.event.faceHero ];
             object.direction = utils.oppositeDirection(this.map.gameObjects["playerCharacter"].direction);
         }
-
+        console.log('Performing text message');
         utils.emitEvent('textMessage', {
             text: this.event.text,
             onComplete: resolve // Promise resolved here
@@ -124,6 +124,13 @@ export default class OverworldEvent {
     
     shopKeeper(resolve){ 
         utils.emitEvent('shopKeeper', {
+            event: this.event,
+            onComplete: resolve // Promise resolved here
+        });
+    };
+
+    powerUp(resolve){
+        utils.emitEvent('powerUp', {
             event: this.event,
             onComplete: resolve // Promise resolved here
         });

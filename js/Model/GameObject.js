@@ -15,7 +15,7 @@ export default class GameObject {
         this.direction = config.direction || 'down';
         
 
-        console.log(this.direction);
+       
         this.sprite = new Sprite({
             gameObject: this,
             src: config.src || "/assets/img/Characters/User/Pink/Chara_Astronaut09_FullBody_Run_4Dir_6x4.png",
@@ -31,14 +31,13 @@ export default class GameObject {
         this.behaviorLoop = config.behaviorLoop || [];
         this.behaviorLoopIndex = config.behaviorLoopIndex || 0;
         this.talking = config.talking || [];
-        console.log(this)
-        console.log(this.behaviorLoop[1])
+
     }
 
     mount(map) {
         this.isMounted = true;
         map.addWall(this.x, this.y);
-        setTimeout(() => this.doBehaviorEvent(map), 10);  // Execute behavior after delay
+        setTimeout(() => this.doBehaviorEvent(map), 20);  // Execute behavior after delay
     }
 
     update() {
@@ -46,6 +45,7 @@ export default class GameObject {
     }
 
     async doBehaviorEvent(map) {
+
         // Don't do anything if there is a more important scene or there are not any events to execute
         if (map.isCutscenePlaying || this.behaviorLoop.length === 0 || this.isStanding ) {
             console.log('No more events to execute');
