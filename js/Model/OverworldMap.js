@@ -67,11 +67,12 @@ export default class OverworldMap {
         this.isCutscenePlaying = true;
         console.log(events);
         for (let event of events){
+          
             const eventHandler = new OverworldEvent({
                 event: event,
                 map: this,
             })
-            gameController.addGameEvent(eventHandler);
+          //  gameController.addGameEvent(eventHandler);
             await eventHandler.init();
             //console.dir(eventHandler);
             //console.log(eventHandler.event);

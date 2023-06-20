@@ -5,30 +5,90 @@ import {utils} from "/js/Model/Utils.js";
 import {Person} from "/js/Model/Person.js";
 import * as PlanetSet from "/js/Model/PlanetSet.js";
 import gameController from '/js/Model/GameController.js';
+import * as User from "/js/Model/User.js";
+import { updateGameSessionState, restartGameSession } from "/js/Model/GameSession.js";
 
 let cosmicQuest
 let currentRoom
 
-window.onload = checkForGameEnd;
+function updateCelestialBodiesInLocalStorage(gameSession) {
+    for (let gameSessionCelestialBody of gameSession.celestialBodies) {
+        let localStorageCelestialBody = JSON.parse(localStorage.getItem(gameSessionCelestialBody.planet));
 
-// Listen for the pageshow event to resume the countdown
-window.addEventListener('pageshow', function() {
-    // Check if the current page is 'rooms.html'
-    if (window.location.href.includes('rooms.html')) {
-       
-       
-        if (window.EscapeRooms.timeLimit.remaining > 0) {
-            startCountdown();
+        // Update notes
+        localStorageCelestialBody.notes = gameSessionCelestialBody.notes;
+        // Update research terminal
+        localStorageCelestialBody.researchTerminal = gameSessionCelestialBody.researchTerminal;
 
+        // Update isAnsweredCorrectly in challenges
+        for (let challengeType in localStorageCelestialBody.challenges) {
+            for (let i = 0; i < localStorageCelestialBody.challenges[challengeType].length; i++) {
+                localStorageCelestialBody.challenges[challengeType][i].isAnsweredCorrectly = gameSessionCelestialBody.challenges[challengeType][i].isAnsweredCorrectly;
+            }
+        }
+
+        // Update the celestial body data in localStorage
+        localStorage.setItem(gameSessionCelestialBody.planet, JSON.stringify(localStorageCelestialBody));
+    }
+}
+
+/*window.onload = function() {
+    if (window.location.pathname.endsWith('rooms.html')) {
+        console.log("Page loaded");
+        // Update the game session with the current state of the game
+        updateGameSessionState(gameSession);
+        
+        // Update celestial bodies in the local storage
+        updateCelestialBodiesInLocalStorage(gameSession);
+        
+        // Update the game session in local storage
+        User.updateGameSession(authenticatedUser.username, gameSession);
+    }
+}
+
+window.onbeforeunload = function() {
+    if (window.location.pathname.endsWith('rooms.html')) {
+        console.log("Page is about to be unloaded");
+        // Update the game session with the current state of the game
+        updateGameSessionState(gameSession);
+        
+        // Update celestial bodies in the local storage
+        updateCelestialBodiesInLocalStorage(gameSession);
+        
+        // Update the game session in local storage
+        User.updateGameSession(authenticatedUser.username, gameSession);
+    }
+}*/
+
+   // Get the currently playing game session
+const authenticatedUser = User.getAuthenticatedUser();
+const activeGameName = localStorage.getItem('activeGameSession');
+const gameSession = authenticatedUser.gameSessions.find(gameSession => gameSession.gameName == activeGameName);
+
+document.addEventListener("visibilitychange", function() {
+    if (window.location.pathname.endsWith('rooms.html')) {
+        updateCelestialBodiesInLocalStorage(gameSession)
+        
+        if (document.visibilityState === 'hidden') {
+            console.log("User navigated away");
+            console.log("User navigated away");
+            // Update the game session with the current state of the game
+            updateGameSessionState(gameSession);
+
+            console.log(gameSession)
+
+            // Update the game session in local storage
+            User.updateGameSession(authenticatedUser.username, gameSession);
+        } else if (document.visibilityState === 'visible') {
+            console.log("User returned");
         }
     }
 });
 
-// Listen for the pagehide event to pause the countdown
-window.addEventListener('pagehide', function() {
-    // Stop the countdown
-    clearInterval(window.EscapeRooms.timeLimit.intervalId);
-});
+
+window.onload = checkForGameEnd;
+
+
 
 const initialize = () => {
     cosmicQuest = new LearningEnvironment({
@@ -37,23 +97,8 @@ const initialize = () => {
       cosmicQuest.init();
       currentRoom = cosmicQuest.map.overworld.currentRoom;
 
-         // Check if game has started before
-    if (window.EscapeRooms.timeLimit.startTime) {
-        // Calculate remaining time
-        const elapsed = Math.floor((new Date().getTime() - window.EscapeRooms.timeLimit.startTime) / 1000);
-        window.EscapeRooms.timeLimit.remaining = window.EscapeRooms.timeLimit.total - elapsed;
-        
-    } else {
-        // Set the start time if it's the first time
-        window.EscapeRooms.timeLimit.startTime = new Date().getTime();
-
-    }
-
-    // Store the timeLimit object in localStorage
-    localStorage.setItem('timeLimit', JSON.stringify(window.EscapeRooms.timeLimit));
 }
 
-PlanetSet.initializeLocalStorage();
 
 //Get the  main containers of Cosmic Quest
 const roomsContainer = document.querySelector('.rooms');
@@ -65,9 +110,7 @@ let storedDirection = localStorage.getItem('playerDirection');
 // Get CUBI's stored properties
 let storedCUBIBehaviorLoopIndex = localStorage.getItem('CUBI_behaviorLoopIndex');
 const storedIndex = Number(storedCUBIBehaviorLoopIndex)
-console.log(typeof storedCUBIBehaviorLoopIndex);
-console.log(storedCUBIBehaviorLoopIndex);
-console.log(typeof Number(storedCUBIBehaviorLoopIndex));
+
 const storedCUBIDirection = localStorage.getItem('CUBI_direction');
 let storedCUBIMovingProgressRemaining = Number(localStorage.getItem('CUBI_movingProgressRemaining'));
 
@@ -86,19 +129,19 @@ window.EscapeRooms = {
             JSON.parse(localStorage.getItem('Mars')),
         ],
         bonusCelestialBodies: [JSON.parse(localStorage.getItem('Sun'))],
-        progressBar: localStorage.getItem('RoomOneProgress') || 0,
+        progressBar:  gameSession ? gameSession.roomOneProgress : 0,
         // Game objects are dynamic entities in the room, like characters, NPCS etc.
         gameObjects: {
             // playerCharacter is the main character controlled by the player
             playerCharacter: new Person ({
                 isPlayerControlled: true, // isPlayerControlled property is used to define whether this character is controlled by the player or not
                 // The x, y properties determine the starting position of the character in the room
-                x: localStorage.getItem('playerX') ? utils.withGrid(Number(localStorage.getItem('playerX'))/16) : utils.withGrid(7),
-                y: localStorage.getItem('playerY') ? utils.withGrid(Number(localStorage.getItem('playerY'))/16) : utils.withGrid(6),
+                x:  utils.withGrid(7), //localStorage.getItem('playerX') ? utils.withGrid(Number(localStorage.getItem('playerX'))/16) : utils.withGrid(7),
+                y: utils.withGrid(7),// localStorage.getItem('playerY') ? utils.withGrid(Number(localStorage.getItem('playerY'))/16) : utils.withGrid(6),
                 // Set the direction of the player character to playerDirection if it exists if not set it to 'down'
-                direction: storedDirection ? storedDirection : 'down',
-                src:"/assets/img/Characters/User/Pink/Chara_Astronaut09_FullBody_Run_4Dir_6x4.png",  // src and idleSrc properties are the source of the character's spritesheet images for running and idle state respectively
-                idleSrc: "/assets/img/Characters/User/Pink/Chara_Astronaut09_FullBody_Idle_8Dir_1x8.png",
+               // direction: storedDirection ? storedDirection : 'down',
+                src: authenticatedUser.characterColor['src'],  // src and idleSrc properties are the source of the character's spritesheet images for running and idle state respectively
+                idleSrc: authenticatedUser.characterColor['idleSrc'], 
                 cutWidth: 32,  // cutWidth and cutHeight properties are used to define the size of the character's image from the spritesheet
                 cutHeight: 32, 
                 imgWidth: 32,  // imgWidth and imgHeight properties are used to define the display size of the character's image
@@ -141,12 +184,14 @@ window.EscapeRooms = {
                 },
                 isRobot : true,
                 behaviorLoop: [
+                    {type: "idle", direction: "left", time: 2000},
                     {type: "run", direction: "left"},
                     {type: "idle", direction: "up", time: 2000},
                     {type: "run", direction: "up"},
                     {type: "idle", direction: "up", time: 1000},
                     {type: "idle", direction: "right", time: 2000},
                     {type: "run", direction: "right"},
+                    {type: "idle", direction: "down", time: 2000},
                     {type: "run", direction: "down"},
                 ],
                // behaviorLoopIndex: storedIndex || 0 ,
@@ -327,12 +372,9 @@ window.EscapeRooms = {
         },        
         // initialCutscene is an array of events that plays at the start of the game in each room.
         /*initialCutscene: [
-            { who: "playerCharacter", type: "run", direction: "down" }, 
-            { who: "playerCharacter", type: "run", direction: "down" },
-            { who: "playerCharacter", type: "idle", direction: "right" },
+
             { type: 'textMessage', text: "Greetings, traveler! I am C.u.b.i!", faceHero: "CUBI" },
-           { who: "playerCharacter", type: "idle", direction: "left" }, 
-            { who: "playerCharacter", type: "run", direction: "left" },
+
         ]*/
     },
     // RoomTwo holds all the data for the second room of Cosmic Quest
@@ -347,48 +389,256 @@ window.EscapeRooms = {
             JSON.parse(localStorage.getItem('Uranus')),
             JSON.parse(localStorage.getItem('Neptune')),
         ],
-        progressBar: { current: 0, total: 100 },
+        bonusCelestialBodies: [JSON.parse(localStorage.getItem('Meteor Showers'))],
+        progressBar: gameSession ? gameSession.roomTwoProgress : 0,
         gameObjects: {
+            // playerCharacter is the main character controlled by the player
             playerCharacter: new Person ({
-                isPlayerControlled: true,
-                x: utils.withGrid(5),
-                y: utils.withGrid(3),
-                cutWidth: 32,  
+                isPlayerControlled: true, // isPlayerControlled property is used to define whether this character is controlled by the player or not
+                // The x, y properties determine the starting position of the character in the room
+                x:  utils.withGrid(7),//localStorage.getItem('playerX') ? utils.withGrid(Number(localStorage.getItem('playerX'))/16) : utils.withGrid(7),
+                y: utils.withGrid(6), //localStorage.getItem('playerY') ? utils.withGrid(Number(localStorage.getItem('playerY'))/16) : utils.withGrid(6),
+                // Set the direction of the player character to playerDirection if it exists if not set it to 'down'
+               // direction: storedDirection ? storedDirection : 'down',
+                src: authenticatedUser.characterColor['src'],  // src and idleSrc properties are the source of the character's spritesheet images for running and idle state respectively
+                idleSrc: authenticatedUser.characterColor['idleSrc'], 
+                cutWidth: 32,  // cutWidth and cutHeight properties are used to define the size of the character's image from the spritesheet
                 cutHeight: 32, 
-                imgWidth: 32,  
+                imgWidth: 32,  // imgWidth and imgHeight properties are used to define the display size of the character's image
                 imgHeight: 32,
-                shadowOffset: 2.4
+                shadowOffset: 2.4, // shadowOffset property is used to define the offset for the character's shadow
             }),
-           CUBI: new Person ({
-                x: utils.withGrid(6),
-                y: utils.withGrid(8),
-                src: '/assets/img/Characters/NPC.png',
-                cutWidth: 48,  
-                cutHeight: 32, 
-                imgWidth: 48,  
-                imgHeight: 32,
+            // Other game objects can be defined in a similar manner
+            pillar: new Person({
+                x: utils.withGrid(8.5),
+                y: utils.withGrid(6.2),
+                idleSrc: '/assets/img/Room 2/pillar.png',
+                cutWidth: 16,  
+                cutHeight: 16, 
+                imgWidth: 16,
+                imgHeight: 16
+            }),
+
+            CUBI: new Person ({
+                x: utils.withGrid(7), //localStorage.getItem('npcX') ? utils.withGrid(Number(localStorage.getItem('npcX'))/16) : utils.withGrid(7),
+                y: utils.withGrid(9), //localStorage.getItem('npcY') ? utils.withGrid(Number(localStorage.getItem('npcY'))/16) : utils.withGrid(9),
+                //direction: storedCUBIDirection? storedCUBIDirection : 'down',
+                src: '/assets/img/CleanBot.png',
+                idleSrc: undefined,
+                cutWidth: 16,  
+                cutHeight: 16, 
+                imgWidth: 16,  
+                imgHeight: 16,
+                shadowOffset: 2.4,
+                animations: {  
+                    "idle-down": [ [0, 0] ],
+                    "idle-right": [ [0, 2] ],
+                    "idle-up": [ [0, 3] ],
+                    "idle-left": [ [0, 1] ],
+                    "run-down": [ [1, 0], [2, 0]],
+                    "run-right": [ [1, 2], [2, 2] ],
+                    "run-up": [ [1, 3], [2, 3]],
+                    "run-left": [ [1, 1], [2, 1] ],
+                    
+                },
+                isRobot : true,
+                behaviorLoop: [
+                    {type: "idle", direction: "left", time: 2000},
+                    {type: "run", direction: "left"},
+                    {type: "idle", direction: "up", time: 2000},
+                    {type: "run", direction: "up"},
+                    {type: "idle", direction: "up", time: 1000},
+                    {type: "idle", direction: "right", time: 2000},
+                    {type: "run", direction: "right"},
+                    {type: "idle", direction: "down", time: 2000},
+                    {type: "run", direction: "down"},
+                ],
+               // behaviorLoopIndex: storedIndex || 0 ,
+                //movingProgressRemaining: storedCUBIMovingProgressRemaining > 0? storedCUBIBehaviorLoopIndex : 0,
                 talking: [
                     {
                         events: [
-                            { type : "textMessage", text: "You've made it dumbass", faceHero: "npcA"},
+                            { 
+                                type: "textMessage", 
+                                text: "Delighted to see you again, my astute explorer! The inner planets hold wonders beyond imagination. Are you prepared to tackle the challenge that lies ahead?", 
+                                faceHero: "CUBI"
+                            },
+                            { 
+                                type: "confirmation", 
+                                text: "Start Main Challenge?", 
+                                onConfirm: { type: "celestialBodies", initiate: "mainTrivia"},
+                                onCancel: { type: "textMessage", text: "Adios!" }
+                            },
                         ]
                     }
                 ]
             }),
         },
-        initialCutscene: [
-            { who: "playerCharacter", type: "idle", direction: "down" },
+        walls: {
+            [utils.asGridCoord(1,6)]: true,
+            [utils.asGridCoord(2,7)]: true,
+            [utils.asGridCoord(2,8)]: true,
+            [utils.asGridCoord(1,8)]: true,
+            [utils.asGridCoord(2,10)]: true,
+            [utils.asGridCoord(3,10)]: true,
+            [utils.asGridCoord(3,11)]: true,
+            [utils.asGridCoord(3,12)]: true,
+            [utils.asGridCoord(4,13)]: true,
+            [utils.asGridCoord(5,13)]: true,
+            [utils.asGridCoord(6,13)]: true,
+            [utils.asGridCoord(2,5)]: true,
+            [utils.asGridCoord(1,9)]: true,
+            [utils.asGridCoord(7,14)]: true,
+            [utils.asGridCoord(8,14)]: true,
+            [utils.asGridCoord(8,13)]: true,
+            [utils.asGridCoord(9,13)]: true,
+            [utils.asGridCoord(10,13)]: true,
+            [utils.asGridCoord(11,13)]: true,
+            [utils.asGridCoord(12,13)]: true,
+            [utils.asGridCoord(13,13)]: true,
+            [utils.asGridCoord(11,12)]: true,
+            [utils.asGridCoord(12,12)]: true,
+            [utils.asGridCoord(13,12)]: true,
+            [utils.asGridCoord(14,11)]: true,
+            [utils.asGridCoord(13,10)]: true,
+            [utils.asGridCoord(12,9)]: true,
+            [utils.asGridCoord(13,8)]: true,
+            [utils.asGridCoord(13,7)]: true,
+            [utils.asGridCoord(13,6)]: true,
+            [utils.asGridCoord(13,5)]: true,
+            [utils.asGridCoord(13,4)]: true,
+            [utils.asGridCoord(12,4)]: true,
+            [utils.asGridCoord(11,4)]: true,
+            [utils.asGridCoord(10,4)]: true,
+            [utils.asGridCoord(9,4)]: true,
+            [utils.asGridCoord(7,4)]: true,
+            [utils.asGridCoord(8,4)]:true,
+            [utils.asGridCoord(6,5)]:true,
+            [utils.asGridCoord(8,6)]:true,
+            [utils.asGridCoord(5,5)]:true,
+            [utils.asGridCoord(4,5)]:true,
+            [utils.asGridCoord(3,5)]:true,
+        },
+        // Cutscene spaces are special areas in the room where a cutscene plays when the player character enters
+        // They are represented by a dictionary, where the keys are grid coordinates of the cutscene's location and the values are an array of events for the cutscene
+       cutsceneSpaces: {
+            // Coordinate (7,13) triggers a change to RoomTwo
+            [utils.asGridCoord(7,13)]: [
+                {
+                    events: [
+                        { 
+                            type: "changeMap", map: "RoomOne",
+                            notAllowed: { type: "textMessage", text: "You can't go there!" },
+                    
+                    },
+                    ]
+                },
+            ],
+
+            // Coordinate (11, 5) triggers the bonus Trivia challenge
+            [utils.asGridCoord(4, 12)]: [
+                { events:  [
+                    { type: 'textMessage', text: "You've unlocked access to the Sun Challenge, a special bonus task dedicated to our solar system's central star. In this challenge, you'll meet SolarProbe, a small robot designed to test your knowledge of the Sun and its many fascinating features. By entering the compartment, you accept the challenge, and the door will remain locked until you successfully complete it. Good luck!"},
+                    { type: "celestialBodies", planet: 'Meteor Showers' },
+                    ] 
+                },
+            ],
+        
+            // Coordinate (6,5) triggers educational content for Venus
+            [utils.asGridCoord(12,6)]: [
+                {
+                    events: [
+                        { type: "celestialBodies", planet: 'Jupiter' },
+                    ]
+                },
+            ],
+        
+            // Coordinate (2,11) triggers educational content for Mars
+            [utils.asGridCoord(8,10)]: [
+                {
+                    events: [
+                        { type: "celestialBodies", planet: 'Saturn' },
+                    ]
+                },
+            ],
+        
+            // Coordinate (10,11) triggers educational content for Mercury
+            [utils.asGridCoord(2,9)]: [
+                {
+                    events: [
+                        { type: "celestialBodies", planet: 'Neptune' },
+                    ]
+                },
+            ],
+        
+            // Coordinate (13,7) triggers educational content for Earth
+            [utils.asGridCoord(12,11)]: [
+                {
+                    events: [
+                        { type: "celestialBodies", planet: 'Uranus' },
+                    ]
+                },
+            ],
+            [utils.asGridCoord(4,6)]: [
+                {
+                    events: [
+                        { 
+                            type: 'textMessage', 
+                            text: "Welcome, traveler! At the intergalactic shop, we offer a variety of items that can help you on your journey. Here's a rundown of what you can find: \n\n" + 
+                                  "1. **Assist Tokens**: These can provide you hints, manipulate time or provide power-ups to boost your gameplay. \n\n" +
+                                  "   a. **Hints**: Need a nudge in the right direction? Our hints can guide you through the toughest challenges. \n\n" +
+                                  "   b. **Time manipulation**: Feel the pressure of time? This allows you to slow down the pace, giving you the precious moments you need. \n\n" +
+                                  "   c. **Power-ups**: For when you need that extra edge, our power-ups can reveal parts of an answer or eliminate wrong options, helping you get to the right answer quicker.\n\n" + 
+                                  "Choose wisely and they can make your journey a lot smoother. Good luck, adventurer!"
+                        },
+                        { type: "shopKeeper" },
+                    ]
+                },
+            ],
+
+            
+        },        
+       /* initialCutscene: [
+            { who: "playerCharacter", type: "run", direction: "up" },
             { type: 'textMessage', text: "Greetings, traveler! I am C.u.b.i!"},
-        ],
+        ],*/
     },
-    timeLimit: JSON.parse(localStorage.getItem('timeLimit')) || { 
-        total: 60 * 20, // Total time limit for the game, for example 30 minutes
-        remaining: 60 * 20, // Remaining time, initialize to total time limit
-        startTime: null, // Will hold the time when the game starts
-    }
+    timeLimit: gameSession.timeLimit,
 }
 
 initialize();
+
+startCountdown();
+console.log(gameSession.timeLimit);
+console.log(window.EscapeRooms.timeLimit)
+/*/ Listen for the pageshow event to resume the countdown
+window.addEventListener('pageshow', function() {
+    // Check if the current page is 'rooms.html'
+    if (window.location.href.includes('rooms.html')) {
+       
+       
+        if (window.EscapeRooms.timeLimit.remaining > 0) {
+            startCountdown();
+
+        }
+    }
+});
+
+
+
+
+// Listen for the pagehide event to pause the countdown
+window.addEventListener('pagehide', function() {
+    // Stop the countdown
+    clearInterval(window.EscapeRooms.timeLimit.intervalId);
+});*/
+
+
+if (currentRoom === 'RoomTwo') {
+    console.log(currentRoom);
+    roomContainer.classList.add('room-two');
+};
+
 let playerCharacter = window.EscapeRooms[currentRoom].gameObjects.playerCharacter;
 let CUBI = window.EscapeRooms[currentRoom].gameObjects.CUBI;
 
@@ -405,17 +655,15 @@ function startCountdown(interval = 1000) {
         clearInterval(window.EscapeRooms.timeLimit.intervalId);
     }
 
-
+console.log(window.EscapeRooms.timeLimit)
     // Start the countdown interval
     window.EscapeRooms.timeLimit.intervalId = setInterval(function() {
         // Decrement the remaining time
         window.EscapeRooms.timeLimit.remaining--;
-
         // Check if the countdown has finished
         if (window.EscapeRooms.timeLimit.remaining <= 0) {
             // If the player or CUBI is currently moving, delay ending the game until they have finished
-            console.log(CUBI)
-            console.log(playerCharacter)
+
             if (playerCharacter.isMoving || CUBI.movingProgressRemaining > 0) {
                 console.log("Either Player or CUBI is moving, delaying end of game");
                 const movementDuration = 400; // Adjust this based on the duration of your movement
@@ -430,7 +678,7 @@ function startCountdown(interval = 1000) {
                 handleEndOfGame();
             }
 
-            console.log(localStorage.getItem('playerDirection'));
+
             // Stop the countdown
             clearInterval(window.EscapeRooms.timeLimit.intervalId);
         }
@@ -501,18 +749,52 @@ function handleEndOfGame() {
 function resetGame() {
     gameController.restartGame();
     const celestialBodies = getRoomsCelestialBodies(currentRoom);
-    
+
     // Iterate over each celestial body
     celestialBodies.forEach(body => {
+        // Reset notes and research terminal
+        body.notes = "";
+        Object.keys(body.researchTerminal).forEach(key => {
+            body.researchTerminal[key] = "";
+        });
+
         // Iterate over each type of challenge
         Object.keys(body.challenges).forEach(challengeType => {
             // Reset 'isAnsweredCorrectly' for each challenge
             body.challenges[challengeType].forEach(challenge => {
                 challenge.isAnsweredCorrectly = null;
+                if (challenge.isPowerUpUsed) {
+                    delete challenge.isTokenUsed;
+                }
             });
         });
+
+        // Update in the localStorage
+        localStorage.setItem(body.planet, JSON.stringify(body));
     });
 
+    let bonusCelestialBodies = getRoomsCelestialBodies(currentRoom, bonusTrivia);
+
+    for (let body of bonusCelestialBodies) {
+        console.log(body)
+        for (let challengeCategory in body.challenges) {
+            for (let challenge of body.challenges[challengeCategory]) {
+                challenge.isAnsweredCorrectly = null;
+                delete challenge.isTokenUsed;
+            }
+        }
+        
+        for (let key in body.researchTerminal) {
+            body.researchTerminal[key] = "";
+        }
+    
+        body.notes = "";
+            // Save the reset celestial bodies back to storage
+    localStorage.setItem(body.planet, JSON.stringify(body));
+    }
+    
+
+    
     // Get the player's direction from localStorage
     const playerDirection = localStorage.getItem('playerDirection');
 
@@ -521,26 +803,16 @@ function resetGame() {
         playerCharacter.direction = playerDirection;
     }
 
+    restartGameSession(gameSession);
+    console.log(gameSession)
+   updateGameSessionState(gameSession);
+   console.log(gameSession)
+    // Update the game session in local storage
+    User.updateGameSession(authenticatedUser.username, gameSession);
+    console.log(gameSession)
 
-    // Remove items from localStorage
-    localStorage.removeItem('timeLimit');
-    localStorage.removeItem(`${currentRoom}Progress`);
-
-    // Reset progress counter
-    const progressCounterContainer = document.querySelector('.progressCounterContainer');
-    progressCounterContainer.innerText = (`0% completed of ${currentRoom} `);
-
-    // Get the two rect elements
-    const fillBarRect = document.querySelector('.FillBar-container rect:nth-child(1)');
-    const backgroundRect = document.querySelector('.FillBar-container rect:nth-child(2)');
-
-    // Set the width attributes to 0%
-    fillBarRect.setAttribute('width', '0%');
-    backgroundRect.setAttribute('width', '0%');
-
-    const tempo = CUBI.behaviorLoop[storedIndex].time
-    console.log(tempo)
     // Refresh the page
+    localStorage.setItem('currentRoom', 'RoomOne');
     location.reload();
     gameController.restartGame();
 }
@@ -552,11 +824,35 @@ function checkForGameEnd() {
     }
 }
 
+function toTitleCase(str) {
+    return str.replace(/([A-Z])/g, ' $1').trim();
+}
+// Separate function to create progress bar and progress text
+function createProgressInfo() {
+    // Create progress bar
+    const progressBarRectangle = document.createElement('div');
+    progressBarRectangle.innerHTML = (`
+        <img src="/assets/img/GUI/ProgressBar.png" class="progressBar">
+        <svg viewBox="0 0 26 3" class="FillBar-container ${currentRoom}">
+            <rect class="rect1" x=0 y=1 width="${EscapeRooms[currentRoom].progressBar}%" height=5.4 />
+            <rect class="rect2" x=0 y=0 width="${EscapeRooms[currentRoom].progressBar}%" height=2 />
+        </svg>
+    `);
+    progressBarRectangle.classList.add('progressBarRectangle');
+
+    // Create progress text
+    const progressCounterContainer = document.createElement('div');
+    progressCounterContainer.classList.add('progressCounterContainer');
+    progressCounterContainer.innerText = `${EscapeRooms[currentRoom].progressBar}% completed of ${toTitleCase(currentRoom)}`;
+
+    return { progressBarRectangle, progressCounterContainer };
+}
 function createHUD() {
-    const authenticatedUser = {
+    
+ /*   const authenticatedUser = {
         username: 'Grupo13',
         characterColor: '/assets/img/Characters/User/BiColor/BiColor.png'
-    }
+    }*/
     const hudContainer = document.createElement('div');
     hudContainer.classList.add('hudContainer');
 
@@ -566,7 +862,7 @@ function createHUD() {
     
     // Create img for profile pic based on characterColor
     const profilePic = document.createElement('img');
-    profilePic.src = authenticatedUser.characterColor; // Assuming this path, adjust it to your needs
+    profilePic.src = authenticatedUser.characterColor['head']; // Assuming this path, adjust it to your needs
     //profilePic.style.width = '50px';
     profilePic.classList.add('profilePic');
     profileContainer.appendChild(profilePic);
@@ -584,21 +880,11 @@ function createHUD() {
     const progressBarContainer = document.createElement('div');
     progressBarContainer.classList.add('progressBarContainer');
     
-    //Create progressBarRectangle
-    const progressBarRectangle = document.createElement('div');
-    progressBarRectangle.innerHTML = (`
-    <img src="/assets/img/GUI/ProgressBar.png" class="progressBar">
-    <svg viewBox="0 0 26 3" class="FillBar-container">
-        <rect x=0 y=1 width="${EscapeRooms.RoomOne.progressBar}%" height=5.4 fill="#ff9ccd" />
-        <rect x=0 y=0 width="${EscapeRooms.RoomOne.progressBar}%" height=2 fill="#ffd5e9" />
-    </svg>
-    `)
-    progressBarRectangle.classList.add('progressBarRectangle');
+    // Create progress bar and progress text
+    const { progressBarRectangle, progressCounterContainer } = createProgressInfo();
     progressBarContainer.appendChild(progressBarRectangle);
+    progressBarContainer.appendChild(progressCounterContainer);
 
-    const progressCounterContainer = document.createElement('div');
-    progressCounterContainer.classList.add('progressCounterContainer');
-    progressCounterContainer.innerText = (`${EscapeRooms.RoomOne.progressBar}% completed of Room One`);
 
     // Create coinCounterContainer
     const coinCounterContainer = document.createElement('div');
@@ -606,7 +892,7 @@ function createHUD() {
     
     // Create coinCounterNumber
     const coinCounterNumber = document.createElement('span');
-    coinCounterNumber.innerText = String(localStorage.getItem('totalCoins')); // Replace 0 with authenticatedUser.coins when the logic is ready
+    coinCounterNumber.innerText = gameSession.coins // Replace 0 with authenticatedUser.coins when the logic is ready
     coinCounterNumber.classList.add('coinCounterNumber');
     coinCounterContainer.appendChild(coinCounterNumber);
     
@@ -628,10 +914,29 @@ function createHUD() {
     return hudContainer;
 }
 
+// Update function
+function updateHUD() {
+    // Get the existing progress bar
+    const existingProgressBar = document.querySelector('.progressBarRectangle');
+    
+    // Get the existing progress text
+    const existingProgressText = document.querySelector('.progressCounterContainer');
+
+    // Create a new progress bar and progress text with the updated progress
+    const { progressBarRectangle, progressCounterContainer } = createProgressInfo();
+
+    // Replace the old progress bar with the new one
+    existingProgressBar.replaceWith(progressBarRectangle);
+
+    // Replace the old progress text with the new one
+    existingProgressText.replaceWith(progressCounterContainer);
+}
+
+
 // Usage:
 const hud = createHUD();
 frameContainer.appendChild(hud);
-console.log(hud);
+
 
 /*  Event listeners for UI updates and interactivity */
 
@@ -726,12 +1031,21 @@ function createRevealingText(element, text, speed = 30) {
 // The 'celestialBodies' event fires when a new celestial body's educational content needs to be displayed
 document.addEventListener("celestialBodies", function(e) {
     const eventData = e.detail;
-    console.log(eventData); //eventData.event.planet gives the name of the planet/celestialBody
-    console.log(getRoomsCelestialBodies(currentRoom))
+
     if (getRoomsCelestialBodies(currentRoom).some(name => name.planet === eventData.event.planet)) {displayEducationalContent(eventData)}
     else {displayChallengeContent(eventData); console.log(eventData.event)}
 });
 
+// Global variables
+let mainTrivia = true;
+let bonusTrivia
+
+let planetSet;
+let currentPlanet;  // These should be dynamically set based on the current game state
+let challengeType;  // These should be dynamically set based on the current game state
+let currentQuestionIndex = 0;
+let currentQuestion;
+let displayQuestion;
 
 // Store the icons paths in an object for later reference
 const iconPaths = {
@@ -774,7 +1088,8 @@ const sortAlphabetSoup = (challenge) => {
 const checkCorrectAnswer = (planet, challenge) => {
         // Call the sorting function
         
-       
+       console.log(planet);
+       console.log(challenge);
         sortAlphabetSoup(challenge);
 
         // Check if the selected answer is correct by comparing the sorted letters with the correct answer
@@ -885,11 +1200,13 @@ function startBonusTriviaCountdown(difficulty, countdownDisplay, currentChalleng
 }
 
 function displayChallengeContent(eventData) {
+    bonusTrivia = true;
+    currentPlanet = eventData.event.planet;
+    challengeType = 'alphabet soup';
 
-    const roomContainer = document.querySelector('.room-container');
-    const planet = getPlanetSet(eventData.event.planet);
+    planetSet = getPlanetSet(eventData.event.planet);
     const resolve = eventData.onComplete
-    console.log(resolve);
+
     mainDiv = document.createElement('div');
     mainDiv.classList.add('challenge-container');
 
@@ -906,14 +1223,13 @@ function displayChallengeContent(eventData) {
     selectedLettersDiv.classList.add('selected-letters-container');
     mainDiv.appendChild(questionDiv);
 
-    let grids = [];
-    let currentChallenge;
+    let grid;
     let countdownResult;
     const icons = [];  // Save the icons to use them later
     let challengesArray = [];
 
-    for (let challengeType in planet.challenges) {
-        const challenges = planet.challenges[challengeType];
+    for (let challengeType in planetSet.challenges) {
+        const challenges = planetSet.challenges[challengeType];
         challengesArray = challengesArray.concat(challenges);
         challenges.forEach((challenge, index) => {
             const questionText = challenge.question;
@@ -930,35 +1246,46 @@ function displayChallengeContent(eventData) {
             icons.push(icon);
 
             icon.addEventListener('click', () => {
-                    // Prevent click if the icon is "disabled"
+
+                    // Clear the alphabetSoup array of the previous question
+                if (currentQuestion) {
+                    currentQuestion.alphabetSoup = [];
+                }
+
+                currentQuestion = challenge;
+                currentQuestionIndex = index;
+                console.log(currentQuestionIndex);
+                // Prevent click if the icon is "disabled"
                 if (icon.classList.contains('disabled')) {
                     return;
                 }
                 questionDiv.innerText = questionText;
-                grids.forEach(grid => grid.style.display = "none");
-                grids[index].style.display = "block";
+                grid.remove();  // remove the previous grid
+                selectedLettersDiv.innerText = '';
+                grid = createAlphabetSoupGrid(11, 13, currentQuestion.answer, challenge);
+
+                mainDiv.insertBefore(grid, iconContainer);
+
                     console.log(countdownResult)
     
                     clearInterval(countdownResult);
           
-                currentChallenge = challenge;
+                
 
              
                 countdownDisplay.innerText = '';
-                countdownResult = startBonusTriviaCountdown('easy', countdownDisplay, currentChallenge, planet, challengesArray, icons, index, resolve);
+                countdownResult = startBonusTriviaCountdown('easy', countdownDisplay, currentQuestion, planetSet, challengesArray, icons, index, resolve);
 
             });
 
             iconContainer.appendChild(icon);
 
-            const grid = createAlphabetSoupGrid(11, 13, challenge.answer, challenge);
-            grid.style.display = "none";
-            grids.push(grid);
-
             if(index === 0) {
                 questionDiv.innerText = questionText;
-                grid.style.display = "block";
-                currentChallenge = challenge;
+               // grid.style.display = "block";
+               currentQuestion = challenge;
+               currentQuestionIndex = index;
+
             }
             challenge.timeLimit = null;
         });
@@ -966,29 +1293,31 @@ function displayChallengeContent(eventData) {
  
 
     // Start the countdown for the first challenge outside the loop
-    countdownResult = startBonusTriviaCountdown('easy', countdownDisplay, currentChallenge, planet, challengesArray, icons, 0, resolve);
+    countdownResult = startBonusTriviaCountdown('easy', countdownDisplay, currentQuestion, planetSet, challengesArray, icons, 0, resolve);
     console.log(countdownResult);
  
-    currentChallenge.timeLimit = 0;
+    currentQuestion.timeLimit = 0;
 
-    console.log(currentChallenge);
-    grids.forEach(grid => mainDiv.appendChild(grid));
+ 
+    //grids.forEach(grid => mainDiv.appendChild(grid));
+    grid = createAlphabetSoupGrid(11, 13, currentQuestion.answer, currentQuestion);
+    mainDiv.appendChild(grid);
     mainDiv.appendChild(iconContainer);
 
     const submitButton = document.createElement('button');
     submitButton.innerText = "Submit";
     submitButton.addEventListener('click', () => {
-        checkCorrectAnswer(planet, currentChallenge); 
-        currentChallenge.alphabetSoup = [];
+        checkCorrectAnswer(planetSet, currentQuestion); 
+        currentQuestion.alphabetSoup = [];
     
         // Clear the interval when the submit button is clicked
-        if (currentChallenge && currentChallenge.intervalId) {
-            clearInterval(currentChallenge.intervalId);
-            currentChallenge.intervalId = null;
+        if (currentQuestion && currentQuestion.intervalId) {
+            clearInterval(currentQuestion.intervalId);
+            currentQuestion.intervalId = null;
         }
     
         // Get the index of the current challenge
-        const currentIndex = challengesArray.indexOf(currentChallenge);
+        const currentIndex = challengesArray.indexOf(currentQuestion);
     
         // Disable the icon and mark it as answered
         const icon = icons[currentIndex];
@@ -1006,8 +1335,10 @@ function displayChallengeContent(eventData) {
             mainDiv.remove();  // remove the main div
             const coinsEarned = calculateCoins(challengesArray, 'easy');  // replace 'easy' with the actual difficulty
             alert(`You earned ${coinsEarned} coins!`);
-            hud.querySelector('.coinCounterNumber').innerText = String(localStorage.getItem('totalCoins'));
+            hud.querySelector('.coinCounterNumber').innerText = gameSession.coins;
             resolve(); // resolve the promise
+            bonusTrivia = false;
+            clearInterval(countdownResult);
         }
     });
     
@@ -1032,11 +1363,14 @@ function calculateCoins(challenges, difficulty) {
             totalCoins += baseScore[difficulty] * (challenge.timeLimit || 0);
         }
     });
-    localStorage.setItem('totalCoins', totalCoins);
+    gameSession.coins += totalCoins; // increment the coins in the game session
+     // Save the game state every time the progress changes
+     updateGameSessionState(gameSession);
+     User.updateGameSession(authenticatedUser.username, gameSession);
     return totalCoins;
 }
 
-
+let answerCells = [];
 function createAlphabetSoupGrid(rows, cols, answer, currentChallenge) {
     
     // Create a multidimensional array (grid) and fill it with random letters
@@ -1053,7 +1387,7 @@ function createAlphabetSoupGrid(rows, cols, answer, currentChallenge) {
     // Randomly select a few words from the filteredWordList and add them to an array
     let wordArray = filteredWordList.sort(() => 0.5 - Math.random()).slice(0, 2);
 
-    // Add the answer to the beginning of the array
+    // Add the answer to the end of the array
     wordArray.push(answer);
 
 
@@ -1132,9 +1466,23 @@ function createAlphabetSoupGrid(rows, cols, answer, currentChallenge) {
             alert(`Cannot place answer ${answer} horizontally. Please adjust the answer or grid size.`);
             return;
         }
-    
         let randomColumnIndex = Math.floor(Math.random() * (maxStartColumnIndex + 1));
-        grid[randomRowIndex].splice(randomColumnIndex, answerLength, ...answerArray);
+
+        // Replace the grid cells with the answer letters
+        for (let i = 0; i < answerLength; i++) {
+            grid[randomRowIndex][randomColumnIndex + i] = answerArray[i];
+        }
+
+        // Check if the current word is the answer
+        if (word === answer) {
+            
+            answerCells = [];
+            // Add each cell to answerCells
+            for (let i = 0; i < answerLength; i++) {
+                answerCells.push([randomRowIndex, randomColumnIndex + i]);
+            }
+        }
+
     } else if (placementOption === "vertical") {
         console.log('Vertical');
         let randomColumnIndex = Math.floor(Math.random() * grid[0].length);
@@ -1156,6 +1504,15 @@ function createAlphabetSoupGrid(rows, cols, answer, currentChallenge) {
             console.log('Setting grid[', randomRowIndex + i, '][', randomColumnIndex, '] to', answerArray[i]);
             grid[randomRowIndex + i][randomColumnIndex] = answerArray[i];
         }
+
+        // Check if the current word is the answer
+        if (word === answer) {
+            // Add each cell to answerCells
+            for (let i = 0; i < answerLength; i++) {
+                answerCells.push([randomRowIndex + i, randomColumnIndex]);
+            }
+        }
+
     } else if (placementOption === "diagonal") {
         console.log('Diagonal');
         // Calculate the maximum possible start indices for the row and column
@@ -1172,6 +1529,15 @@ function createAlphabetSoupGrid(rows, cols, answer, currentChallenge) {
                 for (let i = 0; i < answerLength; i++) {
                     grid[randomStartRowIndex0 + i][randomStartColumnIndex0 + i] = answerArray[i];
                 }
+
+                // Check if the current word is the answer
+                if (word === answer) {
+                    // Add each cell to answerCells
+                    for (let i = 0; i < answerLength; i++) {
+                        answerCells.push([randomStartRowIndex0 + i, randomStartColumnIndex0 + i]);
+                    }
+                }
+
                 placementOption = 'diagonalTopBottomLeftRight';
                 break;
             case 1:  // Diagonal from bottom to top, right to left
@@ -1180,6 +1546,15 @@ function createAlphabetSoupGrid(rows, cols, answer, currentChallenge) {
                 for (let i = 0; i < answerLength; i++) {
                     grid[randomStartRowIndex1 - i][randomStartColumnIndex1 - i] = answerArray[i];
                 }
+
+                // Check if the current word is the answer
+                if (word === answer) {
+                    // Add each cell to answerCells
+                    for (let i = 0; i < answerLength; i++) {
+                        answerCells.push([randomStartRowIndex1 - i][randomStartColumnIndex1 - i]);
+                    }
+                }
+
                 placementOption = 'diagonalBottomTopRightLeft';
                 break;
             case 2:  // Diagonal from top to bottom, right to left
@@ -1188,6 +1563,16 @@ function createAlphabetSoupGrid(rows, cols, answer, currentChallenge) {
                 for (let i = 0; i < answerLength; i++) {
                     grid[randomStartRowIndex2 + i][randomStartColumnIndex2 - i] = answerArray[i];
                 }
+
+                // Check if the current word is the answer
+                if (word === answer) {
+                    // Add each cell to answerCells
+                    for (let i = 0; i < answerLength; i++) {
+                        answerCells.push([randomStartRowIndex2 + i][randomStartColumnIndex2 - i]);
+                    }
+                }
+
+                                
                 placementOption = 'diagonalTopBottomRightLeft';
                 break;
             case 3:  // Diagonal from bottom to top, left to right
@@ -1196,6 +1581,15 @@ function createAlphabetSoupGrid(rows, cols, answer, currentChallenge) {
                 for (let i = 0; i < answerLength; i++) {
                     grid[randomStartRowIndex3 - i][randomStartColumnIndex3 + i] = answerArray[i];
                 }
+
+                // Check if the current word is the answer
+                if (word === answer) {
+                    // Add each cell to answerCells
+                    for (let i = 0; i < answerLength; i++) {
+                        answerCells.push([randomStartRowIndex2 + i][randomStartColumnIndex2 - i]);
+                    }
+                }
+                
                 placementOption = 'diagonalBottomTopLeftRight';
                 break;
             default:
@@ -1232,6 +1626,7 @@ function createAlphabetSoupGrid(rows, cols, answer, currentChallenge) {
                     if (isReversed) {
                         currentChallenge.isReversed = true;
                     }
+                    console.log(currentChallenge);
                     currentChallenge.answerOrganization = placementOption;
                     currentChallenge.alphabetSoup.push({letter: letter, rowIndex: rowIndex, colIndex: colIndex});
                 }
@@ -1287,6 +1682,59 @@ const wordList = [
     "MISSION",
   ];
   
+  const getTokenQuantitiesFromStorage = () => {
+    const storedQuantities = gameSession.tokenQuantities;
+    return storedQuantities ? storedQuantities : { 'Hints': 0, 'Time manipulation': 0, 'Power-ups': 0 };
+};
+
+const saveTokenQuantitiesToStorage = (tokenQuantities) => {
+    gameSession.tokenQuantities;
+            // Update celestial bodies in the local storage
+            updateCelestialBodiesInLocalStorage(gameSession);
+        
+            // Update the game session in local storage
+            User.updateGameSession(authenticatedUser.username, gameSession);
+};
+
+
+const updateTokenQuantitiesOnPage = () => {
+    const storedQuantities = getTokenQuantitiesFromStorage();
+
+    // Token names and corresponding element class names
+    const tokenElements = {
+        'Hints': 'helps-quantity',
+        'Time manipulation': 'reduce-time-quantity',
+        'Power-ups': 'power-ups-quantity'
+    };
+
+    // Update quantities on page
+    let totalTokens = 0; // keep track of total tokens
+    for (let tokenName in tokenElements) {
+        const quantity = storedQuantities[tokenName];
+        totalTokens += quantity; // increment total tokens
+        const elementClassName = tokenElements[tokenName];
+
+        const element = document.querySelector(`.${elementClassName}`);
+        if (quantity) {
+            element.innerText = quantity;
+        } else {
+            element.innerText = '';
+        }
+    }
+    
+    // Update total tokens in "assist-tokens-quantity"
+    const totalElement = document.querySelector('.assist-tokens-quantity');
+    if (totalTokens > 0) {
+    totalElement.innerText = totalTokens;
+    } else {
+        totalElement.innerText = '';
+    }
+};
+
+
+// Call this function when page loads
+document.addEventListener('DOMContentLoaded', updateTokenQuantitiesOnPage);
+
   document.addEventListener('shopKeeper', (eventData) => {
 
     const resolve = eventData.detail.onComplete
@@ -1294,8 +1742,16 @@ const wordList = [
     const shopContainer = document.createElement('div');
     shopContainer.classList.add('shop-container');
 
-    localStorage.setItem('totalCoins', 30);
-    hud.querySelector('.coinCounterNumber').innerText = localStorage.getItem('totalCoins');
+    const closeIcon = document.createElement('img');
+    closeIcon.src = '/assets/img/GUI/UI_Glass_Cross_Medium_01a.png';
+    closeIcon.classList.add('close-icon');
+
+    closeIcon.addEventListener('click', () => {
+        shopContainer.remove();
+        resolve();
+    });
+
+    shopContainer.appendChild(closeIcon);
 
     const shopTitle = document.createElement('h2');
     shopTitle.innerText = "Intergalactic Shop";
@@ -1312,11 +1768,7 @@ const wordList = [
         {name: 'Power-ups', description: 'Boosts your gameplay', price: 15, iconName: 'power-ups'}
     ];
 
-    const tokenQuantities = {
-        'Hints': 0,
-        'Time manipulation': 0,
-        'Power-ups': 0
-    };
+    let tokenQuantities = getTokenQuantitiesFromStorage();
 
     // Create a div to hold the tokens
     const tokenContainerDiv = document.createElement('div');
@@ -1387,24 +1839,25 @@ const wordList = [
         const buyButton = document.createElement('button');
         buyButton.innerText = '+';
         buyButton.addEventListener('click', () => {
-            if (total >= Number(localStorage.getItem('totalCoins'))) {
+            // Check if the user has enough coins
+            if (total + Number(token.price) > gameSession.coins) {
                 alert('You do not have enough coins to buy more.');
-                return;
+                buyButton.disabled = true;
+            } else {
+                quantityContainer.innerText = parseInt(quantityContainer.innerText) + 1;
+                total += Number(token.price);
+        
+                // Increase the quantity of this token
+                tokenQuantities[token.name]++;
+        
+                // Update the corresponding receipt element
+                receiptElements[token.name].innerHTML = `${token.name}: ${Number(quantityContainer.innerText) * Number(token.price)} coins`;
+        
+                // Update total
+                updateTotal();
             }
-
-            quantityContainer.innerText = parseInt(quantityContainer.innerText) + 1;
-            total += Number(token.price);
-
-            // Increase the quantity of this token
-            tokenQuantities[token.name]++;
-
-
-            // Update the corresponding receipt element
-            receiptElements[token.name].innerHTML = `${token.name}: ${Number(quantityContainer.innerText) * Number(token.price)} coins`;
-
-            // Update total
-            updateTotal();
         });
+        
         tokenContainer.insertBefore(buyButton, quantityContainer);
 
         const sellButton = document.createElement('button');
@@ -1444,49 +1897,80 @@ const wordList = [
         if (total == 0 ) {
             alert ('You dont have anything to buy.');
         
-        } else if (total <= Number(localStorage.getItem('totalCoins'))) {
-            localStorage.setItem('totalCoins', Number(localStorage.getItem('totalCoins')) - total);
-            alert(`You bought all tokens. You now have ${localStorage.getItem('totalCoins')} coins left.`);
+        } else if (total <= gameSession.coins) {
+
+            updateGameSessionState(gameSession);
+            User.updateGameSession(authenticatedUser.username, gameSession);
+            alert(`You bought all tokens. You now have ${gameSession.coins} coins left.`);
             
-            // Update the token quantities
-            updateTokenQuantities(tokenQuantities);
-            
+            // Get current quantities from storage
+            let currentQuantities = getTokenQuantitiesFromStorage();
+            // Add bought quantities to current quantities
+            for (let tokenName in tokenQuantities) {
+                currentQuantities[tokenName] += tokenQuantities[tokenName];
+            }
+            // Save updated quantities to storage
+            saveTokenQuantitiesToStorage(currentQuantities);
+            // Update quantities displayed on the page
+            updateTokenQuantitiesOnPage();
+    
             // Reset total and update it
             resetReceiptAndQuantities();
-            hud.querySelector('.coinCounterNumber').innerText = localStorage.getItem('totalCoins');
+            hud.querySelector('.coinCounterNumber').innerText = gameSession.coins;
             shopContainer.remove();
             resolve();
-
+    
         }
     });
+    
     receiptContainer.appendChild(buyAllButton);
 
     roomContainer.appendChild(shopContainer);
 });
 
+let isTokenActive = false;
+
 // Reduce time button click event
 document.querySelector('#reduce-time').addEventListener('click', function() {
+    if (isTokenActive) {
+        alert('You can only use one Time Manipulation token at a time!');
+        return;
+    }
+
     let reduceTimeQuantity = parseInt(document.querySelector('.reduce-time-quantity').innerText, 10);
     if (isNaN(reduceTimeQuantity) || reduceTimeQuantity === 0) {
         alert('No Time Manipulation tokens left!');
         return;
     }
 
-    // Decrease token quantity
-    reduceTimeQuantity--;
-    document.querySelector('.reduce-time-quantity').innerText = reduceTimeQuantity.toString();
+    let tokenQuantities = getTokenQuantitiesFromStorage();
+    if (tokenQuantities['Time manipulation'] > 0) {
+        // Decrease token quantity
+        tokenQuantities['Time manipulation']--;
+        // Save the new quantities to storage
+        saveTokenQuantitiesToStorage(tokenQuantities);
+        // Update quantities displayed on the page
+        updateTokenQuantitiesOnPage();
+    } else {
+        alert('No Time Manipulation tokens left!');
+        return;
+    }
     
     // Update the countdown's interval
     startCountdown(5000); // slow down the countdown
-    setTimeout(() => startCountdown(), 10000); // after 10s, return the countdown to its normal pace
+    isTokenActive = true; // Token is active
+    setTimeout(() => {
+        startCountdown();
+        isTokenActive = false; // Token is no longer active
+    }, 10000); // after 10s, return the countdown to its normal pace
 });
+
 
 
 // Add a flag for tracking if a hint is currently being displayed
 let isHintInProgress = false;
 
-let currentPlanet = "Earth";  // These should be dynamically set based on the current game state
-let currentChallenge = "multiple choice";
+
 
 document.querySelector('#helps').addEventListener('click', async function() {
     if (isHintInProgress) {
@@ -1494,35 +1978,45 @@ document.querySelector('#helps').addEventListener('click', async function() {
         return;
     }
 
+    if (!mainTrivia) {
+        alert('You can only use the hints in the main trivia!');
+        return;
+    }
     let helpQuantity = parseInt(document.querySelector('.helps-quantity').innerText, 10);
     if (isNaN(helpQuantity) || helpQuantity === 0) {
         alert('No help tokens left!');
         return;
     }
 
-    // Decrease token quantity
-    helpQuantity--;
-    document.querySelector('.helps-quantity').innerText = helpQuantity.toString();
-
     // Load the planet data from local storage
-    let planetData = JSON.parse(localStorage.getItem(currentPlanet));
-    if (!planetData) {
+    planetSet = getPlanetSet(currentPlanet);
+
+
+    currentQuestion = planetSet.challenges[challengeType][currentQuestionIndex];
+    console.log(currentPlanet);
+    console.log(planetSet);
+    console.log(challengeType);
+    console.log(currentQuestionIndex);
+    console.log(currentQuestion);
+    if (!currentPlanet) {
         alert('No data found for the current planet!');
         return;
     }
 
-    // Get the challenge data
-    let challengeData = planetData.challenges[currentChallenge];
-    if (!challengeData) {
+    if (!currentQuestion) {
         alert('No challenge data found for the current planet!');
         return;
     }
 
+    if (currentQuestion.isTokenUsed) {
+        alert('Token already used for this challenge!');
+        return;
+    }
+
     // Get a random hint from the current challenge
-    let hintsArray = challengeData.map(challenge => challenge.hints);  // Combine all hints arrays into one
-    let flattenedHintsArray = [].concat(...hintsArray);  // Flatten the array
-    let hintIndex = Math.floor(Math.random() * flattenedHintsArray.length);
-    let hintMessage = flattenedHintsArray[hintIndex];
+    let hintsArray = currentQuestion.hints;  // Combine all hints arrays into one
+    let hintIndex = Math.floor(Math.random() * hintsArray.length);
+    let hintMessage = hintsArray[hintIndex];
 
     // Create a new OverworldEvent with the helpMessage
     let helpEvent = { type: 'textMessage', text: hintMessage };
@@ -1531,76 +2025,232 @@ document.querySelector('#helps').addEventListener('click', async function() {
     gameController.addGameEvent(newOverworldEvent);
     isHintInProgress = true;  // Set the flag to true when the hint starts
     await newOverworldEvent.init();
-    const textMessage = document.querySelector('.TextMessage');
-    textMessage.remove();
+
     isHintInProgress = false; // Set the flag back to false when the hint ends
+
+    // Set the flag back to false when the hint ends
+    isHintInProgress = false;
+
+    let tokenQuantities = getTokenQuantitiesFromStorage();
+    if (tokenQuantities['Hints'] > 0) {
+        // Decrease token quantity
+        tokenQuantities['Hints']--;
+        // Save the new quantities to storage
+        saveTokenQuantitiesToStorage(tokenQuantities);
+        // Update quantities displayed on the page
+        updateTokenQuantitiesOnPage();
+
+        currentQuestion.isTokenUsed = true;
+
+        localStorage.setItem(currentPlanet, JSON.stringify(planetSet));
+    } else {
+        alert('No Time Manipulation tokens left!');
+        return;
+    }
+
 });
 
 
 document.getElementById('power-ups').addEventListener('click', function() {
+    if (!mainTrivia && !bonusTrivia) {
+        alert ('You can only use powerups on the trivias!');
+        return;
+    } 
+
     if (isHintInProgress) {
         alert('Wait for the current hint to finish!');
         return;
     }
 
-    let powerUpsQuantity = parseInt(document.querySelector('.power-ups-quantity').innerText, 10);
+    let powerUpsQuantity = parseInt(document.querySelector('.power-ups-quantity').innerText);
     if (isNaN(powerUpsQuantity) || powerUpsQuantity === 0) {
         alert('No power-ups left!');
         return;
     }
+ 
+    planetSet = getPlanetSet(currentPlanet);
+   
+    currentQuestion = planetSet.challenges[challengeType][currentQuestionIndex];
 
-    // Obtain the current challenge from the localStorage
-    let currentChallenge = JSON.parse(localStorage.getItem('currentChallenge'));
-
-    if (currentChallenge.isPowerUpUsed) {
-        alert('Power-up already used for this challenge!');
+    console.log(currentPlanet);
+    console.log(planetSet);
+    console.log(challengeType);
+    console.log(currentQuestionIndex);
+    console.log(currentQuestion);
+    
+    if (currentQuestion.isTokenUsed) {
+        alert('Token already used for this challenge!');
         return;
     }
-
-    // Decrease token quantity
-    powerUpsQuantity--;
-    document.querySelector('.power-ups-quantity').innerText = powerUpsQuantity.toString();
-
-    // Mark power-up as used for the current challenge
-    currentChallenge.isPowerUpUsed = true;
-
-    switch (currentChallenge.type) {
-        case 'multiple choice':
-            handleMultipleChoicePowerUp(currentChallenge);
-            break;
-        case 'short answer':
-            handleShortAnswerPowerUp(currentChallenge);
-            break;
-        case 'fill in the blanks':
-            handleFillInBlanksPowerUp(currentChallenge);
-            break;
-        default:
-            console.log('Unsupported challenge type for power-ups.');
-            break;
+    
+    let tokenQuantities = getTokenQuantitiesFromStorage();
+    if (tokenQuantities['Power-ups'] > 0) {
+        // Decrease token quantity
+        tokenQuantities['Power-ups']--;
+        // Save the new quantities to storage
+        saveTokenQuantitiesToStorage(tokenQuantities);
+        // Update quantities displayed on the page
+        updateTokenQuantitiesOnPage();
+    
+        // Set token used flag to true
+        currentQuestion.isTokenUsed = true;
+        localStorage.setItem(currentPlanet, JSON.stringify(planetSet));
+    } else {
+        alert('No Power-ups left!');
+        return;
     }
+    
 
-    // Update the challenge in the localStorage
-    localStorage.setItem('currentChallenge', JSON.stringify(currentChallenge));
+
+    // Create a new OverworldEvent with the helpMessage
+    let powerUpEvent = { type: 'powerUp', currentPlanet, challengeType, currentQuestion };
+    
+    const newOverworldEvent = new OverworldEvent({ map: cosmicQuest.map, event: powerUpEvent });
+    gameController.addGameEvent(newOverworldEvent);
+    isHintInProgress = true;  // Set the flag to true when the hint starts
+    newOverworldEvent.init();
 });
 
 
-function updateTokenQuantities(tokenQuantities) {
+document.addEventListener('powerUp', function(eventData) {
+    currentQuestion = eventData.detail.event.currentQuestion;
+    currentPlanet = eventData.detail.event.currentPlanet;
+    challengeType = eventData.detail.event.challengeType;
+    const onComplete = eventData.detail.onComplete; // get the onComplete function
+    
 
-    const assistTokensElement = document.querySelector('.assist-tokens-quantity');
+    if (challengeType === 'multiple choice') {
+        handleMultipleChoicePowerUp(currentPlanet, onComplete);
+    } else if (challengeType === 'short answer') {
+        handleShortAnswerPowerUp(currentQuestion,currentPlanet);
+    } else if (challengeType === 'fill in the blanks') {
+        handleFillInTheBlanksPowerUp(currentQuestion,currentPlanet,onComplete);
+    } else if (challengeType === 'alphabet soup') {
+        handleAlphabetSoupPowerUp(currentQuestion, currentPlanet);
+    };
 
-    const powerUpsQuantity = document.querySelector('.power-ups-quantity');
-    powerUpsQuantity.innerText = tokenQuantities['Power-ups'];
-    const reduceTimeQuantity = document.querySelector('.reduce-time-quantity');
-    reduceTimeQuantity.innerText = tokenQuantities['Time manipulation'];
-    const helpQuantity = document.querySelector('.helps-quantity');
-    helpQuantity.innerText = tokenQuantities['Hints'];
 
+    isHintInProgress = false; // Set the flag back to false after the event handling is done
+});
 
+function handleMultipleChoicePowerUp(currentPlanet, onComplete) {
 
-    // Update the total tokens
-    const totalTokens = Object.values(tokenQuantities).reduce((a, b) => a + b, 0);
-    assistTokensElement.innerText = totalTokens;
+    let randomIndex;
+    do {
+        randomIndex = Math.floor(Math.random() * currentQuestion.choices.length);
+    } while (currentQuestion.choices[randomIndex] === currentQuestion.answer)
+    // Remove the randomly chosen incorrect option from the challenge
+    currentQuestion.choices.splice(randomIndex, 1);
+            // Set token used flag to true
+            currentQuestion.isTokenUsed = true;
+    // Update the challenge in the localStorage
+    localStorage.setItem(currentPlanet, JSON.stringify(planetSet));
+   
+    // Re-display the current question with updated choices
+    displayQuestion(currentQuestionIndex, currentQuestion);
+
+    // resolve the promise
+    onComplete();
+} 
+
+// Handle short answer power-up
+function handleShortAnswerPowerUp(currentQuestion, currentPlanet) {
+    let wordCount = currentQuestion.answer.split(' ').length;
+    alert(`The answer contains ${wordCount} word(s).`);
+    currentQuestion.isPowerUpUsed = true;
+ 
+    // Update the challenge in the localStorage
+    localStorage.setItem(currentPlanet, JSON.stringify(planetSet));
 }
+
+// Handle fill in the blanks power-up
+function handleFillInTheBlanksPowerUp(currentQuestion, currentPlanet, onComplete) {
+
+    console.log(currentQuestion);
+
+    // Use the custom function to split the question and answer
+    let questionArray = splitString(currentQuestion.question);
+    let answerArray = splitString(currentQuestion.answer);
+
+    let correctChoicePosition;
+
+    for (let i = 0; i < answerArray.length; i++) {
+        if (questionArray[i] !== answerArray[i]) {
+            correctChoicePosition = i;
+            break;
+        }
+    }
+
+    // Adjust for 0-based indexing
+    correctChoicePosition += 1;
+
+    // Get the corresponding span elements
+    let beforeSpan = document.querySelector(`.question span:nth-child(${correctChoicePosition-1})`);
+    let afterSpan = document.querySelector(`.question span:nth-child(${correctChoicePosition})`);
+
+    // Add padding to hint the correct position
+    beforeSpan.style.paddingRight = "10px";
+    afterSpan.style.paddingLeft = "10px";
+
+    // Remove the hint after 5 seconds
+    setTimeout(() => {
+        beforeSpan.style.paddingRight = "0";
+        afterSpan.style.paddingLeft = "0";
+    }, 5000);
+
+            // Set token used flag to true
+            currentQuestion.isTokenUsed = true;
+            
+    // Update the challenge in the localStorage
+    localStorage.setItem(currentPlanet, JSON.stringify(planetSet));
+
+    // Resolve the promise
+    onComplete();
+}
+
+
+function splitString(str) {
+    // This regex splits by space but keeps together words that contain apostrophes and decimal numbers
+    let arr = str.match(/[\w.'’]+|[.,;!?]/g);
+    // Then we split 'degrees.' into 'degrees' and '.' by filtering through the array
+    arr = arr.reduce((acc, el) => {
+        if (!el.includes('.5') && el.endsWith('.')) {
+            let splitEl = el.slice(0, el.length - 1);
+            acc.push(splitEl);
+            acc.push('.');
+        } else {
+            acc.push(el);
+        }
+        return acc;
+    }, []);
+    return arr;
+}
+
+
+
+// Add this function in your script
+function handleAlphabetSoupPowerUp(currentQuestion) {
+
+
+// Randomly select 2 or 3 cells from the answer
+let cellsToClick = answerCells.sort(() => 0.5 - Math.random()).slice(0, 2);
+
+
+// Trigger a click event on these cells
+cellsToClick.forEach(cell => {
+    let td = document.querySelector(`tr:nth-child(${cell[0] + 1}) td:nth-child(${cell[1] + 1})`);
+    td.click();
+});
+
+            // Set token used flag to true
+            currentQuestion.isTokenUsed = true;
+
+// Update the challenge in the localStorage
+localStorage.setItem(currentPlanet, JSON.stringify(planetSet));
+}
+
+
+
 
 //Get the current planet set from local storage
 const getPlanetSet = eventPlanet => JSON.parse(localStorage.getItem(eventPlanet));
@@ -1726,19 +2376,30 @@ function displayEducationalContent(eventData) {
     });
 }
 
-function getRoomsCelestialBodies(currentRoom) {
+function getRoomsCelestialBodies(currentRoom = null, bonusTrivia = null) {
     // Get celestial bodies from all rooms
     const celestialBodies = [];
 
-    // Get celestial bodies from all rooms if currentRoom isn't provided, or from the current room otherwise
-    if (currentRoom === null) {
-        celestialBodies.push(...window.EscapeRooms.RoomOne.celestialBodies);
-        celestialBodies.push(...window.EscapeRooms.RoomTwo.celestialBodies);
-    } else {
-        celestialBodies.push(...window.EscapeRooms[currentRoom].celestialBodies);
+    // Determine which celestial bodies to get based on the parameters
+    switch (currentRoom) {
+        case null:
+            // If no room is specified, get celestial bodies from all rooms
+            celestialBodies.push(...window.EscapeRooms.RoomOne.celestialBodies);
+            celestialBodies.push(...window.EscapeRooms.RoomTwo.celestialBodies);
+            break;
+        default:
+            // If a room is specified, get celestial bodies from that room
+            celestialBodies.push(...window.EscapeRooms[currentRoom].celestialBodies);
+            
+            if (bonusTrivia !== null) {
+                // If bonusTrivia is specified, get bonus celestial bodies from that room
+                celestialBodies.push(...window.EscapeRooms[currentRoom].bonusCelestialBodies);
+            }
     }
+
     return celestialBodies;
-};
+}
+
 
 function createButtons(currentRoom = null) {
     const celestialBodies = getRoomsCelestialBodies(currentRoom)
@@ -1836,8 +2497,14 @@ function createConfirmationBox({ event, onComplete }) {
         const newOverworldEvent = new OverworldEvent({ map: cosmicQuest.map, event: event.onConfirm });
         gameController.addGameEvent(newOverworldEvent);
         await newOverworldEvent.init();
+        // Also resolve the 'run' event from CUBI's behavior loop
+        if (CUBI.currentEventResolve) {
+            CUBI.currentEventResolve();
+            CUBI.currentEventResolve = null;
+        }
         onComplete();
     });
+    
 
     confirmationBox.querySelector('.cancelButton').addEventListener('click', async () => {
         confirmationBox.remove();
@@ -1852,16 +2519,17 @@ function createConfirmationBox({ event, onComplete }) {
 // The 'mainTrivia' event fires when a new trivia needs to be displayed in the UI
 document.addEventListener("mainTrivia", function(e) {
     const eventData = e.detail;
+    const onComplete = eventData.onComplete;
 
     const currentRoomChallenge = window.EscapeRooms[currentRoom][eventData.event.type];
 
-    createTriviaElements(currentRoomChallenge);
+    createTriviaElements(currentRoomChallenge, onComplete);
 });
 
 //Function to give the educational content
-const giveEducationalContent = (currentPlanetSet) => {
+const giveEducationalContent = (currentPlanet) => {
     //Check if all the challenges have been correctly answered
-    const planetSet = getPlanetSet(currentPlanetSet);
+    const planetSet = getPlanetSet(currentPlanet);
     let allChallengesCorrect = true;
     Object.values(planetSet.challenges).forEach(challengeArray => {
         challengeArray.forEach(challenge => {
@@ -1893,10 +2561,29 @@ const giveEducationalContent = (currentPlanetSet) => {
     return
 };
 
-function createTriviaElements(eventData) {
+function createTriviaElements(eventData, onComplete) {
+    mainTrivia = true;
+
+    
+
     //Create the container that will hold the trivia
     const triviaContainer = document.createElement('div');
     triviaContainer.classList.add('triviaContainer');
+
+    
+    const closeIcon = document.createElement('img');
+    closeIcon.src = '/assets/img/GUI/UI_Glass_Cross_Medium_01a.png';
+    closeIcon.classList.add('close-icon');
+
+    closeIcon.addEventListener('click', () => {
+        triviaContainer.remove();
+        if (CUBI.currentEventResolve) {
+            CUBI.currentEventResolve();
+            CUBI.currentEventResolve = null;
+        }
+        onComplete();
+    });
+    
 
     // Container that will hold the questions + buttons for the questions types
     const quizzContainer = document.createElement('div');
@@ -1910,9 +2597,13 @@ function createTriviaElements(eventData) {
     // Iterate through each button and add the event listener
     buttons.forEach(button => {
         button.addEventListener('click', function() {
-            const planetSet = eventData.find(set => set.planet === this.dataset.planet);
-            displayQuestions(planetSet);  // pass quizzContainer as argument
+            planetSet = eventData.find(set => set.planet === this.dataset.planet);
+           
             console.log(planetSet);
+            currentQuestionIndex = 0;
+       
+            displayQuestions(planetSet);  // pass quizzContainer as argument
+            
         });
     });
 
@@ -1954,6 +2645,7 @@ function createTriviaElements(eventData) {
     
     //Add the triviaContainer to the roomContainer and the buttonContainer to the triviaContainer
     roomContainer.appendChild(triviaContainer);
+    triviaContainer.appendChild(closeIcon);
     triviaContainer.appendChild(quizzContainer);
     triviaContainer.appendChild(iconContainer);
     triviaContainer.appendChild(buttonContainer);
@@ -1963,10 +2655,10 @@ function createTriviaElements(eventData) {
     //Variables to hold needed values
     let total = 0;    // Total of questions on the celestialBodies
     let correctAnswers = 0; // Total of correct answers
-    let currentQuestionIndex = 0;     // Current question index
-    let currentQuestion; // Current question being displayed
+       // Current question index
+    
     let currentAnswerField; // Current answer field being displayed
-    let currentPlanetSet; // Current planet set being displayed
+
 
     const countTotalQuestions = () => {
         // Loop through each planet's challenges
@@ -2005,16 +2697,24 @@ function createTriviaElements(eventData) {
     function displayQuestions(planetSet) {
         // Clear previous question type buttons
         quizzTypeButtonsContainer.innerHTML = '';
-        currentPlanetSet = planetSet.planet;
-        console.log(currentPlanetSet);
+        currentPlanet = planetSet.planet;
+        console.log(currentPlanet);
         // Create a button for each type of question
+        
         const questionTypes = Object.keys(planetSet.challenges);
+ 
+        challengeType = questionTypes[0];
+        console.log(challengeType);
         questionTypes.forEach(questionType => {
             const button = document.createElement('button');
             button.innerText = questionType;
             button.dataset.questionType = questionType;
             button.addEventListener('click', function() {
+
+                challengeType = this.dataset.questionType;
+                currentQuestionIndex = 0;
                 displayQuestionType(this.dataset.questionType, planetSet);
+
             });
             quizzTypeButtonsContainer.appendChild(button);
         });
@@ -2049,18 +2749,23 @@ function createTriviaElements(eventData) {
         
             icon.style.width = (32/1.8) + 'px';
             icon.style.height = (32/1.8) + 'px';
-            icon.addEventListener('click', () => displayQuestion(index));
+            icon.addEventListener('click', () => {
+                displayQuestion(index); 
+
+                currentQuestionIndex = index
+
+            });
             iconContainer.appendChild(icon);
             return icon;
         });
         
-        console.log(icons);
+
         iconContainer.appendChild(submitButton);
 
         // Function to create an input field for the answer
         const createAnswerField = (question) => {
             let answerField;
-            console.log(question);
+            
             if (questionType === 'multiple choice') {
                 answerField = document.createElement('select');
                 question.choices.forEach(option => {
@@ -2114,7 +2819,11 @@ function createTriviaElements(eventData) {
                     alert('Wrong!');
                 }
             } else if (question.type === 'fill in the blanks') {
+                console.log(JSON.stringify(question.answer));
+                console.log(JSON.stringify(playerAnswer));
                 if (JSON.stringify(question.answer) === JSON.stringify(playerAnswer)) {
+                    console.log(JSON.stringify(question.answer));
+                    console.log(JSON.stringify(playerAnswer));
                     question.isAnsweredCorrectly = true;
                     alert('Correct!');
                 }else {
@@ -2126,7 +2835,7 @@ function createTriviaElements(eventData) {
             // Update localStorage immediately after updating isAnsweredCorrectly
             console.log(` Question ${index}: ${question}`);
             console.dir(question);
-            PlanetSet.updateLocalStorage(currentPlanetSet, question);
+            PlanetSet.updateLocalStorage(currentPlanet, question);
             countCorrectAnswers();
             // To update the icon
             if (question.isAnsweredCorrectly) {
@@ -2134,7 +2843,11 @@ function createTriviaElements(eventData) {
             } else {
                 icons[index].src = iconPaths.incorrectIconSrc;
             }
-
+            // Check if all questions have been answered correctly
+            if (correctAnswers === total) {
+                // All questions answered correctly
+                mainTrivia = false;
+            }
         };
 
         // Function to update the progress bar accordingly to the correct answers
@@ -2145,26 +2858,36 @@ function createTriviaElements(eventData) {
             console.log(`Progress: ${correctAnswers}/${total}`);
             let progressPercentage = (correctAnswers / total) * 100;
 
-            // Update the progress bar from the current Room and also update it in the local storage
-            EscapeRooms.RoomOne.progressBar = progressPercentage;
-            localStorage.setItem('RoomOneProgress', progressPercentage);
-            console.log(` Progress Percentage: ${EscapeRooms.RoomOne.progressBar}%`);
+            // Update the progress bar from the current Room and also update it in the gameSession
+            EscapeRooms[currentRoom].progressBar = progressPercentage;
+            gameSession[`${currentRoom}Progress`] = progressPercentage;  // Assuming roomOneProgress is the right field in gameSession
+console.log(gameSession[`${currentRoom}Progress`])
+            console.log(gameSession),
+            console.log(` Progress Percentage: ${EscapeRooms[currentRoom].progressBar}%`);
 
             // Apply new width to SVG rect
             const rects = document.querySelectorAll('.FillBar-container rect');
             rects.forEach(rect => {
-                rect.setAttribute("width", EscapeRooms.RoomOne.progressBar + "%");
+                rect.setAttribute("width", EscapeRooms[currentRoom].progressBar + "%");
             });
 
             // Update progressCounterContainer text
             const progressCounterContainer = document.querySelector('.progressCounterContainer');
-            progressCounterContainer.innerText = `${EscapeRooms.RoomOne.progressBar.toFixed(2)}% completed of Room One`; 
+            progressCounterContainer.innerText = `${EscapeRooms[currentRoom].progressBar.toFixed(2)}% completed of Room One`; 
+
+             // Save the game state every time the progress changes
+            updateGameSessionState(gameSession);
+            User.updateGameSession(authenticatedUser.username, gameSession);
+            console.log(gameSession);
         }
 
         // Function to display a question
-        const displayQuestion = (index) => {
+        displayQuestion = (index, atualizedQuestion = null) => {
             questionContainer.innerHTML = '';  // Clear the container
-            currentQuestion = questions[index];
+            if (!atualizedQuestion) {currentQuestion = questions[index];
+ console.log(index);}
+            else {currentQuestion = atualizedQuestion; console.log('entered'); console.log(currentQuestion);};
+            
             console.log(currentQuestion);
             // Display the question
             const questionElement = document.createElement('div');
@@ -2187,21 +2910,21 @@ function createTriviaElements(eventData) {
                 } else if (currentQuestion.type === 'short answer') {
                     checkAnswer(currentQuestion, currentAnswerField.value, index);
                 } else if (currentQuestion.type === 'fill in the blanks') {
-                    const answer = Array.from(questionElement.children)
-                    .map(child => child.innerText)
-                    .join('');
-                    checkAnswer(currentQuestion, answer, index);
+                    let playerAnswer = Array.from(questionElement.children).map(span => span.innerText).join(" ").trim().replace(/\s+/g, " ");
+                    // Remove the space before punctuation marks
+                    playerAnswer = playerAnswer.replace(/ \./g, ".");
+                    checkAnswer(currentQuestion, playerAnswer, index);
                 }
 
 
                 updateProgressBar(correctAnswers,total);
                 // Give educational content if all challenges were answered correctly
-                giveEducationalContent(currentPlanetSet);
+                giveEducationalContent(currentPlanet);
             };
             submitButton.addEventListener('click', submitButtonEventListener);
         
 
-            if (currentQuestion.type === 'fill in the blanks') {
+            if (challengeType === 'fill in the blanks') {
                 // Define a function to calculate the target span and side
                 function calculateTarget(e) {
                     // Get the relative mouse position inside the questionElement
@@ -2326,13 +3049,13 @@ function createTriviaElements(eventData) {
 
                             questionElement.insertBefore(choiceSpan, targetSpan);
 
-                            // Check if the inserted choiceSpan is not followed by a punctuation, if so, add a space
-                            if (!choiceSpan.nextSibling.innerText.match(/^[\.,;!\?]/)) {
+                            // Check if the inserted choiceSpan is not followed by a punctuation or number, if so, add a space
+                            if (!choiceSpan.nextSibling.innerText.match(/^[\.,;!\?]/) && isNaN(parseInt(choiceSpan.nextSibling.innerText))) {
                                 choiceSpan.innerText = choiceSpan.innerText.trim() + ' ';
                             }
                         } else {
                             // Check if the nextSibling is a word and not a punctuation, if so, add a space
-                            if (targetSpan.nextSibling && !targetSpan.nextSibling.innerText.match(/^[\.,;!\?]/)) {
+                            if (targetSpan.nextSibling && !targetSpan.nextSibling.innerText.match(/^[\.,;!\?]/) && isNaN(parseInt(targetSpan.nextSibling.innerText))) {
                                 choiceSpan.innerText = choiceSpan.innerText.trim() + ' ';
                             }
 
@@ -2347,6 +3070,7 @@ function createTriviaElements(eventData) {
                                 choiceSpan.innerText = ' ' + choiceSpan.innerText.trim();
                             }
                         }
+
                     });
                 }
 
@@ -2387,6 +3111,26 @@ function createTriviaElements(eventData) {
 
 }
 
+const observer = new MutationObserver(() => {
+    const triviaContainer = document.querySelector('.triviaContainer');
+    const bonusTriviaContainer = document.querySelector('.challenge-container');
+    if (!triviaContainer) {
+        // Trivia container does not exist
+        mainTrivia = false;
+
+    }
+    if (!bonusTriviaContainer) {
+        // Challenge container does not exist
+        bonusTrivia = false;
+
+    }
+
+});
+
+// Start observing
+observer.observe(document.body, { childList: true, subtree: true });
+
+
 // Listen for the 'changeMap' event. This event is fired when the user 
 // changes the map in the cutsceneSpaces instance. The event contains the
 // information about the new map and what should happen after the transition.
@@ -2421,6 +3165,9 @@ document.addEventListener('changeMap', (e) => {
 
     // Initiate the scene transition
     sceneTransition(eventData);
+    // After changing the room, update the HUD.
+    updateHUD();
+
 });
 
 // The sceneTransition function creates a transition effect between maps.

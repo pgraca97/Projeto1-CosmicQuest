@@ -15,7 +15,16 @@
     background-position: center;
     background-size: 100% 50%;
   }
-  
+  /*  Frame Container */
+.frame-container {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2; 
+  pointer-events: none;
+}
+
   
   
   .title {
@@ -112,6 +121,10 @@ transform: scale(1.8) ;
     image-rendering: pixelated;
     
 }
+
+.room-container.room-two {
+  left: -15%;
+}
 .TextMessage_p {
   overflow: hidden scroll;
 }
@@ -154,9 +167,24 @@ transform: scale(1.8) ;
     align-items: center;
 }
 
+.question {
+  width: 400px
+}
 .quizzTypeButtonsContainer {
   display: flex;
   flex-direction: column;
+}
+
+.answerField div[draggable="true"] {
+  /* CSS styles for draggable div elements in the answerField */
+  /* Add your styles here */
+
+  /* Example styles: */
+  border: 2px solid blue;
+  border-radius: 5px;
+  padding: 5px;
+  margin: 10px;
+  cursor: grab;
 }
 
 .iconContainer {
@@ -174,6 +202,20 @@ transform: scale(1.8) ;
 .progressBarContainer {
   position: relative;
 }
+.RoomOne .rect1 {
+  fill: #ff9ccd;
+}
+.RoomOne .rect2 {
+  fill: #ffd5e9;
+}
+.RoomTwo .rect1 {
+  fill: #7cc576;
+}
+.RoomTwo .rect2 {
+  fill: #d9e9d7;
+}
+
+
 .hudContainer {
   position: absolute;
   top: -100px;
@@ -329,11 +371,7 @@ left: -30px;
   transform: translate(-50%, -50%);
   width: 450px;
   height: 250px;
-
   padding: 2rem;
-
-  
-  
 }
 
 .TerminalContent {
@@ -542,6 +580,11 @@ td.selected {
   text-align: center;
   margin-bottom: 20px;
   color: #FFD700;
+}
+.close-icon {
+ width: 18px;
+ align-self: flex-end;
+ cursor: pointer;
 }
 .shop-keeper {
   display: flex;

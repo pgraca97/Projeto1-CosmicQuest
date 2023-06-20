@@ -133,8 +133,9 @@ export function initializeLocalStorage() {
                 educationalContent,
                 new Quizz('multiple choice', ['Option 1', 'Option 2', 'Option 3'], `Default question for ${planet}?`, 'Option 1', ['Hint 1', 'Hint 2']),
                 new Quizz('multiple choice', ['Option 4', 'Option 5', 'Option 6'], `Default question 2 for ${planet}?`, 'Option 4', ['Hint 3', 'Hint 4']),
-                new Quizz('short answer', null, 'Short Answer1?', 'Answer', ['Hint 1', 'Hint 2']), 
-                new Quizz('fill in the blanks', ['Drag 1', 'Drag 2', 'Drag 3'], 'Question, Drag 2.', 'Question, Drag 2 Drag 1.', ['Hint 1', 'Hint 2']),
+                new Quizz('short answer', null, 'Short Answer1?', 'Answer for Short Answer', ['Hint 1', 'Hint 2']), 
+                new Quizz('fill in the blanks', ['23.5', '45', '65.2'], "Earth's axial tilt is approximately degrees.", "Earth's axial tilt is approximately 23.5 degrees.", ['Hint 1', 'Hint 2']),
+                new Quizz('fill in the blanks', ['Sodium', 'Helium', 'Oxygen'], "The main component of Mercury's thin atmosphere is.", "The main component of Mercury's thin atmosphere is Sodium.", ['Hint 1', 'Hint 2']),
             );
             console.log(`Created default PlanetSet for ${planet}`);
             localStorage.setItem(planet, JSON.stringify(planetSet));
