@@ -19,7 +19,7 @@ export default class GameSession {
         let minutes;
         switch (difficulty) {
             case 'Stellar Novice':
-                minutes = 1;
+                minutes = 30;
                 break;
             case 'Cosmic Explorer':
                 minutes = 20;
@@ -110,10 +110,12 @@ function     initializeCelestialBodies(newSession) {
           };
   
           for (let challengeType in celestialBody.challenges) {
-              newCelestialBody.challenges[challengeType] = celestialBody.challenges[challengeType].map(challenge => ({
-                  isAnsweredCorrectly: null
-              }));
-          }
+            newCelestialBody.challenges[challengeType] = celestialBody.challenges[challengeType].map(challenge => ({
+                isAnsweredCorrectly: null,
+                isTokenUsed: null
+            }));
+        }
+        
   
           celestialBodies.push(newCelestialBody);
       }
@@ -132,7 +134,8 @@ function     initializeCelestialBodies(newSession) {
           
                   for (let challengeType in celestialBody.challenges) {
                       newCelestialBody.challenges[challengeType] = celestialBody.challenges[challengeType].map(challenge => ({
-                          isAnsweredCorrectly: challenge.isAnsweredCorrectly
+                          isAnsweredCorrectly: challenge.isAnsweredCorrectly,
+                          isTokenUsed: challenge.isTokenUsed
                       }));
                   }
           

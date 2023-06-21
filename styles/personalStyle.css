@@ -85,6 +85,9 @@ padding-top: 10px;
   flex-direction: column;
   align-items: flex-start;
   margin-left: 20px;
+  width: 100%;
+  text-align: left;
+  padding-bottom: 10px;;
 }
 .not-earned-image {
   position: absolute;
@@ -319,4 +322,44 @@ label {
   width: 42px;
   height: 42px;
 
+}
+
+#admin-options {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+#admin-options button {
+  color: red;
+  font-size: 1em;
+  font-weight: bold;
+
+}
+
+#content.users-container {
+  position: relative;
+  display: flex;
+  flex-direction: column ;
+  justify-content: space-between;
+  color: red;
+  width: 600px;
+  left: 2%;
+}
+.treating-users {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.unblocked-container {
+  display: flex;
+  flex-direction: column !important;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  width: 200px;
+}
+.unblocked-containerp {
+  margin: 0;
 }

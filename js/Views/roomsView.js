@@ -11,6 +11,32 @@ import { updateGameSessionState, restartGameSession } from "/js/Model/GameSessio
 let cosmicQuest
 let currentRoom
 
+// Get the modal
+const modal = document.getElementById("exitModal");
+
+// Get the button that opens the modal
+const btn = document.getElementById("home-btn");
+
+// Get the elements that close the modal
+const confirmExit = document.getElementById("confirmExit");
+const cancelExit = document.getElementById("cancelExit");
+
+// When the user clicks the button, open the modal
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on "Yes", redirect to index.html
+confirmExit.onclick = function() {
+    window.location.href = "/index.html";
+}
+
+// When the user clicks on "No", close the modal
+cancelExit.onclick = function() {
+    modal.style.display = "none";
+}
+
+
 function updateCelestialBodiesInLocalStorage(gameSession) {
     for (let gameSessionCelestialBody of gameSession.celestialBodies) {
         let localStorageCelestialBody = JSON.parse(localStorage.getItem(gameSessionCelestialBody.planet));
@@ -20,12 +46,14 @@ function updateCelestialBodiesInLocalStorage(gameSession) {
         // Update research terminal
         localStorageCelestialBody.researchTerminal = gameSessionCelestialBody.researchTerminal;
 
-        // Update isAnsweredCorrectly in challenges
+        // Update isAnsweredCorrectly and isTokenUsed in challenges
         for (let challengeType in localStorageCelestialBody.challenges) {
             for (let i = 0; i < localStorageCelestialBody.challenges[challengeType].length; i++) {
                 localStorageCelestialBody.challenges[challengeType][i].isAnsweredCorrectly = gameSessionCelestialBody.challenges[challengeType][i].isAnsweredCorrectly;
+                localStorageCelestialBody.challenges[challengeType][i].isTokenUsed = gameSessionCelestialBody.challenges[challengeType][i].isTokenUsed;
             }
         }
+
 
         // Update the celestial body data in localStorage
         localStorage.setItem(gameSessionCelestialBody.planet, JSON.stringify(localStorageCelestialBody));
@@ -763,8 +791,8 @@ function resetGame() {
             // Reset 'isAnsweredCorrectly' for each challenge
             body.challenges[challengeType].forEach(challenge => {
                 challenge.isAnsweredCorrectly = null;
-                if (challenge.isPowerUpUsed) {
-                    delete challenge.isTokenUsed;
+                if (challenge.isTokenUsed) {
+                    challenge.isTokenUsed = null;
                 }
             });
         });
@@ -2157,7 +2185,7 @@ function handleMultipleChoicePowerUp(currentPlanet, onComplete) {
 function handleShortAnswerPowerUp(currentQuestion, currentPlanet) {
     let wordCount = currentQuestion.answer.split(' ').length;
     alert(`The answer contains ${wordCount} word(s).`);
-    currentQuestion.isPowerUpUsed = true;
+    currentQuestion.isTokenUsed = true;
  
     // Update the challenge in the localStorage
     localStorage.setItem(currentPlanet, JSON.stringify(planetSet));
