@@ -1,7 +1,3 @@
-
-import { characterColor } from "/js/common.js";
-
-
 // Global variable that will hold the user list
 let users = localStorage.getItem('users')? JSON.parse(localStorage.getItem('users')) : [];
 
@@ -14,23 +10,8 @@ export default class User {
         this.characterColor = characterColor; // E.g. 'blue', 'red', etc.
         this.gameSessions = []; // Each game session is a GameSession object
         this.settings = settings;
-        this.trophies = [
-            {
-                name: 'NOVICE ASTRONAUT',
-                description: 'Complete Room 1',
-                isEarned: false,
-                earnedImage: 'path/to/earned/image.png',
-                notEarnedImage: 'path/to/not/earned/image.png'
-            },
-            {
-                name: 'ACCURACY ACE',
-                description: 'Solve both rooms with 100% accuracy',
-                isEarned: false,
-                earnedImage: 'path/to/earned/image.png',
-                notEarnedImage: 'path/to/not/earned/image.png'
-            }
-            // Add as many trophies as you need
-        ];
+        this.isAdmin = true; 
+        this.isBlocked = false;
     }
 
 
@@ -53,20 +34,6 @@ export default class User {
     }
 
 
-
-    // Method to earn a trophy
-    earnTrophy(trophyName) {
-        const trophy = this.trophies.find(trophy => trophy.name === trophyName);
-        if (trophy) {
-            trophy.isEarned = true;
-        }
-    }
-
-    // Method to check if a trophy is earned
-    isTrophyEarned(trophyName) {
-        const trophy = this.trophies.find(trophy => trophy.name === trophyName);
-        return trophy ? trophy.isEarned : false;
-    }
 }
 
 // Standalone functions related to the User class
@@ -96,7 +63,9 @@ export function addUser( username, email, password, characterColor) {
 export function login(username, password) {
     const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
     const user = storedUsers.find(user => user.username === username && user.password === password);
-    if (user) {
+    if (user && user.isBlocked) {
+        throw new Error('This account has been blocked');
+    } else if (user) {
         sessionStorage.setItem('loggedUser', JSON.stringify(user));
         return true; // Signal that the login was successful
     } else {
@@ -119,6 +88,11 @@ export function isLoggedIn() {
 export function getAuthenticatedUser() {
     return JSON.parse(sessionStorage.getItem('loggedUser'));
 }
+
+export function isAuthenticatedAdmin() {
+    const currentUser = this.getAuthenticatedUser();
+    return currentUser && currentUser.isAdmin;
+  };
 
 // Function to get a user from local storage
 export function getUserFromLocalStorage(username) {
@@ -179,3 +153,45 @@ export function updateGameSession(username, gameSession) {
     updateUser(users[userIndex]);
 }
 
+export function blockUser(username) {
+    // Get the user
+    let user = getUserFromLocalStorage(username);
+    
+    // Set isBlocked to true
+    user.isBlocked = true;
+    
+    // Update the user
+    updateUser(user);
+    
+    // If the blocked user is the currently logged in user, log them out and redirect to index.html
+    if (isLoggedIn() && getAuthenticatedUser().username === username) {
+      logout();
+      window.location.href = 'index.html';
+    }
+  }
+  
+  export function deleteUser(username) {
+    // Get the users array
+    let users = JSON.parse(localStorage.getItem('users'));
+  
+    // Find the index of the user
+    let index = users.findIndex(user => user.username === username);
+    
+    // Remove the user from the array
+    users.splice(index, 1);
+    
+    // Update the users in local storage
+    localStorage.setItem('users', JSON.stringify(users));
+  }
+  
+  export function unblockUser(username) {
+    // Get the user
+    let user = getUserFromLocalStorage(username);
+    
+    // Set isBlocked to false
+    user.isBlocked = false;
+    
+    // Update the user
+    updateUser(user);
+  }
+  

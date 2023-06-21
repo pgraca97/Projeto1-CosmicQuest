@@ -63,7 +63,16 @@
                     <img src="/assets/img/GUI/Helps.png"  alt="Helps Icon" ><p class="helps-quantity"></p>
                 </div>
             </div>
-
+            <div class="top-content text-center">
+                <!-- This could be the place for a title -->
+                <div class="btn-group gap-1 mt-4 pt-5">
+                    <button type="button" class="btn btn-primary rounded-0" id="home-btn">
+                        <img class="btn-image" src="/assets/img/Buttons/Top Buttons/HOME.png" alt="HOME" />
+                        <img class="btn-image-hover" src="/assets/img/Buttons/Top Buttons/HOME-hover.png" alt="HOME-hover" />
+                      </button>
+                </div>
+            </div>
+ 
             <div id="modalContainer" class="modal">
                 <div class="modal-content">
                     <p id="modalText"></p>
@@ -79,6 +88,15 @@
             <img src="/assets/img/GUI/icon423.png" alt="Research Terminal Icon" class="ResearchTerminal">
             </div>
         </div>
+        <div id="exitModal" class="modal">
+            <div class="modal-content">
+                <h2>Confirmation Needed</h2>
+                <p>Are you sure you want to leave your cosmic quest?</p>
+                <button id="confirmExit">Yes</button>
+                <button id="cancelExit">No</button>
+            </div>
+        </div>
+        
             <!-- Top section of the main content -->
             <div class="rooms text-center">
                 <div class="title-banner-container mt-5 pt-5">

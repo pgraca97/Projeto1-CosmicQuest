@@ -48,6 +48,16 @@ function landingPageView() {
       <span class="alerts-counter">(*)</span>
     `;
 
+    if(User.isAuthenticatedAdmin()){
+      btnGroupTopContent += `
+        <button type="button" class="btn btn-primary rounded-0" id="admin-btn">
+          <!--<img class="btn-image" src="assets/img/Buttons/Top Buttons/ADMIN.png" alt="ADMIN" />
+          <img class="btn-image-hover" src="assets/img/Buttons/Top Buttons/ADMIN-hover.png" alt="ADMIN-hover" />-->
+          BACKOFFICE
+        </button>
+      `;
+    }
+
     let btnGroupContent = `
       <button type="button" class="btn btn-primary rounded-0" id="new-game-btn">
         <img class="btn-image" src="assets/img/Buttons/Main Buttons/NEW GAME.png" alt="NEW GAME" />
@@ -84,7 +94,7 @@ function landingPageView() {
         <img class="btn-image-hover" src="assets/img/Buttons/logIn-hover.png" alt="log-in-hover">
       </button>
       
-      <button typoe="button" class="btn ms-auto m-2" id="sign-up-btn" data-bs-toggle="modal" data-bs-target="#signupModal">
+      <button type="button" class="btn ms-auto m-2" id="sign-up-btn" data-bs-toggle="modal" data-bs-target="#signupModal">
         <img class="btn-image" src="assets/img/Buttons/signUp.png" alt="sign-up">
         <img class="btn-image-hover" src="assets/img/Buttons/signUp-hover.png" alt="sign-up-hover">
       </button>
@@ -152,6 +162,11 @@ document.querySelector('.arrow.left-arrow').addEventListener('click', function()
     updateUserCharacterColor();
 });
 
+document.querySelector("#admin-btn")?.addEventListener("click", () => {
+  location.href = "../html/backoffice.html";
+});
+
+
 
   document.querySelector("#login-form")?.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -198,6 +213,11 @@ document.querySelector('.arrow.left-arrow').addEventListener('click', function()
 document.querySelector("#new-game-btn")?.addEventListener("click", () => {
   location.href = "../html/new game.html";
 });
+
+document.querySelector("#continue-btn")?.addEventListener("click", () => {
+  location.href = "../html/continue.html";
+});
+
 
 document.querySelector("#personal-btn")?.addEventListener("click", () => {
   location.href = "../html/personal.html";

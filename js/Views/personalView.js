@@ -5,18 +5,22 @@ const container = document.querySelector('#content');
 
 
 
+const user = User.getAuthenticatedUser();
+
+
+
+// Retrieve users from local storage and parse them into a JavaScript object
+const users = JSON.parse(localStorage.getItem('users'));
 
 
 //STATS DASHBOARD
 
 const statTitles = [
     "COMPLETION TIME", 
-    "QUICKEST ESCAPE", // This could be the fastest time in which a user has completed Cosmic Quest.
     "PLANETARY PRO", // This could represent the number of correctly answered questions about the solar system.
-    /* "SOLAR SYSTEM MASTER", // Whether the user has completed everything in Cosmic Quest.
-   "UNSTOPPABLE LEARNER", // This could represent the number of continuous days the user has played the game.
-    "ASTRONOMY ACE", // This could represent the number of correct answers to questions specifically about stars, planets, moons etc.
-    "ALIEN ENTHUSIAST", // This could represent the number of correct answers to questions specifically about extraterrestrial life or theories. */
+    "BONUS TRIVIA", // This could represent the number of correctly answered questions about the solar system
+    "PENDING CHALLENGES", // This could represent the number of correctly answered questions about the
+  
 ];
 
 let currentIndex = 0;
@@ -38,160 +42,140 @@ document.querySelector('.stats-dashboard').addEventListener('click', function() 
 
     document.querySelector('.stats-dashboard').src = "/assets/img/GUI/Stats.png";
     container.classList.add('stats-dashboard');
-    container.innerHTML = statsDashboardHtml;
-    setWidth(55);
-    document.querySelector('.arrow.right-arrow').addEventListener('click', function() {
-        currentIndex = (currentIndex + 1) % statTitles.length;
-        console.log(currentIndex);
-        document.querySelector('.subtitle').innerHTML = statTitles[currentIndex];
-    });
-    
-    document.querySelector('.arrow.left-arrow').addEventListener('click', function() {
-        currentIndex--;
-        if (currentIndex < 0) currentIndex = statTitles.length - 1;
-        document.querySelector('.subtitle').innerHTML = statTitles[currentIndex];
-    });
+    // After initial generation of user stats
+  container.innerHTML = updateStatsDashboardHtml(user.username, statTitles[currentIndex]);
+  attachArrowListeners(); // Attach the listeners for the first time
+
+
+   
   });
+  let userStats = {};
+
+for (let user of users) {
+  let totalCompletionTime = 0;
+  let totalSessionsPlayed = 0;
+  let correctAnswers = 0;
+  let totalQuestions = 0;
+
+  let bonusTriviaQuestions = 0;
+  let bonusTriviaCorrectAnswers = 0;
+  let pendingChallenges = 0;
+  let allCorrect = true;
+
+  if (user.gameSessions && user.gameSessions.length > 0) {
+    totalSessionsPlayed = user.gameSessions.length;
+
+    for (let session of user.gameSessions) {
+      // Since we're assuming time from points, we just use total points for now
+      // It would be much better to keep explicit track of completion times
+      totalCompletionTime += session.roomOnePoints + session.roomTwoPoints;
+
+      for (let body of session.celestialBodies) {
+        for (let challengeType in body.challenges) {
+          for (let challenge of body.challenges[challengeType]) {
+            if (challenge.isAnsweredCorrectly !== null) {
+              if (body.planet === "Sun" || body.planet === "Meteor Showers") {
+                bonusTriviaQuestions++;
+                if (challenge.isAnsweredCorrectly) bonusTriviaCorrectAnswers++;
+              } else {
+                totalQuestions++;
+                if (challenge.isAnsweredCorrectly) correctAnswers++;
+              }
+            } else {
+              pendingChallenges++;
+            }
   
-
-const statsDashboardHtml = `
-<div class="title-banner-container pt-5">
-  <div class="title">Stats</div>
-</div>
-
-<div class="subtitle-container">
-  <img class="arrow left-arrow" src="/assets/img/Glass_Arrow_Small.png" alt="Left arrow">
-  
-  <div class="subtitle">${statTitles[currentIndex]}</div> 
-
-  <img class="arrow right-arrow" src="/assets/img/Glass_Arrow_Small.png" alt="Right arrow">
-</div>
-
-<div id="stats-content">
-  ROOM 1: 12 min<br>
-  ROOM 2: 12 min<br>
-  (time taken to finish each room)
-</div>`;
-
-
-
-//TROPHY DASHBOARD
-// Get the trophy-dashboard image and add a mouse enter event tot change its src 
-
-document.querySelector('.trophy-dashboard').addEventListener('mouseenter', function() {
-    document.querySelector('.trophy-dashboard').src = "/assets/img/GUI/Trophy hover.png";
-});
-// Now a mouse leave event to get the image to its original src
-document.querySelector('.trophy-dashboard').addEventListener('mouseleave', function() {
-    document.querySelector('.trophy-dashboard').src = "/assets/img/GUI/Trophy.png";
-});
-document.querySelector('.trophy-dashboard').addEventListener('click', function() {
-
-    container.classList.remove('stats-dashboard');
-    container.classList.remove('leaderboard-dashboard');
-    container.classList.remove('settings-dashboard');
-
-
-    document.querySelector('.trophy-dashboard').src = "/assets/img/GUI/Trophy.png";
-
-    container.classList.add('trophy-dashboard');
-    trophiesDashboardHtml() 
-    setWidth(95);
-});
-
-let currentPage = 0;
-const trophiesPerPage = 2; // Number of trophies per page
-
-const notEarnedImage = '/assets/img/GUI/Trophies/UI_Glass_Textfield_01a.png'
-const trophies = [
-  {
-    name: 'Super Explorer',
-    description: 'Visit all planets in the solar system',
-    earned: false,
-    trophyImage: '/assets/img/GUI/Trophies/icon707.png', 
-
-  },
-  {
-    name: 'Super Explorer',
-    description: 'Visit all planets in the solar system',
-    earned: false,
-    trophyImage: '/assets/img/GUI/Trophies/icon383.png', 
-
-  },
-  {
-    name: 'Super Explorer',
-    description: 'Visit all planets in the solar system',
-    earned: false,
-    trophyImage: '/assets/img/GUI/Trophies/icon232.png', 
-
-  },
-  {
-    name: 'Super Explorer',
-    description: 'Visit all planets in the solar system',
-    earned: false,
-    trophyImage: '/assets/img/GUI/Trophies/icon199.png', 
-
-  },
-  // ... more trophies
-];
-
-
-function trophiesDashboardHtml() {
-    const start = currentPage * trophiesPerPage;
-    const end = start + trophiesPerPage;
-  
-    const trophiesToDisplay = trophies.slice(start, end);
-
-    let trophiesHtml = (`
-    <div class="trophies-header">
-        <div class="title-banner-container pt-5">
-            <div class="title">TROPHIES</div>
-        </div>
-        <div class="trophies-pages"> 
-            <img class="arrow left-arrow" src="/assets/img/Glass_Arrow_Small.png" alt="Left arrow">
-                <span class="page-counter">PAGE 1</span>
-            <img class="arrow right-arrow" src="/assets/img/Glass_Arrow_Small.png" alt="Right arrow">\
-        </div>
-    </div>
-    `);
-  
-    for (const trophy of trophiesToDisplay) {
-      trophiesHtml += `
-      <div class="trophy-container">
-        <div class="trophy-icons">
-          <img class="trophy-image " src="${trophy.trophyImage}" alt="Trophy image">
-          ${trophy.earned ? '' : `<img class="not-earned-image" src="${notEarnedImage}" alt="Not earned image">`}
-        </div>
-        <div class="trophy-info">
-            <div class="trophy-name">${trophy.name}</div>
-            <div class="trophy-description">${trophy.description}</div>
-            <div class="trophy-earned">Earned: ${trophy.earned ? 'Yes' : 'No'}</div>
-        </div>
-      </div>`;
+            if (!challenge.isAnsweredCorrectly) allCorrect = false;
+          }
+        }
+      }
     }
-  
-    container.innerHTML = trophiesHtml;
-    setWidth(95);  // Set the width after updating the HTML content
 
-    // Update the page counter
-    document.querySelector('.page-counter').textContent = `PAGE ${currentPage + 1}`;
+    let averageCompletionTime = totalCompletionTime / totalSessionsPlayed;
+    let planetaryProScore = correctAnswers / totalQuestions;
+    let bonusTriviaScore = bonusTriviaQuestions > 0 ? (bonusTriviaCorrectAnswers / bonusTriviaQuestions) : null;
 
-    // Add event listeners to the navigation arrows
-    document.querySelector('.left-arrow').addEventListener('click', function() {
-      if (currentPage > 0) {
-        currentPage--;
-        trophiesDashboardHtml();
-      }
-    });
-
-    document.querySelector('.right-arrow').addEventListener('click', function() {
-      if (end < trophies.length) {
-        currentPage++;
-        trophiesDashboardHtml();
-      }
-    });
+    userStats[user.username] = {
+      averageCompletionTime: averageCompletionTime,
+      planetaryProScore: planetaryProScore,
+      bonusTriviaScore: bonusTriviaScore,
+      pendingChallenges: pendingChallenges,
+      allCorrect: allCorrect
+    };
+  }
 }
 
+// Step 2: Update the dashboard HTML
+
+const updateStatsDashboardHtml = (username, statType) => {
+  let stats = userStats[username];
+  let content = '';
+
+  switch (statType) {
+    case "COMPLETION TIME":
+      content = `ROOM 1: ${stats.averageCompletionTime.toFixed(2)} min<br>
+                 ROOM 2: ${stats.averageCompletionTime.toFixed(2)} min<br>
+                 (time taken to finish each room)`;
+      break;
+    case "PLANETARY PRO":
+      content = `Correct Answers Ratio: ${(stats.planetaryProScore * 100).toFixed(2)}%<br>
+                 (average of right and wrong questions)`;
+      break;
+      case "BONUS TRIVIA":
+        if (stats.bonusTriviaScore === null) {
+          content = `You need to explore more to discover hidden secrets of the cosmos!`;
+        } else {
+          content = `Bonus Trivia Correct Answers Ratio: ${(stats.bonusTriviaScore * 100).toFixed(2)}%`;
+        }
+        break;
+      case "PENDING CHALLENGES":
+        content = `You still have ${stats.pendingChallenges} challenges to solve, explorer!`;
+        break;
+  }
+
+  if (stats.allCorrect) {
+    content += `<br><br>You have answered all challenges correctly! Check back later for new challenges.`;
+  }
+
+
+  const statsDashboardHtml = `
+  <div class="title-banner-container pt-5">
+    <div class="title">Stats</div>
+  </div>
+
+  <div class="subtitle-container">
+    <img class="arrow left-arrow" src="/assets/img/Glass_Arrow_Small.png" alt="Left arrow">
+    
+    <div class="subtitle">${statType}</div> 
+
+    <img class="arrow right-arrow" src="/assets/img/Glass_Arrow_Small.png" alt="Right arrow">
+  </div>
+
+  <div id="stats-content">
+    ${content}
+  </div>`;
+
+  return statsDashboardHtml;
+}
+
+function attachArrowListeners() {
+  document.querySelector('.arrow.right-arrow').addEventListener('click', function() {
+    currentIndex = (currentIndex + 1) % statTitles.length;
+    console.log(currentIndex);
+    container.innerHTML = updateStatsDashboardHtml(user.username, statTitles[currentIndex]);
+    attachArrowListeners(); // Re-attach the listeners
+    console.log('clicked');
+  });
+
+  document.querySelector('.arrow.left-arrow').addEventListener('click', function() {
+    currentIndex--;
+    if (currentIndex < 0) {currentIndex = statTitles.length - 1};
+    container.innerHTML = updateStatsDashboardHtml(user.username, statTitles[currentIndex]);
+    attachArrowListeners(); // Re-attach the listeners
+    console.log(currentIndex);
+    console.log('clicked');
+  });
+}
 
 // SETTING DASHBOARD
 // Get the setting-dashboard image and add a mouse enter event tot change its src 
@@ -295,129 +279,6 @@ document.querySelector('.leaderboard-dashboard').addEventListener('click', funct
     setWidth(125);
 });
 
-let users = [
-    {
-      username: "paulo",
-      email: "paulo@gmail.com",
-      password: "paulo",
-      characterColor: {
-        src: "/assets/img/Characters/User/Salmon/Chara_Astronaut12_FullBody_Run_4Dir_6x4.png"
-      },
-      gameSessions: [
-        {roomOnePoints: 30, roomTwoPoints: 40},
-        {roomOnePoints: 50, roomTwoPoints: 60},
-        {roomOnePoints: 70, roomTwoPoints: 80}
-      ],
-      settings: {
-        sound: false, 
-        fxSound: true, 
-        subtitles: true
-      }
-    },
-    {
-      username: "john",
-      email: "john@gmail.com",
-      password: "john",
-      characterColor: {
-        src: "/assets/img/Characters/User/Salmon/Chara_Astronaut12_FullBody_Run_4Dir_6x4.png"
-      },
-      gameSessions: [
-        {roomOnePoints: 10, roomTwoPoints: 20},
-        {roomOnePoints: 30, roomTwoPoints: 40},
-        {roomOnePoints: 50, roomTwoPoints: 60}
-      ],
-      settings: {
-        sound: false, 
-        fxSound: true, 
-        subtitles: true
-      }
-    },
-    {
-      username: "mary",
-      email: "mary@gmail.com",
-      password: "mary",
-      characterColor: {
-        src: "/assets/img/Characters/User/Salmon/Chara_Astronaut12_FullBody_Run_4Dir_6x4.png"
-      },
-      gameSessions: [
-        {roomOnePoints: 20, roomTwoPoints: 30},
-        {roomOnePoints: 40, roomTwoPoints: 50},
-        {roomOnePoints: 60, roomTwoPoints: 70}
-      ],
-      settings: {
-        sound: false, 
-        fxSound: true, 
-        subtitles: true
-      }
-    }
-  ];
-  
-  let moreUsers = [
-    {
-      username: "lisa",
-      email: "lisa@gmail.com",
-      password: "lisa",
-      characterColor: {
-        src: "/assets/img/Characters/User/Salmon/Chara_Astronaut12_FullBody_Run_4Dir_6x4.png"
-      },
-      gameSessions: [
-        {roomOnePoints: 10, roomTwoPoints: 20, playedTime: 120},
-        {roomOnePoints: 30, roomTwoPoints: 40, playedTime: 200},
-        {roomOnePoints: 50, roomTwoPoints: 60, playedTime: 180}
-      ],
-      settings: {
-        sound: false, 
-        fxSound: true, 
-        subtitles: true
-      }
-    },
-    {
-      username: "mike",
-      email: "mike@gmail.com",
-      password: "mike",
-      characterColor: {
-        src: "/assets/img/Characters/User/Salmon/Chara_Astronaut12_FullBody_Run_4Dir_6x4.png"
-      },
-      gameSessions: [
-        {roomOnePoints: 50, roomTwoPoints: 60, playedTime: 190},
-        {roomOnePoints: 70, roomTwoPoints: 80, playedTime: 210},
-        {roomOnePoints: 90, roomTwoPoints: 100, playedTime: 300}
-      ],
-      settings: {
-        sound: false, 
-        fxSound: true, 
-        subtitles: true
-      }
-    },
-    {
-      username: "jane",
-      email: "jane@gmail.com",
-      password: "jane",
-      characterColor: {
-        src: "/assets/img/Characters/User/Salmon/Chara_Astronaut12_FullBody_Run_4Dir_6x4.png"
-      },
-      gameSessions: [
-        {roomOnePoints: 20, roomTwoPoints: 30, playedTime: 130},
-        {roomOnePoints: 40, roomTwoPoints: 50, playedTime: 220},
-        {roomOnePoints: 60, roomTwoPoints: 70, playedTime: 230}
-      ],
-      settings: {
-        sound: false, 
-        fxSound: true, 
-        subtitles: true
-      }
-    }
-  ];
-  
-  // Add moreUsers to the existing users array
-  users = users.concat(moreUsers);
-  
-  // Save it to local storage
-  localStorage.setItem('uzers', JSON.stringify(users));
-  
-  
-// Retrieve users from local storage and parse them into a JavaScript object
-users = JSON.parse(localStorage.getItem('uzers'));
 
 // Initialize an empty object to hold each user's scores and play times
 let userScores = {};
@@ -486,6 +347,191 @@ const leaderboardDashboardHtml = `
 <div id="leaderboard-content">
   ${leaderboardHtml}
 </div>`;
+
+//TROPHY DASHBOARD
+// Get the trophy-dashboard image and add a mouse enter event tot change its src 
+
+document.querySelector('.trophy-dashboard').addEventListener('mouseenter', function() {
+  document.querySelector('.trophy-dashboard').src = "/assets/img/GUI/Trophy hover.png";
+});
+// Now a mouse leave event to get the image to its original src
+document.querySelector('.trophy-dashboard').addEventListener('mouseleave', function() {
+  document.querySelector('.trophy-dashboard').src = "/assets/img/GUI/Trophy.png";
+});
+
+let start = 0;
+let end = 0;
+
+
+document.querySelector('.trophy-dashboard').addEventListener('click', function() {
+
+  container.classList.remove('stats-dashboard');
+  container.classList.remove('leaderboard-dashboard');
+  container.classList.remove('settings-dashboard');
+
+
+  document.querySelector('.trophy-dashboard').src = "/assets/img/GUI/Trophy.png";
+
+  container.innerHTML = trophiesDashboardHtml();
+
+  container.classList.add('trophy-dashboard');
+
+  
+
+  // Update the page counter
+  document.querySelector('.page-counter').textContent = `PAGE ${currentPage + 1}`;
+  // Update the page counter
+  document.querySelector('.page-counter').textContent = `PAGE ${currentPage + 1}`;
+
+  // Initialize start and end, and update the HTML
+  start = currentPage * trophiesPerPage;
+  end = start + trophiesPerPage;
+  container.innerHTML = trophiesDashboardHtml();
+
+  addArrowListeners();
+});
+
+
+
+let currentPage = 0;
+const trophiesPerPage = 2; // Number of trophies per page
+
+const notEarnedImage = '/assets/img/GUI/Trophies/UI_Glass_Textfield_01a.png'
+const trophies = [
+{
+  name: 'Super Explorer',
+  description: 'Complete all rooms in Cosmic Quest in all of the three difficulties',
+  earned: false,
+  trophyImage: '/assets/img/GUI/Trophies/icon707.png', 
+
+},
+{
+  name: 'Hint Hoarder',
+  description: 'No assist tokens used to complete Cosmic Quest',
+  earned: false,
+  trophyImage: '/assets/img/GUI/Trophies/icon383.png', 
+
+},
+{
+  name: 'Light Traveler',
+  description: 'Completed Cosmic Quest in half of the time',
+  earned: false,
+  trophyImage: '/assets/img/GUI/Trophies/icon232.png', 
+
+},
+{
+  name: 'Cosmic Conqueror',
+  description: 'You are in the top 5 of Cosmic Quest',
+  earned: false,
+  trophyImage: '/assets/img/GUI/Trophies/icon199.png', 
+
+},
+// ... more trophies
+];
+
+
+function updateUserTrophies(user) {
+let totalCompletion = 0;
+let totalAssistTokens = 0;
+let totalPlayedTime = 0;
+let totalTimeLimit = 0;
+let top5 = false;
+
+if (user.gameSessions && user.gameSessions.length > 0) {
+  for (let session of user.gameSessions) {
+    if(session.roomOneProgress === 100 && session.roomTwoProgress === 100){
+      totalCompletion++;
+    }
+    totalTimeLimit += session.timeLimit.total;
+    totalPlayedTime += session.playedTime;
+
+    for (let body of session.celestialBodies) {
+      for (let challengeType in body.challenges) {
+        for (let challenge of body.challenges[challengeType]) {
+          if (challenge.isTokenUsed !== null) {
+            totalAssistTokens++;
+          }
+        }
+      }
+    }
+  }
+
+  if (topUsers.findIndex(u => u[0] === user.username) < 5) {
+    top5 = true;
+  }
+
+  trophies[0].earned = totalCompletion === user.gameSessions.length * 3;
+  trophies[1].earned = totalAssistTokens === 0;
+  trophies[2].earned = (totalTimeLimit - totalPlayedTime) <= totalTimeLimit / 2;
+  trophies[3].earned = top5;
+}
+}
+
+updateUserTrophies(user); // Update the trophies based on the authenticated user's progress
+
+function trophiesDashboardHtml() {
+
+
+const trophiesToDisplay = trophies.sort((a, b) => b.earned - a.earned).slice(start, end);
+
+let trophiesHtml = `
+<div class="trophies-header">
+  <div class="title-banner-container pt-5">
+    <div class="title">TROPHIES</div>
+  </div>
+  <div class="trophies-pages"> 
+    <img class="arrow left-arrow" src="/assets/img/Glass_Arrow_Small.png" alt="Left arrow">
+    <span class="page-counter">PAGE 1</span>
+    <img class="arrow right-arrow" src="/assets/img/Glass_Arrow_Small.png" alt="Right arrow">
+  </div>
+</div>`;
+
+for (const trophy of trophiesToDisplay) {
+  trophiesHtml += `
+  <div class="trophy-container">
+    <div class="trophy-icons">
+      <img class="trophy-image " src="${trophy.trophyImage}" alt="Trophy image">
+      ${trophy.earned ? '' : `<img class="not-earned-image" src="${notEarnedImage}" alt="Not earned image">`}
+    </div>
+    <div class="trophy-info">
+      <div class="trophy-name">${trophy.name}</div>
+      <div class="trophy-description">${trophy.description}</div>
+      <div class="trophy-earned">Earned: ${trophy.earned ? 'Yes' : 'No'}</div>
+    </div>
+  </div>`;
+}
+
+return trophiesHtml;
+}
+
+function addArrowListeners() {
+  document.querySelector('.left-arrow').addEventListener('click', function() {
+    console.log('clicked');
+    if (start > 0) {
+      currentPage--;
+      start = currentPage * trophiesPerPage;
+      end = start + trophiesPerPage;
+      container.innerHTML = trophiesDashboardHtml();
+      addArrowListeners();
+      // Update the page counter
+      document.querySelector('.page-counter').textContent = `PAGE ${currentPage + 1}`;
+    }
+  });
+
+  document.querySelector('.right-arrow').addEventListener('click', function() {
+    console.log('clicked');
+    if (end < trophies.length) {
+      currentPage++;
+      start = currentPage * trophiesPerPage;
+      end = start + trophiesPerPage;
+      container.innerHTML = trophiesDashboardHtml();
+      addArrowListeners();
+      // Update the page counter
+      document.querySelector('.page-counter').textContent = `PAGE ${currentPage + 1}`;
+    }
+  });
+  setWidth(95);
+}
 
 
 

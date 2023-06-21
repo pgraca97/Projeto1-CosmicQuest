@@ -8,7 +8,7 @@
 
 @font-face {
   font-family: 'DePixelSchmal';
-  src: url('../assets/fonts/DePixelSchmal.ttf') format('truetype');
+  src: url('../assets/fonts/CosmicQuest.otf') format('opentype');
 }
 
 @font-face {
@@ -276,17 +276,12 @@ button.btn.btn-primary {
 
 
 #welcome-msg {
-  font-family: 'DePixelSchmal';
-  font-size: 0.7rem;
+  font-family: 'DePixelSchmal', sans-serif;;
+  font-size: 1.5rem;
 
-  background: linear-gradient(to top, #75f8d2, #6096db, #2ae3fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent; 
-  background-clip: text;
-  color: transparent; 
   display: inline-block;
 
-  animation: glowing-text 2s infinite;
+  /*animation: glowing-text 2s infinite;*/
   
 }
 
