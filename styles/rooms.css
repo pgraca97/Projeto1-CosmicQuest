@@ -676,9 +676,9 @@ td.selected {
   display: flex !important;
   align-items: center !important;
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  left: 20%;
+  top: 20%;
+  transform: translate(-50%, -20%);
 }
 
 /* Hover Image Styles */

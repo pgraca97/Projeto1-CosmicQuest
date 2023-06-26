@@ -1,5 +1,33 @@
 import * as User from "/js/Model/User.js";
-import { characterColor, setWidth } from "/js/common.js";
+import { characterColor } from "/js/common.js";
+
+// Get the modal
+const modal = document.getElementById("exitModal");
+console.log(modal);
+// Get the button that opens the modal
+const btn = document.getElementById("home-btn");
+console.log(btn);
+// Get the elements that close the modal
+const confirmExit = document.getElementById("btnYes");
+const cancelExit = document.getElementById("btnNo");
+
+const modelText = document.querySelector('#modalText');
+// When the user clicks the button, open the modal
+btn.onclick = function() {
+    modal.style.display = "block";
+    modelText.innerText = 'Exiting to the home page...';
+}
+
+// When the user clicks on "Yes", redirect to index.html
+confirmExit.onclick = function() {
+    window.location.href = "/index.html";
+}
+
+// When the user clicks on "No", close the modal
+cancelExit.onclick = function() {
+    modal.style.display = "none";
+}
+
 
 const contentContainer = document.getElementById('content');
 

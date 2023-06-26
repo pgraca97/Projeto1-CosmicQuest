@@ -20,13 +20,30 @@
         <div class="frame-container">
             <img src="/assets/img/Frame.png" alt="Frame2" />
         </div>
-
+        <div class="top-content text-center">
+            <!-- This could be the place for a title -->
+            <div class="btn-group gap-1 mt-1 pt-1">
+                <button type="button" class="btn btn-primary rounded-0" id="home-btn">
+                    <img class="btn-image" src="/assets/img/Buttons/Top Buttons/HOME.png" alt="HOME" />
+                    <img class="btn-image-hover" src="/assets/img/Buttons/Top Buttons/HOME-hover.png" alt="HOME-hover" />
+                  </button>
+            </div>
+        </div>
+         
+        <div id="exitModal" class="modal">
+            <div class="modal-content">
+                <p id="modalText"></p>
+                <button id="btnYes">Yes</button>
+                <button id="btnNo">No</button>
+            </div>
+        </div>
+   
         <div class="main-container">
             <div id="content" class="text-center mt-5">
             </div>
 
-          
-        </div>
+ 
+
                 <!-- Register Modal -->
                 <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">

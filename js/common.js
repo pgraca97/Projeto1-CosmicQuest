@@ -23,95 +23,6 @@ window.onload = function() {
     }
   };
 
-/*
-
-// create an engine
-var engine = Matter.Engine.create();
-engine.world.gravity.y = 0;
-
-// array of asteroid images
-var asteroidImages = [
-  '/assets/img/Asteroids/Asteroid1.png',
-  // add more asteroid image paths
-];
-
-// create a list to store the asteroids
-var asteroids = [];
-
-// create asteroids
-asteroidImages.forEach(function(image) {
-  var xPos = Math.random() * window.innerWidth;
-  var yPos = Math.random() * window.innerHeight;
-  var asteroid = Matter.Bodies.circle(xPos, yPos, 50, {
-    render: {
-      sprite: {
-        texture: image,
-        xScale: 1.0,
-        yScale: 1.0
-      }
-    }
-  });
-  asteroids.push(asteroid);
-  Matter.World.add(engine.world, asteroid);
-});
-
-// add walls
-var offset = 5;
-Matter.World.add(engine.world, [
-  Matter.Bodies.rectangle(window.innerWidth / 2, -offset, window.innerWidth + 2 * offset, 50, { 
-    isStatic: true,
-    render: {
-      fillStyle: '#0d0c13'
-    }
-  }),
-  Matter.Bodies.rectangle(window.innerWidth / 2, window.innerHeight + offset, window.innerWidth + 2 * offset, 50, { 
-    isStatic: true,
-    render: {
-      fillStyle: '#0d0c13'
-    }
-  }),
-  Matter.Bodies.rectangle(window.innerWidth + offset, window.innerHeight / 2, 50, window.innerHeight + 2 * offset, { 
-    isStatic: true,
-    render: {
-      fillStyle: '#0d0c13'
-    }
-  }),
-  Matter.Bodies.rectangle(-offset, window.innerHeight / 2, 50, window.innerHeight + 2 * offset, { 
-    isStatic: true,
-    render: {
-      fillStyle: '#0d0c13'
-    }
-  })
-]);
-
-
-// run the engine
-var runner = Matter.Runner.create();
-Matter.Runner.run(runner, engine);
-
-// add an event listener for the afterUpdate event
-Matter.Events.on(engine, 'afterUpdate', function() {
-  asteroids.forEach(function(asteroid) {
-    var forceMagnitude = Matter.Common.random(0.05, 0.1);
-    var forceDirection = Matter.Vector.create(Math.random() * 2 - 1, Math.random() * 2 - 1);
-    var force = Matter.Vector.mult(forceDirection, forceMagnitude);
-    Matter.Body.applyForce(asteroid, asteroid.position, force);
-  });
-});
-
-// run the renderer
-var render = Matter.Render.create({
-  element: document.body,
-  engine: engine,
-  options: {
-    width: window.innerWidth,
-    height: window.innerHeight,
-    background: '#0d0c13',
-    wireframes: false
-  }
-});
-Matter.Render.run(render); */
-
 export const characterColor = {
   BiColor: {
       src: "/assets/img/Characters/User/BiColor/Chara_Astronaut01_FullBody_Run_4Dir_6x4.png",
@@ -184,3 +95,55 @@ export const characterColor = {
       head: "/assets/img/Characters/User/Yellow/Yellow.png",
   }
 };
+
+export const utils = {
+  withGrid (number) {
+      return number * 16;
+  },
+  asGridCoord(x, y) {
+      return `${x*16},${y*16}`
+  },
+  snapToGrid(coord) {
+      return Math.round(coord / 16) * 16
+  },
+  nextPosition(initialX, initialY, direction) {
+      let x = initialX;
+      let y = initialY;
+      const size = 16;
+      if (direction === 'left') {
+          x -= size;
+      } else if (direction === 'right') {
+          x += size;
+      } else if (direction === 'up') {
+          y -= size;
+      } else if (direction === 'down') {
+          y += size;
+      }
+
+      //console.log(`Next position: x=${x}, y=${y}`);
+      
+      return {x, y};
+  },
+  oppositeDirection(direction) {
+      if (direction === 'left') { return 'right' }
+      if (direction === 'right') { return 'left' }
+      if (direction === 'up') { return 'down'; }
+      return 'up';
+  },
+
+
+  wait(ms) {
+      return new Promise(resolve => {setTimeout(() => {resolve()}, ms)});
+  },
+
+  randomFromArray(array) {
+      return array[Math.floor(Math.random() * array.length)];
+  },
+
+  emitEvent(name, detail) {
+      const event = new CustomEvent(name, {
+          detail
+      });
+      document.dispatchEvent(event);
+  }
+}

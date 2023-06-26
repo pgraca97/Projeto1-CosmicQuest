@@ -31,6 +31,8 @@ class PlanetSet {
     // This method is used to add a challenge to the appropriate type category in this ChallengeSet.
     addChallenge(quizz) {
         const existingChallenges = this.challenges[quizz.type];
+        console.log(`Adding ${quizz.question} to ${quizz.type}`);
+        console.log(existingChallenges);
         if (!existingChallenges.some(existingChallenge => existingChallenge.question === quizz.question)) {
             existingChallenges.push(quizz);
         } else {
@@ -56,103 +58,106 @@ class PlanetSet {
 
 }
 
+
+
 // Function to initialize localStorage with default PlanetSet and Challenge data
 export function initializeLocalStorage() {
     // Planets list
     console.log('Initializing Local Storage');
     const planets = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune'];
     const additionalTrivia = ['Sun', 'Meteor Showers']; //, 'Inner Planets Moons', 'Outer Planets Moons'
+ 
+    let educationalContent, planetSet, quizzes;
 
     // Loop through the planets
     for (const planet of planets) {
         // Check if there is a PlanetSet in localStorage for this planet
         if (!localStorage.getItem(planet)) {
             // Create a default educational content for the planet
-            let educationalContent;
-            let planetSet
+
             switch(planet) {
                 case 'Mercury': {
-                  let educationalContent = {
+                  educationalContent = {
                     video: `/assets/video/Mercury/Mercury 101 _ National Geographic.mp4`,
                     subtitles: `/assets/video/Mercury/Mercury.vtt`
                   };
-                  let quizzes = getMercuryQuizzes();
+                  quizzes = getMercuryQuizzes();
                   planetSet = generatePlanetSetsForRoom(planet, educationalContent, ...quizzes);
                   localStorage.setItem(planet, JSON.stringify(planetSet));
                   break;
                 }
                 case 'Venus': {
-                  let educationalContent = {
+                  educationalContent = {
                     video: `/assets/video/Venus/Venus 101 _ National Geographic.mp4`,
                     subtitles: `/assets/video/Venus/Venus.vtt`
                   };
-                  let quizzes = getVenusQuizzes();
+                  quizzes = getVenusQuizzes();
                   planetSet = generatePlanetSetsForRoom(planet, educationalContent, ...quizzes);
                   localStorage.setItem(planet, JSON.stringify(planetSet));
                   break;
                 }
                 case 'Earth': {
-                  let educationalContent = {
+                  educationalContent = {
                     video: `/assets/video/Earth/Earth 101 _ National Geographic.mp4`,
                     subtitles: `/assets/video/Earth/Earth.vtt`
                   };
-                  let quizzes = getEarthQuizzes();
+                  quizzes = getEarthQuizzes();
                   planetSet = generatePlanetSetsForRoom(planet, educationalContent, ...quizzes);
                   localStorage.setItem(planet, JSON.stringify(planetSet));
                   break;
                 }
                 case 'Mars': {
-                  let educationalContent = {
+                  educationalContent = {
                     video: `/assets/video/Mars/Mars 101 _ National Geographic.mp4`,
                     subtitles: `/assets/video/Mars/Mars.vtt`
                   };
-                  let quizzes = getMarsQuizzes();
+                  quizzes = getMarsQuizzes();
                   planetSet = generatePlanetSetsForRoom(planet, educationalContent, ...quizzes);
                   localStorage.setItem(planet, JSON.stringify(planetSet));
                   break;
                 }
                 case 'Jupiter': {
-                  let educationalContent = {
+                  educationalContent = {
                     video: `/assets/video/Jupiter/Jupiter 101 _ National Geographic.mp4`,
                     subtitles: `/assets/video/Jupiter/Jupiter.vtt`
                   };
-                  let quizzes = getJupiterQuizzes();
+                  quizzes = getJupiterQuizzes();
                    planetSet = generatePlanetSetsForRoom(planet, educationalContent, ...quizzes);
                   localStorage.setItem(planet, JSON.stringify(planetSet));
                   break;
                 }
                 case 'Saturn': {
-                  let educationalContent = {
+                  educationalContent = {
                     video: `/assets/video/Saturn/Saturn 101 _ National Geographic.mp4`,
                     subtitles: `/assets/video/Saturn/Saturn.vtt`
                   };
-                  let quizzes = getSaturnQuizzes();
+                  quizzes = getSaturnQuizzes();
                    planetSet = generatePlanetSetsForRoom(planet, educationalContent, ...quizzes);
                   localStorage.setItem(planet, JSON.stringify(planetSet));
                   break;
                 }
                 case 'Uranus': {
-                  let educationalContent = {
+                  educationalContent = {
                     video: `/assets/video/Uranus/Uranus 101 _ National Geographic.mp4`,
                     subtitles: `/assets/video/Uranus/Uranus.vtt`
                   };
-                  let quizzes = getUranusQuizzes();
+                  quizzes = getUranusQuizzes();
                    planetSet = generatePlanetSetsForRoom(planet, educationalContent, ...quizzes);
                   localStorage.setItem(planet, JSON.stringify(planetSet));
                   break;
                 }
                 case 'Neptune': {
-                  let educationalContent = {
+                  educationalContent = {
                     video: `/assets/video/Neptune/Neptune 101 _ National Geographic.mp4`,
                     subtitles: `/assets/video/Neptune/Neptune.vtt`
                   };
-                  let quizzes = getNeptuneQuizzes();
+                  quizzes = getNeptuneQuizzes();
                    planetSet = generatePlanetSetsForRoom(planet, educationalContent, ...quizzes);
                   localStorage.setItem(planet, JSON.stringify(planetSet));
                   break;
                 }
                 default: {
-                  let educationalContent = {
+                  educationalContent = {
                     video: `/assets/videos/${planet}.mp4`,
                     subtitles: `This is a dummy narration for ${planet}.`
                   };
@@ -166,8 +171,6 @@ export function initializeLocalStorage() {
     // Additional trivia
     for (const trivia of additionalTrivia) {
         if (!localStorage.getItem(trivia)) {
-            // Create a default educational content for the planet
-            let educationalContent;
 
             switch(trivia) {
                 case 'Sun': {
@@ -175,8 +178,8 @@ export function initializeLocalStorage() {
                         video: `/assets/video/Sun/Sun 101 _ National Geographic.mp4`,
                         subtitles: `/assets/video/Sun/Sun.vtt`
                     };
-                    let quizzes = getSunQuizzes();
-                     planetSet = generatePlanetSetsForRoom(trivia, educationalContent, ...quizzes);
+                    quizzes = getSunQuizzes();
+                    planetSet = generatePlanetSetsForRoom(trivia, educationalContent, ...quizzes);
                     localStorage.setItem(trivia, JSON.stringify(planetSet));
                     break;
                 }
@@ -185,8 +188,8 @@ export function initializeLocalStorage() {
                         video: `/assets/video/Meteor Showers/Meteor Showers 101 _ National Geographic.mp4`,
                         subtitles: `/assets/video/Meteor Showers/Meteor Showers.vtt`
                     };
-                    let quizzes = getMeteorQuizzes();
-                     planetSet = generatePlanetSetsForRoom(trivia, educationalContent, ...quizzes);
+                    quizzes = getMeteorQuizzes();
+                    planetSet = generatePlanetSetsForRoom(trivia, educationalContent, ...quizzes);
                     localStorage.setItem(trivia, JSON.stringify(planetSet));
                     break;
                 }
@@ -197,18 +200,6 @@ export function initializeLocalStorage() {
                     };
                     break;
             }
-            // Create a default PlanetSet and Challenge for this trivia
-            let planetSet = generatePlanetSetsForRoom(
-                trivia,
-                educationalContent,
-                new Quizz('alphabet soup', null, `What element makes up most of the Sun's mass?`, 'Hydrogen', ['Hint 1', 'Hint 2']),
-                new Quizz('alphabet soup', null, `What is the process that generates the Sun's energy?`, 'Nuclear fusion', ['Hint 1', 'Hint 2']),
-                new Quizz('alphabet soup', null, `Name the outermost layer of the Sun`, 'Corona', ['Hint 1', 'Hint 2'])
-            );
-        
-
-            localStorage.setItem(trivia, JSON.stringify(planetSet));
-
         }
     }
 }
@@ -268,7 +259,7 @@ function getMercuryQuizzes() {
         new Quizz('multiple choice', ['Iron', 'Sulfur', 'Aluminum'], `Which of the following elements is NOT found in Mercury's core?`, 'Aluminum', ['Hint 3', 'Hint 4']),
         new Quizz('short answer', null, 'What is the name of the spacecraft that provided the first global topographic model of Mercury?', 'MESSENGER', ['Hint 1', 'Hint 2']),
         new Quizz('short answer', null, "Which gas is NOT found in Mercury's thin atmosphere?", 'Argon', ['Hint 1', 'Hint 2']), 
-        new Quizz('fill in the blanks', ['88', '365', '694'], "Mercury's orbital period around the Sun is approximately Earth days.", "Earth's axial tilt is approximately 23.5 degrees.", ['Hint 1', 'Hint 2']),
+        new Quizz('fill in the blanks', ['88', '365', '694'], "Mercury's orbital period around the Sun is approximately Earth days.", "Mercury's orbital period around the Sun is approximately 88 Earth days.", ['Hint 1', 'Hint 2']),
         new Quizz('fill in the blanks', ['Sodium', 'Helium', 'Oxygen'], "The main component of Mercury's thin atmosphere is.", "The main component of Mercury's thin atmosphere is Sodium.", ['Hint 1', 'Hint 2'])
     ];
 }
