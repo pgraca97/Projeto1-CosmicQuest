@@ -491,6 +491,34 @@ let users = [
   
 ];
 
+// Get the modal
+const modal = document.getElementById("exitModal");
+console.log(modal);
+// Get the button that opens the modal
+const btn = document.getElementById("home-btn");
+console.log(btn);
+// Get the elements that close the modal
+const confirmExit = document.getElementById("btnYes");
+const cancelExit = document.getElementById("btnNo");
+
+const modelText = document.querySelector('#modalText');
+// When the user clicks the button, open the modal
+btn.onclick = function() {
+    modal.style.display = "block";
+    modelText.innerText = 'Exiting to the home page...';
+}
+
+// When the user clicks on "Yes", redirect to index.html
+confirmExit.onclick = function() {
+    window.location.href = "/index.html";
+}
+
+// When the user clicks on "No", close the modal
+cancelExit.onclick = function() {
+    modal.style.display = "none";
+}
+
+
 function renderGameSessions() {
     // Get the authenticated user
     let user = User.getAuthenticatedUser();
@@ -544,8 +572,9 @@ function renderGameSessions() {
         let continueButton = document.createElement('button');
         continueButton.innerText = 'CONTINUE';
         continueButton.addEventListener('click', function() {
+          console.log('Continue button clicked');
                         // Save the gameName as the active game session
-                        localStorage.setItem('activeGameSession', gameSession.gameName);
+                        localStorage.setItem('activeGameSession', session.gameName);
                         setTimeout(() => {
                           location.href = '../html/rooms.html';
                       }, 3000);
@@ -559,3 +588,4 @@ function renderGameSessions() {
 
 // Call the function to render the game sessions
 renderGameSessions();
+

@@ -3,7 +3,7 @@ import  OverworldMap  from "/js/Model/OverworldMap.js";
 import { DirectionInput } from "/js/Model/DirectionInput.js";
 import KeyPressListener from '/js/Model/KeyPressListener.js';
 import gameController from './GameController.js';
-import { utils } from "/js/Model/Utils.js";
+import { utils } from "/js/common.js";
 // The LearningEnvironment class is the central part of our application.
 // It controls the setup and rendering of the game environment.
 export default class LearningEnvironment {
@@ -123,7 +123,7 @@ startGameLoop() {
 
          // Save the room's key (i.e., its name) to currentRoom
         this.currentRoom = Object.keys(window.EscapeRooms).find(key => window.EscapeRooms[key] === mapConfig);
-        localStorage.setItem('currentRoom', this.currentRoom); //CHANGE THIS LINE!!!
+        localStorage.setItem('currentRoom', this.currentRoom);
         console.log(this.currentRoom);
     }
     

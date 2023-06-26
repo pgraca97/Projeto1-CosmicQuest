@@ -81,12 +81,12 @@ export function calculatePoints(progress, totalTime, playedTime, roomPoints) {
     return roomPoints;
 }
 
-function     initializeCelestialBodies(newSession) {
+function  initializeCelestialBodies(newSession) {
     // If playedTime is 0, it's a new game session, so initialize celestial bodies from original data.
           // Otherwise, it's a resumed game session, so load celestial bodies from localStorage.
-          const celestialBodiesNames = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Sun', 'Meteor Showers'];
-          let celestialBodies = [];
-          if (newSession) {
+    const celestialBodiesNames = ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Sun', 'Meteor Showers'];
+    let celestialBodies = [];
+    if (newSession) {
             console.log('Initializing celestial bodies from original data');
   
       for (let name of celestialBodiesNames) {

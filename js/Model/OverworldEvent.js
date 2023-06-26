@@ -1,4 +1,4 @@
-import { utils } from "/js/Model/Utils.js";
+import { utils } from "/js/common.js";
 
 // The OverworldEvent class defines how different types of events are handled in the app.
 export default class OverworldEvent {

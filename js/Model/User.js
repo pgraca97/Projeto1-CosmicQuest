@@ -10,29 +10,9 @@ export default class User {
         this.characterColor = characterColor; // E.g. 'blue', 'red', etc.
         this.gameSessions = []; // Each game session is a GameSession object
         this.settings = settings;
-        this.isAdmin = true; 
+        this.isAdmin = false; 
         this.isBlocked = false;
     }
-
-
-
-
-    
-    //Method to render the game sessions and present them in the CONTINUE container
-    renderGameSessions() {
-        const gameSessionsContainer = document.getElementById('game-sessions-container');
-        gameSessionsContainer.innerHTML = '';
-        User.gameSessions.forEach(gameSession => {
-            const gameSessionContainer = document.createElement('div');
-            gameSessionContainer.classList.add('game-session-container');
-            gameSessionContainer.innerHTML = `
-                <div class="game-session-name">${gameSession.gameName}</div>
-                <div class="game-session-difficulty">${gameSession.difficulty}</div>
-            `;
-            gameSessionsContainer.appendChild(gameSessionContainer);
-        });
-    }
-
 
 }
 

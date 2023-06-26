@@ -1,5 +1,3 @@
-import {utils} from "/js/Model/Utils.js";
-
 export default class Sprite {
     constructor(config) {
 

@@ -1,6 +1,36 @@
 import * as User from "/js/Model/User.js";
 import { characterColor, setWidth } from "/js/common.js";
 
+
+
+// Get the modal
+const modal = document.getElementById("exitModal");
+console.log(modal);
+// Get the button that opens the modal
+const btn = document.getElementById("home-btn");
+console.log(btn);
+// Get the elements that close the modal
+const confirmExit = document.getElementById("btnYes");
+const cancelExit = document.getElementById("btnNo");
+
+const modelText = document.querySelector('#modalText');
+// When the user clicks the button, open the modal
+btn.onclick = function() {
+    modal.style.display = "block";
+    modelText.innerText = 'Exiting to the home page...';
+}
+
+// When the user clicks on "Yes", redirect to index.html
+confirmExit.onclick = function() {
+    window.location.href = "/index.html";
+}
+
+// When the user clicks on "No", close the modal
+cancelExit.onclick = function() {
+    modal.style.display = "none";
+}
+
+
 const container = document.querySelector('#content');
 
 
@@ -91,8 +121,10 @@ for (let user of users) {
       }
     }
 
-    let averageCompletionTime = totalCompletionTime / totalSessionsPlayed;
-    let planetaryProScore = correctAnswers / totalQuestions;
+    let averageCompletionTime = totalSessionsPlayed > 0 ? totalCompletionTime / totalSessionsPlayed : 0;
+
+    let planetaryProScore = totalQuestions > 0 ? correctAnswers / totalQuestions : 0;
+
     let bonusTriviaScore = bonusTriviaQuestions > 0 ? (bonusTriviaCorrectAnswers / bonusTriviaQuestions) : null;
 
     userStats[user.username] = {
@@ -103,6 +135,7 @@ for (let user of users) {
       allCorrect: allCorrect
     };
   }
+
 }
 
 // Step 2: Update the dashboard HTML

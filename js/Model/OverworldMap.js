@@ -1,6 +1,5 @@
-import {utils} from "/js/Model/Utils.js";
+import { utils } from "/js/common.js";
 import  OverworldEvent  from "/js/Model/OverworldEvent.js";
-import gameController from './GameController.js';
 
 // Defining the OverworldMap class
 export default class OverworldMap {

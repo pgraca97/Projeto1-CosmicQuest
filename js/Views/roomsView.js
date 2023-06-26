@@ -1,7 +1,7 @@
 import  LearningEnvironment  from "/js/Model/learningEnvironment.js";
 import OverworldEvent from "/js/Model/OverworldEvent.js";
 import  KeyPressListener  from '/js/Model/KeyPressListener.js';
-import {utils} from "/js/Model/Utils.js";
+import { utils } from "/js/common.js";
 import {Person} from "/js/Model/Person.js";
 import * as PlanetSet from "/js/Model/PlanetSet.js";
 import gameController from '/js/Model/GameController.js';
@@ -23,6 +23,7 @@ const cancelExit = document.getElementById("cancelExit");
 
 // When the user clicks the button, open the modal
 btn.onclick = function() {
+    console.log("Home button clicked");
     modal.style.display = "block";
 }
 
@@ -60,38 +61,16 @@ function updateCelestialBodiesInLocalStorage(gameSession) {
     }
 }
 
-/*window.onload = function() {
-    if (window.location.pathname.endsWith('rooms.html')) {
-        console.log("Page loaded");
-        // Update the game session with the current state of the game
-        updateGameSessionState(gameSession);
-        
-        // Update celestial bodies in the local storage
-        updateCelestialBodiesInLocalStorage(gameSession);
-        
-        // Update the game session in local storage
-        User.updateGameSession(authenticatedUser.username, gameSession);
-    }
-}
 
-window.onbeforeunload = function() {
-    if (window.location.pathname.endsWith('rooms.html')) {
-        console.log("Page is about to be unloaded");
-        // Update the game session with the current state of the game
-        updateGameSessionState(gameSession);
-        
-        // Update celestial bodies in the local storage
-        updateCelestialBodiesInLocalStorage(gameSession);
-        
-        // Update the game session in local storage
-        User.updateGameSession(authenticatedUser.username, gameSession);
-    }
-}*/
-
-   // Get the currently playing game session
+// Get the currently playing game session
 const authenticatedUser = User.getAuthenticatedUser();
 const activeGameName = localStorage.getItem('activeGameSession');
 const gameSession = authenticatedUser.gameSessions.find(gameSession => gameSession.gameName == activeGameName);
+
+document.addEventListener("DOMContentLoaded", function() {
+    checkForGameEnd();
+    updateCelestialBodiesInLocalStorage(gameSession);
+});
 
 document.addEventListener("visibilitychange", function() {
     if (window.location.pathname.endsWith('rooms.html')) {
@@ -114,7 +93,6 @@ document.addEventListener("visibilitychange", function() {
 });
 
 
-window.onload = checkForGameEnd;
 
 
 
@@ -1941,7 +1919,9 @@ document.addEventListener('DOMContentLoaded', updateTokenQuantitiesOnPage);
             saveTokenQuantitiesToStorage(currentQuantities);
             // Update quantities displayed on the page
             updateTokenQuantitiesOnPage();
-    
+            gameSession.coins = gameSession.coins - total;
+            updateGameSessionState(gameSession);
+            User.updateGameSession(authenticatedUser.username, gameSession);
             // Reset total and update it
             resetReceiptAndQuantities();
             hud.querySelector('.coinCounterNumber').innerText = gameSession.coins;

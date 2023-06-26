@@ -1,5 +1,5 @@
 import  GameObject  from "./GameObject.js";
-import {utils} from "/js/Model/Utils.js";
+import { utils } from "/js/common.js";
 
 export class Person extends GameObject {
     constructor(config) {

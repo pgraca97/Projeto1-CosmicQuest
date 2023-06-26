@@ -63,3 +63,4 @@ import { characterColor, setWidth } from "/js/common.js";
   }
   console.log('inject done')
 })();
+
