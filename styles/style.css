@@ -368,3 +368,10 @@ button.btn.btn-primary {
 }
 
 
+#loginModal {
+top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  --bs-modal-margin: 31rem;
+  --bs-modal-bg: red;
+}
