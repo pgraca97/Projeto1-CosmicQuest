@@ -1461,7 +1461,7 @@ function createAlphabetSoupGrid(rows, cols, answer, currentChallenge) {
             placementOption = "vertical";
         }
     }
-    placementOption = "horizontal";
+    //placementOption = "horizontal";
     if (placementOption === "horizontal") {
         console.log('Horizontal');
         let randomRowIndex = Math.floor(Math.random() * grid.length);
