@@ -29,6 +29,7 @@
             <div class="top-content text-center">
                 <!-- This could be the place for a title -->
                 <div class="btn-group gap-1 mt-4 pt-5">
+
                     <!-- Buttons will be added here -->
                 </div>
             </div>
@@ -36,7 +37,7 @@
             <!-- Bottom Content -->
             <div class="bottom-content">
                 <!-- Group of buttons -->
-                <div class="btn-group-vertical mb-5 gap-2">
+                <div class="btn-group-vertical main-buttons gap-2">
                     <button type="button" class="btn btn-primary rounded-0" id="instructions-btn">
                         <img class="btn-image" src="assets/img/Buttons/Main Buttons/INSTRUCTIONS.png" alt="INSTRUCTIONS" />
                         <img class="btn-image-hover" src="assets/img/Buttons/Main Buttons/INSTRUCTIONS-hover.png" alt="INSTRUCTIONS-hover" />
@@ -45,111 +46,6 @@
 
                 <!-- Navbar/Footer -->
                 <nav class="navbar navbar-expand-md fixed-bottom gap-3 w-100 navbar-small pb-3"></nav>
-            </div>
-        </div>
-
-        <!-- Login Modal -->
-        <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <!-- Modal Header -->
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Login</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-
-                    <!-- Login Form -->
-                    <form id="login-form">
-                        <div class="modal-body">
-                            <!-- Username Field -->
-                            <div class="form-group">
-                                <label for="txtUsername">Username</label>
-                                <input type="text" class="form-control" id="txtUsername" placeholder="Enter username" />
-                            </div>
-
-                            <!-- Password Field -->
-                            <div class="form-group">
-                                <label for="txtPassword">Password</label>
-                                <input type="password" class="form-control" id="txtPassword" placeholder="Enter password" />
-                            </div>
-                        </div>
-
-                        <!-- Modal Footer -->
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-secondary">Login</button>
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </form>
-
-                    <!-- Message Container -->
-                    <div class="row">
-                        <div class="col">
-                            <div id="msgLogin"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-      
-        <!-- Register Modal -->
-        <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <!-- Modal Header -->
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Register</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-
-                    <!-- Register Form -->
-                    <form id="sign-up-form">
-                        <div class="character-container">
-                            <img class="arrow left-arrow" src="/assets/img/Glass_Arrow_Small.png" alt="Left arrow">
-                            <div class="user-character-container">
-                                <div class="user-character"><img class="user-character-img" src="" alt="User img"></div>
-                            </div>
-        
-                            <img class="arrow right-arrow" src="/assets/img/Glass_Arrow_Small.png" alt="Right arrow">
-                        </div>
-                        <div class="modal-body">
-                            <!-- Username Field -->
-                            <div class="form-group">
-                                <label for="txtUsernameRegister">Username</label>
-                                <input type="text" class="form-control" id="txtUsernameRegister" placeholder="Enter username" />
-                            </div>
-
-                            <!-- Password Field -->
-                            <div class="form-group">
-                                <label for="txtPasswordRegister">Password</label>
-                                <input type="password" class="form-control" id="txtPasswordRegister" placeholder="Enter password" />
-                            </div>
-
-                            <!-- Confirm Password Field -->
-                            <div class="form-group">
-                                <label for="txtPasswordRegister2">Confirm Password</label>
-                                <input type="password" class="form-control" id="txtPasswordRegister2" placeholder="Enter password again" />
-                            </div>
-
-                            <div class="form-group">
-                                <label for="txtEmailRegister">Email</label>
-                                <input type="email" class="form-control" id="txtEmailRegister" placeholder="Enter email" />
-                            </div>
-                        </div>
-
-                        <!-- Modal Footer -->
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-secondary">Register</button>
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </form>
-
-                    <!-- Message Container -->
-                    <div class="row">
-                        <div class="col">
-                            <div id="msgRegister"></div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </main>

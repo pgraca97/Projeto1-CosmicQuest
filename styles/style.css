@@ -144,7 +144,7 @@ body {
 }
 
 /* Specific Styles for .btn-primary */
-button.btn.btn-primary {
+.btn-group-vertical.main-buttons .btn.btn-primary {
   padding: 0;
   display: flex;
   justify-content: center;
@@ -336,14 +336,210 @@ button.btn.btn-primary {
 }
 
 
-.character-container {
-  position: relative;
+
+
+
+#loginModal {
+top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  --bs-modal-margin: 31rem;
+  --bs-modal-bg: red;
+}
+
+label {
+  font-family: 'DePixelBreit';
+  background: linear-gradient(to top, #75f8d2 45%, #6096db 15%, #2ae3fc 40%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; 
+  background-clip: text;
+  color: transparent; 
+  font-size: 0.8rem;
+  color: white;
+}
+
+
+/**/
+#form-fields {
+  width: auto !important;
   display: flex;
   flex-direction: column;
-  width: auto; 
-  justify-content: space-between; 
+
   align-items: center;
-  padding-right: 15px;
+  font-family: 'DePixelSchmal';
+  font-size: 1.2rem;
+
+}
+.btn-group-vertical.sign-up-form {
+  display: flex;
+  flex-direction: column;
+}
+.btn-group-vertical.sign-up-form #form-fields{
+  align-items: flex-start;
+
+}
+
+
+
+.btn-group-vertical.sign-up-form {
+  position: absolute;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: space-evenly;
+  width: 500px;
+  height: 300px;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'DePixelSchmal';
+  font-size: 1.2rem;
+}
+
+#form-fields input::placeholder {
+  color: green; /* change to the color you want */
+}
+.input-container {
+  margin-bottom: 20px;
+}
+
+.btn-group-vertical.sign-up-form .input-container {
+  margin: 6px;
+}
+#form-fields input {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 0;
+  border: none;
+  background: none;
+  white-space: nowrap;
+}
+
+#form-fields input:focus {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: none !important;
+  border-radius: 0;
+ /* background: rgba(41, 78, 92, 0.5) !important;   */
+  box-shadow: none;
+  outline: none;
+  -webkit-text-stroke: 1px black; /* Adding text stroke */
+
+}
+
+.input-container {
+  position: relative;
+  background-image: url("/assets/img/UI_Glass_Frame_Horizontal_01a.png");
+  /*background-color: rgba(196, 223, 233,0.2) !important;    */;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  image-rendering: pixelated !important;
+  z-index: 2;
+}
+
+
+
+#password {
+  width: 150px!important;
+  font-family: 'DePixelSchmal', sans-serif;
+}
+
+input[type='password'] {
+  font-family: 'DePixelSchmal', sans-serif;
+}
+
+.password-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#toggle-password {
+  height: fit-content;
+  background-color: transparent !important;
+  border: none!important;
+  margin-bottom: 15px;
+  margin-left: 2px;
+  position: fixed;
+  left: 60%;
+}
+
+#email {
+  width: 200px!important;
+}
+
+#form-fields > button {
+  width: auto !important;
+}
+
+.btn-group-vertical {
+  margin-bottom: 3rem;
+}
+.btn-group-vertical.login-form {
+  margin-bottom: 10rem;
+}
+
+.btn-group-vertical.login-form .btn.btn-primary,
+.btn-group-vertical.sign-up-form .btn.btn-primary {
+  background-color: transparent !important;
+  border: none !important;
+  display: flex; /* Add this */
+  align-items: center; /* Add this */
+  justify-content: center; /* Add this */
+
+}
+
+.btn-group-vertical.login-form .btn-container {
+  position: relative;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent !important;
+  padding: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  image-rendering: pixelated !important;
+  border: none;
+  height: 32px;
+  overflow: hidden;
+}
+.btn-group-vertical.gap-2.sign-up-form {
+  gap: 0 !important;
+}
+
+.btn-group-vertical.sign-up-form .btn-container {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent !important;
+  padding: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  image-rendering: pixelated !important;
+  border: none;
+  overflow: hidden;
+}
+
+#submit-button {
+  display: flex;
+  height: 32px;
+  margin-bottom: 1.5px;
+}
+.user-character-container {
+  position: relative;
+  background-image: url("/assets/img/UI_Glass_Frame_Standard_01a.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+}
+
+
+.character-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .arrow {
@@ -359,19 +555,53 @@ button.btn.btn-primary {
   transform: rotate(90deg);
 }
 
-.user-character-container {
-  position: relative;
-  background-image: url("/assets/img/UI_Glass_Frame_Standard_01a.png");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 100% 100%;
+
+.content-container {
+  display: flex; 
+  flex-direction: row;
+  justify-content: space-between; 
+  align-items: center;
+  width: 350px; 
+  height: 200px;
 }
 
+.content-container #personal-form {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
 
-#loginModal {
-top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  --bs-modal-margin: 31rem;
-  --bs-modal-bg: red;
+.btn-container {
+  align-self: center; /* Center this horizontally */
+}
+
+.msgLogin {
+  margin-top: 10px;
+  font-family: 'DePixelSchmal';
+}
+.msgLogin.success {
+  color: green;
+}
+
+.msgLogin.error {
+  color: red;
+  text-align: center;
+}
+
+#msgRegister {
+
+  height: 32px;
+  text-align: center;
+  color: violet;
+  display: flex;
+  align-items: center;
+  line-height: 20px;
+}
+
+#toggle-password.sign-up {
+  margin-bottom: 0;
+  margin-top:4px;
+  position: fixed;
+  left: 75%;
 }

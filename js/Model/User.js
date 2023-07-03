@@ -40,18 +40,22 @@ export function addUser( username, email, password, characterColor) {
 
 
 // Log in function
-export function login(username, password) {
+export function login(usernameOrEmail, password) {
     const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-    const user = storedUsers.find(user => user.username === username && user.password === password);
+    const user = storedUsers.find(
+      user => (user.username === usernameOrEmail || user.email === usernameOrEmail) && user.password === password
+    );
+  
     if (user && user.isBlocked) {
-        throw new Error('This account has been blocked');
+      throw new Error('This account has been blocked');
     } else if (user) {
-        sessionStorage.setItem('loggedUser', JSON.stringify(user));
-        return true; // Signal that the login was successful
+      sessionStorage.setItem('loggedUser', JSON.stringify(user));
+      return true; // Signal that the login was successful
     } else {
-        throw new Error('Invalid login');
+      throw new Error('Invalid login');
     }
-}
+  }
+  
 
 
 // Log out function

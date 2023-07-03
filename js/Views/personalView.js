@@ -38,7 +38,6 @@ const container = document.querySelector('#content');
 const user = User.getAuthenticatedUser();
 
 
-
 // Retrieve users from local storage and parse them into a JavaScript object
 const users = JSON.parse(localStorage.getItem('users'));
 
