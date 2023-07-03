@@ -1,17 +1,6 @@
 import * as User from "/js/Model/User.js";
 import { characterColor } from "/js/common.js";
 
-
-
-// Function to display a message in a specific modal
-function displayMessage(modal, message, type) {
-  const divMessage = document.getElementById(modal);
-  divMessage.innerHTML = `<div class="alert alert-${type}" role="alert">${message}</div>`;
-  setTimeout(() => {
-    divMessage.innerHTML = "";
-  }, 2000);
-}
-
 function landingPageView() {
   const navbar = document.querySelector('.navbar');
   const btnGroupTop = document.querySelector('.btn-group');
@@ -89,12 +78,12 @@ function landingPageView() {
   } else {
     // If user is not logged in, add login and sign up buttons
     nav += `
-      <button type="button" class="btn me-auto m-2" id="login-btn" data-bs-toggle="modal" data-bs-target="#loginModal">
+      <button type="button" class="btn me-auto m-2" id="login-btn">
         <img class="btn-image" src="assets/img/Buttons/logIn.png" alt="log-in">
         <img class="btn-image-hover" src="assets/img/Buttons/logIn-hover.png" alt="log-in-hover">
       </button>
       
-      <button type="button" class="btn ms-auto m-2" id="sign-up-btn" data-bs-toggle="modal" data-bs-target="#signupModal">
+      <button type="button" class="btn ms-auto m-2" id="sign-up-btn">
         <img class="btn-image" src="assets/img/Buttons/signUp.png" alt="sign-up">
         <img class="btn-image-hover" src="assets/img/Buttons/signUp-hover.png" alt="sign-up-hover">
       </button>
@@ -113,99 +102,349 @@ function landingPageView() {
     });
   }
 
- // Initialize the counter
-  const userCharacterColor = document.querySelector(".user-character img");
+
+// Hold onto the timeoutID
+let clearMsgTimeoutId;
+
+// Select the login button and add a click event listener
+document.querySelector("#login-btn")?.addEventListener("click", () => {
+
+  document.querySelector(".btn-group-vertical").style.top = null;
+  document.querySelector(".btn-group-vertical").style.marginBottom = null;
+
+  clearTimeout(clearMsgTimeoutId);
+
+  // Update the inner HTML of the btnGroup
+  btnGroup.innerHTML = `
+    <form id="personal-form" action="">
+      <div id="form-fields" class="form-group gap-1">
+        <div class="input-container">
+          <input type="email" id="email" class="form-control" placeholder="EMAIL OR USERNAME" maxlength="30" />
+        </div>
+        <div class="password-container">
+          <div class="input-container">
+            <input type="password" id="password" class="form-control" placeholder="PASSWORD" maxlength="15" />
+          </div>
+          <button type="button" id="toggle-password" class="toggle-password">show</button>
+        </div>
+        <div class="btn-container">
+          <button id="submit-button" type="submit" class="btn btn-primary">LOG IN</button>
+        </div>
+      </div>
+      <div class="msgLogin"></div>
+    </form>
+  `;
+
+  // Select elements
+  const submitButton = document.querySelector(".btn-container");
+  const msgLogin = document.querySelector(".msgLogin");
+  const passwordInput = document.getElementById("password");
+  const togglePasswordButton = document.getElementById("toggle-password");
   
-  // Get the array of keys from the characterColor object
-  const characterColorArray = Object.values(characterColor);
-
-  let currentColorKey = 0
-
-console.log(characterColorArray[currentColorKey])
-
-  // Function to update the user character color image
-  function updateUserCharacterColor() {
-      // Get the head image for the current color
-      userCharacterColor.src = characterColorArray[currentColorKey].head;
-
-  }
+  // Handle show/hide password button click
+  togglePasswordButton.addEventListener('click', () => {
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      togglePasswordButton.textContent = "hide";
+    } else {
+      passwordInput.type = "password";
+      togglePasswordButton.textContent = "show";
+    }
+  });
   
+  // Update the background image of the submitButton
+  submitButton.style.backgroundImage = "url('/assets/img/GUI/UI_Glass_Button_Medium_Lock_01a3.png')";
 
-// Update the image for the first time
-updateUserCharacterColor();
+  // Handle submit button click
+  submitButton.addEventListener('click', (event) => {
+    event.preventDefault();
 
-// Handle the arrow clicks
-document.querySelector('.arrow.right-arrow').addEventListener('click', function() {
-  console.log("right arrow clicked");
-    // Increase the counter
-    currentColorKey++;
-
-    // If the counter exceeds the last index of the array, reset it to 0
-    if (currentColorKey > characterColorArray.length - 1) {
-      currentColorKey = 0;
+    const emailOrUsername = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+  
+    // Client-side validation
+    if (!emailOrUsername.trim() || !password.trim()) {
+      msgLogin.classList.remove("success");
+      msgLogin.classList.add("error");
+      msgLogin.innerText = "Please fill in all fields.";
+      if (msgLogin.innerText) {
+        document.querySelector(".btn-group-vertical").style.marginBottom = "8.5rem";
+      }
+      
+      // Clear the error message and reset margin after 2 seconds
+      clearMsgTimeoutId = setTimeout(() => {
+        console.log('timeout');
+        msgLogin.innerText = "";
+        document.querySelector(".btn-group-vertical").style.marginBottom = null;
+      }, 4000);
+      return;
     }
 
-    // Update the image
-    updateUserCharacterColor();
+    try {
+      // Attempt to log in the user
+      User.login(emailOrUsername, password);
+
+      // If login is successful, display success message and update margin
+      msgLogin.classList.remove("error");
+      msgLogin.classList.add("success");
+      msgLogin.innerText = "User logged in with success!";
+      if (msgLogin.innerText) {
+        document.querySelector(".btn-group-vertical").style.marginBottom = "8.5rem";
+      }
+
+      // Clear the success message and reset margin after 2 seconds
+      clearMsgTimeoutId = setTimeout(() => {
+        msgLogin.innerText = "";
+        document.querySelector(".btn-group-vertical").style.marginBottom = null;
+      }, 2000);
+
+      // Reload the page after 1 second
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
+
+    } catch (e) {
+      // If login fails, display error message and update margin
+      msgLogin.classList.remove("success");
+      msgLogin.classList.add("error");
+      msgLogin.innerText = e.message;
+      if (msgLogin.innerText) {
+        document.querySelector(".btn-group-vertical").style.marginBottom = "8.5rem";
+      }
+
+      // Clear the error message and reset margin after 2 seconds
+      clearMsgTimeoutId = setTimeout(() => {
+        msgLogin.innerText = "";
+        document.querySelector(".btn-group-vertical").style.marginBottom = null;
+      }, 2000);
+    }
+  });
+
+  // Handle submit button mousedown
+  submitButton.addEventListener('mousedown', () => {
+    submitButton.style.backgroundImage = "url('/assets/img/GUI/UI_Glass_Button_Medium_Press_01a3.png')";
+    submitButton.style.transform = 'translateY(1px)';  // move button down slightly
+  });
+
+  // Handle submit button mouseup
+  submitButton.addEventListener('mouseup', () => {
+    submitButton.style.backgroundImage = "url('/assets/img/GUI/UI_Glass_Button_Medium_Release_01a3.png')";
+    submitButton.style.transform = 'translateY(0)';  // move button back to original position
+    setTimeout(() => {
+      submitButton.style.backgroundImage = "url('/assets/img/GUI/UI_Glass_Button_Medium_Lock_01a3.png')";
+    }, 100); // delay the switch back to the locked state so the release state can be seen
+  });
+
+  // Handle submit button mouseout
+  submitButton.addEventListener('mouseout', () => {
+    // reset button state when mouse leaves button
+    submitButton.style.backgroundImage = "url('/assets/img/GUI/UI_Glass_Button_Medium_Lock_01a3.png')";
+    submitButton.style.transform = 'translateY(0)';  // move button back to original position
+  });
+
+  // Update the classes of the btnGroup
+  btnGroup.classList.remove("main-buttons");
+  btnGroup.classList.remove("sign-up-form");
+  btnGroup.classList.add("login-form");
 });
 
-document.querySelector('.arrow.left-arrow').addEventListener('click', function() {
-    // Decrease the counter
-    currentColorKey--;
 
-    // If the counter becomes less than 0, set it to the last index of the array
-    if (currentColorKey < 0) {
-      currentColorKey = characterColorArray.length - 1;
+// Handle sign up button click 
+document.querySelector("#sign-up-btn")?.addEventListener("click", () => {
+  // Reset the top and marginBottom of the btn-group-vertical
+  document.querySelector(".btn-group-vertical").style.top = null;
+  document.querySelector(".btn-group-vertical").style.marginBottom = null;
+
+  // Clear previous error or success messages
+  clearTimeout(clearMsgTimeoutId);
+
+  // Update the inner HTML of the button group
+  btnGroup.innerHTML = `
+    <!-- Content Container -->
+    <div class="content-container">
+      <form id="personal-form" action="">
+        <!-- Character Container -->
+        <div class="character-container">
+          <img class="arrow left-arrow" src="/assets/img/Glass_Arrow_Small.png" alt="Left arrow">
+          <div class="user-character-container">
+            <div class="user-character"><img class="user-character-img" src="" alt="User img"></div>
+          </div>
+          <img class="arrow right-arrow" src="/assets/img/Glass_Arrow_Small.png" alt="Right arrow">
+        </div>
+        <!-- Form Fields -->
+        <div id="form-fields" class="form-group gap-1">
+          <div class="input-container">
+            <input type="text" id="username" class="form-control" placeholder="USERNAME" maxlength="20" required>
+          </div>
+          <div class="password-container">
+            <div class="input-container">
+              <input type="password" id="password" class="form-control" placeholder="PASSWORD" maxlength="15" />
+            </div>
+            <button type="button" id="toggle-password" class="sign-up">show</button>
+          </div>
+          <div class="input-container">
+            <input type="password" id="password2" class="form-control" placeholder="CONFIRM PASSWORD" maxlength="15" required>
+          </div>
+          <div class="input-container">
+            <input type="email" id="email" class="form-control" placeholder="EMAIL" maxlength="30" required>
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- Button Container -->
+    <div class="btn-container">
+      <button id="submit-button" type="submit" class="btn btn-primary">SIGN UP</button>
+    </div>
+    <!-- Message Container -->
+    <div id="msgRegister"></div>
+  `;
+
+  // Get DOM references for later use
+  const submitButton = document.querySelector(".btn-container");
+  const userCharacterColor = document.querySelector(".user-character img");
+  const passwordInput = document.getElementById("password");
+  const password2Input = document.getElementById("password2");
+  const togglePasswordButton = document.getElementById("toggle-password");
+  const msgRegister = document.getElementById("msgRegister");
+  
+  // Handle show/hide password button click
+  togglePasswordButton.addEventListener('click', () => {
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      password2Input.type = "text";
+      togglePasswordButton.textContent = "hide";
+    } else {
+      passwordInput.type = "password";
+      password2Input.type = "password";
+      togglePasswordButton.textContent = "show";
+    }
+  });
+
+  // Character color handling
+  const characterColorArray = Object.values(characterColor);
+  let currentColorKey = 0;
+
+  function updateUserCharacterColor() {
+    userCharacterColor.src = characterColorArray[currentColorKey].head;
+  }
+
+  updateUserCharacterColor();
+  submitButton.style.backgroundImage = "url('/assets/img/GUI/UI_Glass_Button_Medium_Lock_01a3.png')";
+
+  // Event handlers for the arrows
+  document.querySelector('.arrow.right-arrow').addEventListener('click', function() {
+    currentColorKey = (currentColorKey + 1) % characterColorArray.length;
+    updateUserCharacterColor();
+  });
+
+  document.querySelector('.arrow.left-arrow').addEventListener('click', function() {
+    currentColorKey = (currentColorKey - 1 + characterColorArray.length) % characterColorArray.length;
+    updateUserCharacterColor();
+  });
+
+// Handle form submission
+submitButton.addEventListener("click", (event) => {
+  event.preventDefault();
+  try {
+    const registerUsername = document.getElementById("username");
+    const registerPassword = document.getElementById("password");
+    const registerPassword2 = document.getElementById("password2");
+    const email = document.getElementById("email");
+    
+    // Username validation
+    if (registerUsername.value.length < 4 || registerUsername.value.length > 20) {
+      throw Error("Username should be between 4 and 20 characters long");
+    }
+    
+    if (!/^[\w.-]+$/.test(registerUsername.value)) {
+      throw Error("Username can only contain letters, numbers, and ._-");
+    }
+    
+    // Password validation
+    if (registerPassword.value.length < 8 || registerPassword.value.length > 16) {
+      throw Error("Password should be between 8 and 16 characters long");
+    }
+    
+    if (!/[A-Za-z]/.test(registerPassword.value) || !/\d/.test(registerPassword.value) || !/[\W_]/.test(registerPassword.value)) {
+      throw Error("Password should contain at least one letter, one number, and one special character");
     }
 
-    // Update the image
-    updateUserCharacterColor();
+    if (/\s/.test(registerPassword.value)) {
+      throw Error("Password should not contain spaces");
+    }
+    
+    if (registerPassword.value !== registerPassword2.value) {
+      throw Error("Password and Confirm Password are not equal");
+    }
+
+    // Email validation
+    if (!/^\S+@\S+\.\S+$/.test(email.value)) {
+      throw Error("Invalid email format");
+    }
+    
+    const selectedColor = characterColorArray[currentColorKey];
+    User.addUser(registerUsername.value, email.value, registerPassword.value, selectedColor);
+
+
+    msgRegister.classList.remove("error");
+    msgRegister.classList.add("success");
+    msgRegister.innerText = "Sign up successful!";
+    if (msgRegister.innerText) {
+      document.querySelector(".btn-group-vertical").style.top="55%";
+    }
+
+    clearMsgTimeoutId = setTimeout(() => {
+      msgRegister.innerText = "";
+      document.querySelector(".btn-group-vertical").style.top = null;
+    }, 2000);
+    
+     setTimeout(() => {
+       location.reload();
+    }, 1000);
+    } catch (e) {
+      msgRegister.classList.remove("success");
+      msgRegister.classList.add("error");
+      msgRegister.innerText = e.message;
+      if (msgRegister.innerText) {
+        document.querySelector(".btn-group-vertical").style.top="55%";
+      }
+
+      clearMsgTimeoutId = setTimeout(() => {
+        msgRegister.innerText = "";
+        document.querySelector(".btn-group-vertical").style.top = null;
+      }, 2000);
+    }
+  });
+
+  // Button press effects
+  submitButton.addEventListener('mousedown', () => {
+    submitButton.style.backgroundImage = "url('/assets/img/GUI/UI_Glass_Button_Medium_Press_01a3.png')";
+    submitButton.style.transform = 'translateY(1px)';
+  });
+
+  submitButton.addEventListener('mouseup', () => {
+    submitButton.style.backgroundImage = "url('/assets/img/GUI/UI_Glass_Button_Medium_Release_01a3.png')";
+    submitButton.style.transform = 'translateY(0)';
+    setTimeout(() => {
+      submitButton.style.backgroundImage = "url('/assets/img/GUI/UI_Glass_Button_Medium_Lock_01a3.png')";
+    }, 100);
+  });
+
+  submitButton.addEventListener('mouseout', () => {
+    submitButton.style.backgroundImage = "url('/assets/img/GUI/UI_Glass_Button_Medium_Lock_01a3.png')";
+    submitButton.style.transform = 'translateY(0)';
+  });
+
+  // Update class list for the button group
+  btnGroup.classList.remove("main-buttons");
+  btnGroup.classList.remove("login-form");
+  btnGroup.classList.add("sign-up-form");
 });
 
 document.querySelector("#admin-btn")?.addEventListener("click", () => {
   location.href = "../html/backoffice.html";
 });
 
-
-
-  document.querySelector("#login-form")?.addEventListener("submit", (event) => {
-    event.preventDefault();
-    try {
-      User.login(
-        document.getElementById("txtUsername").value,
-        document.getElementById("txtPassword").value
-      );
-      displayMessage("msgLogin", "User logged in with success!", "success");
-      setTimeout(() => {
-        location.reload();
-      }, 1000);
-    } catch (e) {
-      displayMessage("msgLogin", e.message, "danger");
-    }
-
-  });
-
-  document.querySelector("#sign-up-form")?.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const registerUsername = document.getElementById("txtUsernameRegister");
-    const registerPassword = document.getElementById("txtPasswordRegister");
-    const registerPassword2 = document.getElementById("txtPasswordRegister2");
-    const email = document.getElementById("txtEmailRegister");
-    try {
-      if (registerPassword.value !== registerPassword2.value) {
-        throw Error("Password and Confirm Password are not equal");
-      }
-      const selectedColor = characterColorArray[currentColorKey]; // get selected color object
-      User.addUser(registerUsername.value, email.value, registerPassword.value, selectedColor); // pass color object
-      displayMessage("msgRegister", "User registered with success!", "success");
-      setTimeout(() => {
-        location.reload();
-      }, 1000);
-    } catch (e) {
-      displayMessage("msgRegister", e.message, "danger");
-    }
-  });
-  
   document.querySelector("#instructions-btn")?.addEventListener("click", () => {
     location.href = "./html/instructions.html";
 });
@@ -218,7 +457,6 @@ document.querySelector("#continue-btn")?.addEventListener("click", () => {
   location.href = "../html/continue.html";
 });
 
-
 document.querySelector("#personal-btn")?.addEventListener("click", () => {
   location.href = "../html/personal.html";
 });
@@ -227,7 +465,6 @@ document.querySelector("#exit-btn")?.addEventListener("click", () => {
   User.logout();
   location.reload();
 });
-
 }
 
 landingPageView();
